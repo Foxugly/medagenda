@@ -1,0 +1,4 @@
+django
+pypdf
+django-colorfield
+django-address

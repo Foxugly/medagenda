@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015, Foxugly. All rights reserved.
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+
+from string import printable
+from django.db import models
+from django.db.models import signals, Q
+from django.contrib.auth import models as authmod
+from django.contrib.auth.models import User
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+from django.conf.settings import LANGUAGES
+from colorfield.fields import ColorField
+from address.models import AddressField
+
+
+class CreateUserForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField()
+    email = forms.EmailField()
+    last_name = forms.CharField()
+    first_name = forms.CharField()
+
+
+MEDECINE_CHOICES = (
+  ('medgen', _('Médecine Générale')),
+  ('medint', _('Médecine Interne')),
+)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, verbose_name=_('user'))
+    speciality = models.CharField(max_length=10, choices=MEDECINE_CHOICES, required=True)
+    slug = models.SlugField(blank=True)
+    language = models.CharField(max_length=2, choices=GENDER_CHOICES, required=True)
+    free_slot_color = ColorField(default='#00FF00')
+    busy_slot_color = ColorField(default='#FF0000')
+    view_busy_slot = forms.BooleanField(default=True)
+    address = AddressField()
+
+    def __str__(self):
+        return self.user.username
+
+    def real_name(self):
+        return self.user.first_name + " " + self.user.last_name
+
+    def get_speciality(self):
+        return self.real_name + " " + self.speciality
+
+    def save(self, *args, **kwargs):
+        self.slug = self.get_speciality()
+        super(UserProfile, self).save(*args, **kwargs)
+
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=LANGUAGES[0])[0])
