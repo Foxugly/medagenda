@@ -11,10 +11,10 @@
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-import json
 from users.models import UserProfile, UserProfileForm
 from utils.perms import get_context
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
+import json
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from datetime import datetime, timedelta, time
@@ -72,6 +72,13 @@ def calendar_user(request,slug):
         c['slots'].append(s.as_json())
     print c['slots']
     return render(request, 'calendar.tpl', c)
+
+@login_required
+def model_calendar(request, slug):
+    c = get_context(request)
+    user = get_object_or_404(UserProfile,slug=slug)
+    c['doctor'] = user
+    return render(request, 'model.tpl', c)
 
 def reminder_slot(request, slug):
      return HttpResponseRedirect('/')

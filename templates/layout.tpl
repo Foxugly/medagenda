@@ -16,13 +16,13 @@
     <title>MedAgenda</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
-    <!--<link rel="stylesheet" href="/static/css/bootstrap.min.css">-->
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
     {% block css %}
     {% endblock %}
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
-    <!--<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>-->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>-->
+    <script type="text/javascript" src="/static/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
     <script type="text/javascript" src="/static/js/jquery.geocomplete.min.js"></script>
     <script type="text/javascript" src="/static/address/js/address.js"></script>
@@ -59,7 +59,7 @@
               <ul class="dropdown-menu" style='background:black;color:white;'>
                 <li><a class="glyphicon glyphicon-cog" href="/user/settings/">{% blocktrans %} Profil{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-calendar" href="/user/{{userprofile.slug}}/agenda/">{% blocktrans %} Agenda{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/{{userprofile.slug}}/modele/">{% blocktrans %} Modèle{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/{{userprofile.slug}}/model/">{% blocktrans %} Modèle{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/">{% blocktrans %} Déconnexion{% endblocktrans %} </a></li>
               </ul>
             </li>
