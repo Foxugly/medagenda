@@ -18,7 +18,8 @@ from django.conf import settings
 from colorfield.fields import ColorField
 from address.models import AddressField
 from django.forms import ModelForm
-
+from django.utils.text import slugify
+from agenda.models import WeekTemplate, Slot
 
 class CreateUserForm(forms.Form):
     username = forms.CharField()
@@ -27,27 +28,36 @@ class CreateUserForm(forms.Form):
     last_name = forms.CharField()
     first_name = forms.CharField()
 
-
-MEDECINE_CHOICES = (
-  ('none', _('None')),
-  ('medgen', _('Medecine Generale')),
-  ('medint', _('Medecine Interne')),
-)
-
-
 class UserProfile(models.Model):
+    MEDECINE_CHOICES = (
+        (1, _(u'Aucune')),
+        (2, _(u'Médecine Générale')),
+        (3, _(u'Médecine Interne')),
+    )
+    TITLE_CHOICES = (
+        (1, _(u'Professeur')),
+        (2, _(u'Docteur')),
+        (3, _(u'Madame')),
+        (4, _(u'Monsieur')),
+    )
+
+    title = models.IntegerField(choices=TITLE_CHOICES,default=2)
     user = models.OneToOneField(User, verbose_name=_('user'))
     picture = models.ImageField(upload_to='pic', blank=True, null=True)
-    speciality = models.CharField(max_length=10, choices=MEDECINE_CHOICES)
-    slug = models.SlugField(blank=True)
+    speciality = models.IntegerField(choices=MEDECINE_CHOICES)
+    slug = models.SlugField(max_length=50, blank=True)
     language = models.CharField(max_length=2, choices=settings.LANGUAGES)
     vat_number = models.CharField(max_length=20, blank=True)
     telephone = models.CharField(max_length=20, blank=True)
     address = AddressField()
-    free_slot_color = ColorField(default='#00FF00')
-    busy_slot_color = ColorField(default='#FF0000')
+    free_price_free_slot_color = ColorField(default='#73B5EB')
+    free_price_booked_slot_color = ColorField(default='#F64636')
+    nhs_price_free_slot_color = ColorField(default='#73EB79') # nhs = national health service price
+    nhs_price_booked_slot_color = ColorField(default='#F64636')
     view_busy_slot = models.BooleanField()
-    
+    view_in_list = models.BooleanField()
+    weektemplate = models.ForeignKey(WeekTemplate, blank=True, null=True)
+    slots = models.ManyToManyField(Slot, verbose_name=_(u'slots'), blank=True)
 
     def __str__(self):
         return str(self.user.username)
@@ -56,6 +66,7 @@ class UserProfile(models.Model):
         return str(self.user.first_name + " " + self.user.last_name)
 
     def save(self, *args, **kwargs):
+        self.slug = slugify(self.real_name())
         super(UserProfile, self).save(*args, **kwargs)
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
@@ -114,4 +125,4 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user','slug')
+        exclude = ('user','slug','weektemplate',)

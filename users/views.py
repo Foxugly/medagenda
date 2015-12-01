@@ -8,6 +8,7 @@
 # your option) any later version.
 
 
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 import json
@@ -16,18 +17,19 @@ from utils.perms import get_context
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
+from datetime import datetime, timedelta, time
 
 def home(request):
     if request.user.is_authenticated():
         # doctors
         if request.user.is_superuser:
             # admin
-            userprofiles = UserProfile.objects.all()
+            userprofiles = UserProfile.objects.filter(view_in_list=True)
             c = get_context(request)
             c['list'] = userprofiles
             return render_to_response('list.tpl', c)
     else :
-        userprofiles = UserProfile.objects.all()
+        userprofiles = UserProfile.objects.filter(view_in_list=True)
         c = get_context(request)
         c['list'] = userprofiles
         return render_to_response('list.tpl', c)
@@ -52,3 +54,31 @@ def add_user(request):
         c['url'] = "/user/adduser/"
         c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
+
+def profile_user(request,slug):
+    c = get_context(request)
+    user = get_object_or_404(UserProfile,slug=slug)
+    c['doctor'] = user
+    return render(request, 'profile.tpl', c)
+
+def calendar_user(request,slug):
+    c = get_context(request)
+    user = get_object_or_404(UserProfile,slug=slug)
+    c['doctor'] = user
+    today = datetime.now().date()
+    c['slots'] = []
+    slots = user.slots.filter(date__gte=today)
+    for s in slots:
+        c['slots'].append(s.as_json())
+    print c['slots']
+    return render(request, 'calendar.tpl', c)
+
+def reminder_slot(request, slug):
+     return HttpResponseRedirect('/')
+
+def remove_slot(request,slug,slot_id):
+    return HttpResponseRedirect('/')
+
+def find_slot(request,slug,input):
+    # AJAX TOUSSA
+    return HttpResponseRedirect('/')

@@ -1,5 +1,6 @@
 {% extends "layout.tpl" %}
 {% load i18n %}
+{% load tools %}
 {% block content %}
 {% if userprofile.user.is_authenticated %}
   {% if userprofile.user.is_superuser %}
@@ -24,42 +25,19 @@
 </div>
 {% endif %}
 <p></p>
+{% for item in list %}
+{% if forloop.counter0|divisibleby:"4" %}
 <div class="row">
+{% endif %}
   <div class="col-sm-3">
     <div class="thumbnail">
       <p style="text-align:center;"><img src="/media/pic/profil.jpg"></p>
-      <p style="text-align:center;">Docteur Julie Tricot</p>
-      <p style="text-align:center;">Médecine générale</p>
-      <p  style="text-align:center;">Lesve</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="#" role="button">Plus d'infos</a></p>
+      <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>
+      <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
+      <p  style="text-align:center;">{{item.address.locality.name}}</p>
+      <p style="text-align:center;"><a class="btn btn-info" href="/user/{{item.slug}}/" role="button">Plus d'infos</a></p>
     </div>
   </div>
-  <div class="col-sm-3">
-    <div class="thumbnail">
-      <p style="text-align:center;"><img src="/media/pic/profil.jpg"></p>
-      <p style="text-align:center;">Docteur Alyssia Ferraresse</p>
-      <p style="text-align:center;">Médecine générale</p>
-      <p style="text-align:center;">Ixelles</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="#" role="button">Plus d'infos</a></p>
-    </div>
-  </div>
-  <div class="col-sm-3">
-    <div class="thumbnail">
-      <p style="text-align:center;"><img src="/media/pic/profil.jpg"></p>
-      <p style="text-align:center;">Docteur Claire Gheurs</p>
-      <p style="text-align:center;">Médecine générale</p>
-      <p style="text-align:center;">Woluwé-Saint-Etienne</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="#" role="button">Plus d'infos</a></p>
-    </div>
-  </div>
-  <div class="col-sm-3">
-    <div class="thumbnail">
-      <p style="text-align:center;"><img src="/media/pic/profil.jpg"></p>
-      <p style="text-align:center;">Docteur Céline bombeck</p>
-      <p style="text-align:center;">Médecine d'urgence</p>
-      <p style="text-align:center;">La Louvière</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="#" role="button">Plus d'infos</a></p>
-    </div>
-  </div>
-</div>
+{% if forloop.last or forloop.counter|divisibleby:4 %}</div>{% endif %}
+{% endfor %}
 {% endblock %}

@@ -10,10 +10,13 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user
+from users.views import add_user, profile_user, calendar_user, reminder_slot, remove_slot, find_slot
 
 urlpatterns = (
     url(r'^adduser/$', add_user, name='add_user'),
+    url(r'^(?P<slug>[\w-]+)/$', profile_user, name='profile_user'),
+    url(r'^(?P<slug>[\w-]+)/calendar/$', calendar_user, name='calendar_user'),
+    url(r'^(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_user'),
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}),
     url(r'^logout/$', login_required(views.logout), {'template_name': 'logout.tpl'}, name='logout'),
     url(r'^password_change/$', login_required(views.password_change), name='password_change'),

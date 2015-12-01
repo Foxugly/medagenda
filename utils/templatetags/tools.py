@@ -7,10 +7,10 @@
 # the Free Software Foundation, either version 3 of the License, or (at
 # your option) any later version.
 
-from django.contrib import admin
-from users.models import UserProfile
+from django import template
 
+register = template.Library()
 
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    filter_horizontal = ['slots',]
+@register.filter()
+def index(d,value):
+    return dict(d)[value]

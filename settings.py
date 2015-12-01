@@ -47,6 +47,8 @@ INSTALLED_APPS = (
     'utils',
     'colorfield',
     'address',
+    'agenda',
+    'patient',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,17 +90,27 @@ LANGUAGES = (
   ('en', _('English')),
 )
 
+DAY_CHOICES = (
+    (1, _(u'Lundi')),
+    (2, _(u'Mardi')),
+    (3, _(u'Mercredi')),
+    (4, _(u'Jeudi')),
+    (5, _(u'Vendredi')),
+    (6, _(u'Samedi')),
+    (7, _(u'Dimanche')),
+)
+
 DEFAULT_LANGUAGE = 1
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 UPLOAD_DIR = 'upload'
 STOCK_DIR = 'folders'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
-#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
 STATICFILES_FINDERS = (
