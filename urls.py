@@ -29,6 +29,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^user/', include('users.urls'), name='users'),
+    url(r'^slot/', include('agenda.urls'), name='agenda'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^$', home, name='index'),
 ] + patterns('', (r'^media/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}), ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

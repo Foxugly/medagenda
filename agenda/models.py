@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 # Create your models here.
 from patient.models import Patient
+from datetime import datetime, timedelta
 
 class SlotTemplate(models.Model):
     start = models.TimeField(verbose_name=_(u'Début'), blank=False)
@@ -22,6 +23,23 @@ class SlotTemplate(models.Model):
         pricing = _(u"Tarif Conventionne") if self.national_health_service_price else _(u'Tarif libre')
         return u"%s - %s (%s)" %(self.start, self.end, pricing)
 
+    def t_start(self,i):
+        date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
+        date += timedelta(days=(i-1))
+        return str(date.strftime('%Y-%m-%d')) + str('T') + str(self.start)
+
+
+    def t_end(self,i):
+        date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
+        date += timedelta(days=(i-1))
+        return str(date.strftime('%Y-%m-%d')) + str('T') + str(self.end)
+
+    def as_json(self,i,doctor):
+        if self.national_health_service_price:
+            color = str(doctor.nhs_price_free_slot_color)
+        else:
+            color = str(doctor.free_price_free_slot_color)
+        return dict(id=self.id, start=self.t_start(i), end=self.t_end(i), title=str(_('Libre')),color=color) 
 
 # use date.isoweekday()
 class DayTemplate(models.Model):

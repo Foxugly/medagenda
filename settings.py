@@ -84,6 +84,8 @@ AUTH_PROFILE_MODULE = 'users.UserProfile'
 LOGIN_REDIRECT_URL = '/user/'
 LOGIN_URL = '/user/login/'
 
+FULLCALENDAR_REF_DATE = '2016-02-01'
+
 LANGUAGES = (
   ('fr', _('Francais')),
   ('nl', _('Nederlands')),

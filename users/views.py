@@ -17,7 +17,8 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 import json
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
+from django.conf import settings
 
 def home(request):
     if request.user.is_authenticated():
@@ -78,6 +79,7 @@ def model_calendar(request, slug):
     c = get_context(request)
     user = get_object_or_404(UserProfile,slug=slug)
     c['doctor'] = user
+    c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE 
     return render(request, 'model.tpl', c)
 
 def reminder_slot(request, slug):
