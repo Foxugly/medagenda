@@ -7,13 +7,16 @@
 <link href='/static/fullcalendar-2.5.0/fullcalendar.css' rel='stylesheet' />
 <link href='/static/fullcalendar-2.5.0/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link href='/static/clockfield/bootstrap-clockpicker.min.css' rel='stylesheet' />
+<link href='/static/bootstrap-datepicker-1.5.0/css/bootstrap-datepicker3.min.css' rel='stylesheet' />
 <style>
+.datepicker { z-index: 1151 !important;  }
+
   #calendar {
     /*max-width: 900px;*/
     margin: 0 auto;
   }
   .fc-agendaWeek-view tr {
-height: 30px;
+height: 32px;
 }
 .fc-unthemed .fc-today {
   background: transparent;
@@ -28,14 +31,15 @@ height: 30px;
     <script type="text/javascript" src="/static/fullcalendar-2.5.0/fullcalendar.min.js"></script>
     <script type="text/javascript" src="/static/fullcalendar-2.5.0/lang-all.js"></script>
     <script type="text/javascript" src="/static/clockfield/bootstrap-clockpicker.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap-datepicker-1.5.0/js/bootstrap-datepicker3.min.js"></script>
     <script>
       $(document).ready(function() {
-        
         $('#calendar').fullCalendar({
           header: false,
           lang: 'fr',
-          /*columnFormat: 'dddd',*/
+          columnFormat: 'dddd',
           aspectRatio : 2,
+          contentHeight: 'auto',
           minTime : '{{doctor.start_time}}',
           maxTime : '{{doctor.end_time}}',
           defaultDate : '{{fullcalendar_ref_date}}',
@@ -47,18 +51,16 @@ height: 30px;
           eventClick: function(calEvent, jsEvent, view) {
               alert('Event: ' + calEvent.id);
           },
-          /*events:  [{'color': '#73B5EB', 'start': '2016-02-01T10:00:00', 'end': '2016-02-01T10:30:00', 'id': 1, 'title': 'Libre'}]*/
+          events:  {{templateslots|safe}}
         });
-        var date_min = "{{doctor.start_time}}";
+        /*var date_min = "{{doctor.start_time}}";
         var date_max = "{{doctor.end_time}}";
-        var h_table = $(window).height() - 240;
+        var h_table = $(window).height() - 220;
         var d_min = date_min.split(":");
         var d_max = date_max.split(":");
         var nb_slots = 1+(2*(d_max[0]-d_min[0])) + Math.ceil((d_max[1]-d_min[1])/30);
-        var p_size = Math.floor(h_table/nb_slots);
-        var ratio = Math.floor($("#calendar").width()*1000/(p_size * nb_slots))/1000;
-        $('#calendar').fullCalendar('option', 'aspectRatio', ratio);
-        $('.fc-agendaWeek-view tr').css('height', p_size);
+        var ratio = (Math.floor($("#calendar").width()*1000/(32 * nb_slots))/1000);
+        $('#calendar').fullCalendar('option', 'aspectRatio', ratio);*/
       });
 
     </script>
@@ -88,6 +90,14 @@ height: 30px;
     <div class="circle" style="background:{{doctor.free_price_free_slot_color}}"><span class="info">{% blocktrans %} Tarif libre{% endblocktrans %}</div>
   </div>
 </div>
+<input id="datepick" name="datepick" type="text" class="form-control">
+<script type="text/javascript">
+$('#datepick').datepicker({
+    format: "dd/mm/yyyy",
+    language: "fr",
+    autoclose: true
+});
+</script>
 <!-- Modal -->
 <div id="addslots" class="modal fade" role="dialog">
   <div class="modal-dialog modal-lg">
@@ -97,7 +107,7 @@ height: 30px;
         <h4 class="modal-title">{% blocktrans %}Add slots{% endblocktrans %}</h4>
       </div>
       <div class="modal-body">
-        <form id="form_addslots">
+        <form name="form_addslots" id="form_addslots">
         <div class="row form-group"><label class="col-md-2 col-md-offset-1 control-label" for="check_monday">{% blocktrans %}Days{% endblocktrans %} :</label>
           <div class="col-md-8 btn-group" data-toggle="buttons">
             <label class="btn btn-default"><input id="check_monday" name="check_monday" type="checkbox" autocomplete="off"> {% blocktrans %}Monday{% endblocktrans %}</label>
@@ -112,16 +122,22 @@ height: 30px;
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="start_time">{% blocktrans %}Start Time{% endblocktrans %} :</label>
           <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="start_time" name="start_time" type="text" class="form-control" value="{{doctor.start_time}}">
+            <input id="start_time" name="start_time" type="text" class="form-control">
             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
           </div>
+          <script>
+            $("#start_time").val("{{doctor.start_time}}");
+          </script>
         </div>
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="end_time">{% blocktrans %}End Time{% endblocktrans %} :</label>
           <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="end_time" name="end_time" type="text" class="form-control" value="{{doctor.end_time}}">
+            <input id="end_time" name="end_time" type="text" class="form-control">
             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
           </div>
+          <script>
+            $("#end_time").val("{{doctor.end_time}}");
+          </script>
         </div>
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% blocktrans %}Duration{% endblocktrans %} :</label>
@@ -193,7 +209,7 @@ height: 30px;
 </div>
 <!-- Modal -->
 <div id="applyslots" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -201,20 +217,21 @@ height: 30px;
       </div>
       <div class="modal-body">
         <form id="form_applyslots">
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="start_time">{% blocktrans %}Start Time{% endblocktrans %} :</label>
-          <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="start_time" name="start_time" type="text" class="form-control" value="{{doctor.start_time}}">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          <div class="row form-group">
+            <div class="input-daterange input-group" id="datepicker">
+              <input type="text" class="input-sm form-control datepicker" name="start" />
+              <span class="input-group-addon">to</span>
+              <input type="text" class="input-sm form-control datepicker" name="end" />
+            </div>
           </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="end_time">{% blocktrans %}End Time{% endblocktrans %} :</label>
-          <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="end_time" name="end_time" type="text" class="form-control" value="{{doctor.end_time}}">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-          </div>
-        </div>
+          <script type="text/javascript">
+            $('.datepicker').datepicker({
+              format: "dd/mm/yyyy",
+              language: "fr",
+              autoclose: true
+            });
+          </script>
+        </form>
       </div>
         <div class="modal-footer">
           <button id="btn_applyslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% blocktrans %}Submit{% endblocktrans %}</button>
@@ -225,10 +242,8 @@ height: 30px;
 </div>
 <script type="text/javascript">
 $('#btn_addslots').on("click", function(){
-  console.log('addslots');
   var form = $('#form_addslots');
   var url = '/slot/ajax/{{doctor.slug}}/add/';
-  console.log(url);
   $.ajax({
       url: url,
       type: 'GET',
@@ -236,33 +251,24 @@ $('#btn_addslots').on("click", function(){
       traditional: true,
       dataType: 'json',
       success: function(result){
-        console.log(result['slots']);
-        //$('#calendar').fullCalendar('options', 'events', result['slots']);
-        //$('#calendar').fullCalendar({'events': result['slots']});
-        $('#calendar').fullCalendar('renderEvent',
-            {
-                title: 'title',
-                start: '2016-02-02T10:00:00',
-                end: '2016-02-02T11:00:00'
-            });
-        console.log('retour');
+        for (var i=0; i < result['slottemplates'].length; i++){
+          $('#calendar').fullCalendar('renderEvent',result['slottemplates'][0]);
+        }
+        location.reload();
       }
   });
 });
 $('#btn_removeslots').on("click", function(){
-  console.log('removeslots');
-  $('#calendar').fullCalendar('removeEvents');
   var url = '/slot/ajax/{{doctor.slug}}/remove/';
   console.log(url);
   $.ajax({
       url: url,
-      type: 'POST',
-      data: form.serialize(),
+      type: 'GET',
+      data: '',
       traditional: true,
       dataType: 'json',
       success: function(result){
-        $('#calendar').fullCalendar('options', 'events', result['slots']);
-        console.log('retour');
+        $('#calendar').fullCalendar('removeEvents');
       }
   });
 });
@@ -273,7 +279,7 @@ $('#btn_applyslots').on("click", function(){
   console.log(url);
   $.ajax({
       url: url,
-      type: 'POST',
+      type: 'GET',
       data: form.serialize(),
       traditional: true,
       dataType: 'json',

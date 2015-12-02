@@ -20,6 +20,7 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from django.conf import settings
 
+
 def home(request):
     if request.user.is_authenticated():
         # doctors
@@ -29,7 +30,7 @@ def home(request):
             c = get_context(request)
             c['list'] = userprofiles
             return render_to_response('list.tpl', c)
-    else :
+    else:
         userprofiles = UserProfile.objects.filter(view_in_list=True)
         c = get_context(request)
         c['list'] = userprofiles
@@ -42,52 +43,55 @@ def add_user(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            print('VALID')
             form.save()
             return HttpResponseRedirect('/')
         else:
             messages.error(request, "Error")
-            print('ERROR1')
     else:
         messages.error(request, "Error")
-        print('ERROR2')
         c['form'] = UserProfileForm()
         c['url'] = "/user/adduser/"
         c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
 
-def profile_user(request,slug):
+
+def profile_user(request, slug):
     c = get_context(request)
-    user = get_object_or_404(UserProfile,slug=slug)
+    user = get_object_or_404(UserProfile, slug=slug)
     c['doctor'] = user
     return render(request, 'profile.tpl', c)
 
-def calendar_user(request,slug):
+
+def calendar_user(request, slug):
     c = get_context(request)
-    user = get_object_or_404(UserProfile,slug=slug)
+    user = get_object_or_404(UserProfile, slug=slug)
     c['doctor'] = user
     today = datetime.now().date()
     c['slots'] = []
     slots = user.slots.filter(date__gte=today)
     for s in slots:
         c['slots'].append(s.as_json())
-    print c['slots']
     return render(request, 'calendar.tpl', c)
+
 
 @login_required
 def model_calendar(request, slug):
     c = get_context(request)
-    user = get_object_or_404(UserProfile,slug=slug)
+    user = get_object_or_404(UserProfile, slug=slug)
     c['doctor'] = user
-    c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE 
+    c['templateslots'] = user.get_all_slottemplates()
+    c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
     return render(request, 'model.tpl', c)
 
-def reminder_slot(request, slug):
-     return HttpResponseRedirect('/')
 
-def remove_slot(request,slug,slot_id):
+def reminder_slot(request, slug):
     return HttpResponseRedirect('/')
 
-def find_slot(request,slug,input):
+
+def remove_slot(request, slug, slot_id):
+    return HttpResponseRedirect('/')
+
+
+def find_slot(request, slug, input):
     # AJAX TOUSSA
     return HttpResponseRedirect('/')

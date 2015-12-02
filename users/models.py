@@ -19,7 +19,8 @@ from colorfield.fields import ColorField
 from address.models import AddressField
 from django.forms import ModelForm
 from django.utils.text import slugify
-from agenda.models import WeekTemplate, Slot
+from agenda.models import WeekTemplate, DayTemplate, Slot
+
 
 class CreateUserForm(forms.Form):
     username = forms.CharField()
@@ -27,6 +28,7 @@ class CreateUserForm(forms.Form):
     email = forms.EmailField()
     last_name = forms.CharField()
     first_name = forms.CharField()
+
 
 class UserProfile(models.Model):
     MEDECINE_CHOICES = (
@@ -41,7 +43,7 @@ class UserProfile(models.Model):
         (4, _(u'Monsieur')),
     )
 
-    title = models.IntegerField(choices=TITLE_CHOICES,default=2)
+    title = models.IntegerField(choices=TITLE_CHOICES, default=2)
     user = models.OneToOneField(User, verbose_name=_('user'))
     picture = models.ImageField(upload_to='pic', blank=True, null=True)
     speciality = models.IntegerField(choices=MEDECINE_CHOICES)
@@ -54,7 +56,7 @@ class UserProfile(models.Model):
     end_time = models.TimeField(blank=False, default="18:00:00")
     free_price_free_slot_color = ColorField(default='#73B5EB')
     free_price_booked_slot_color = ColorField(default='#F64636')
-    nhs_price_free_slot_color = ColorField(default='#73EB79') # nhs = national health service price
+    nhs_price_free_slot_color = ColorField(default='#73EB79')  # nhs = national health service price
     nhs_price_booked_slot_color = ColorField(default='#F64636')
     view_busy_slot = models.BooleanField()
     view_in_list = models.BooleanField()
@@ -70,6 +72,27 @@ class UserProfile(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.real_name())
         super(UserProfile, self).save(*args, **kwargs)
+
+    def get_all_slottemplates(self):
+        out = []
+        for dt in self.weektemplate.days.all():
+            for s in dt.slots.all():
+                out.append(s.as_json(dt.day, self))
+        return out
+
+    def remove_all_slottemplates(self):
+        self.weektemplate.remove_all_slottemplates()
+
+    def get_daytemplate(self, i):
+        d = None
+        for day in self.weektemplate.days.all():
+            if day.day == i:
+                d = day
+        if not d:
+            d = DayTemplate(day=i)
+            d.save()
+            self.weektemplate.add_daytemplate(d)
+        return d
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
@@ -103,7 +126,7 @@ class UserProfileForm(ModelForm):
             'view_busy_slot'
             ]
 
-    #def clean(self):
+    # def clean(self):
     #    print 'clean'
     #    cleaned_data = super(UserProfileForm, self).clean()
     #    password = cleaned_data.get("password")
@@ -113,13 +136,13 @@ class UserProfileForm(ModelForm):
     #                _("Les mots de passes ne sont pas identiques.")
     #            )
     #    else :
-    #        return cleaned_data 
+    #        return cleaned_data
 
     def save(self, *args, **kw):
-        up = super(UserProfileForm, self).save(commit = False)
-        new_user = User.objects.create_user(self.cleaned_data.get('username'), email=self.cleaned_data.get('email'),password=self.cleaned_data.get('password'))
-        new_user.last_name=self.cleaned_data.get('last_name')
-        new_user.first_name=self.cleaned_data.get('first_name')
+        up = super(UserProfileForm, self).save(commit=False)
+        new_user = User.objects.create_user(self.cleaned_data.get('username'), email=self.cleaned_data.get('email'), password=self.cleaned_data.get('password'))
+        new_user.last_name = self.cleaned_data.get('last_name')
+        new_user.first_name = self.cleaned_data.get('first_name')
         new_user.save()
         up.user = new_user
         up.save()
@@ -127,4 +150,4 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user','slug','weektemplate',)
+        exclude = ('user', 'slug', 'weektemplate',)

@@ -13,7 +13,7 @@ from django.forms import ModelForm
 
 
 class Patient(models.Model):
-    mail = models.EmailField(blank=True, null= True,)
+    mail = models.EmailField(blank=True, null=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     telephone = models.CharField(max_length=20)

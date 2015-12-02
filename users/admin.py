@@ -13,4 +13,4 @@ from users.models import UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    filter_horizontal = ['slots',]
+    filter_horizontal = ['slots', ]
