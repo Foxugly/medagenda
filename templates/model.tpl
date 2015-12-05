@@ -7,12 +7,13 @@
 <link href='/static/fullcalendar-2.5.0/fullcalendar.css' rel='stylesheet' />
 <link href='/static/fullcalendar-2.5.0/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link href='/static/clockfield/bootstrap-clockpicker.min.css' rel='stylesheet' />
-<link href='/static/bootstrap-datepicker-1.5.0/css/bootstrap-datepicker3.min.css' rel='stylesheet' />
+<link href="/static/datepicker/datepicker3.css" rel="stylesheet">
+<link href="/static/datepicker/prettify.css" rel="stylesheet">
+<link href="/static/datepicker/docs.css" rel="stylesheet">
 <style>
 .datepicker { z-index: 1151 !important;  }
 
   #calendar {
-    /*max-width: 900px;*/
     margin: 0 auto;
   }
   .fc-agendaWeek-view tr {
@@ -31,7 +32,69 @@ height: 32px;
     <script type="text/javascript" src="/static/fullcalendar-2.5.0/fullcalendar.min.js"></script>
     <script type="text/javascript" src="/static/fullcalendar-2.5.0/lang-all.js"></script>
     <script type="text/javascript" src="/static/clockfield/bootstrap-clockpicker.min.js"></script>
-    <script type="text/javascript" src="/static/bootstrap-datepicker-1.5.0/js/bootstrap-datepicker3.min.js"></script>
+    <script src="/static/datepicker/prettify.min.js"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.js"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ar.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.az.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.bg.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.bs.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ca.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.cs.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.cy.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.da.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.de.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.el.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.en-GB.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.es.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.et.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.eu.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.fa.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.fi.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.fo.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.fr.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.fr-CH.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.gl.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.he.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.hr.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.hu.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.hy.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.id.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.is.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.it.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.it-CH.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ja.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ka.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.kh.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.kk.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.kr.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.lt.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.lv.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.mk.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ms.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.nb.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.nl.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.nl-BE.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.no.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.pl.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.pt-BR.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.pt.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ro.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.rs.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.rs-latin.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.ru.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sk.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sl.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sq.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sr.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sr-latin.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sv.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.sw.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.th.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.tr.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.uk.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.vi.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.zh-CN.js" charset="UTF-8"></script>
+    <script src="/static/datepicker/bootstrap-datepicker.zh-TW.js" charset="UTF-8"></script>
     <script>
       $(document).ready(function() {
         $('#calendar').fullCalendar({
@@ -53,14 +116,12 @@ height: 32px;
           },
           events:  {{templateslots|safe}}
         });
-        /*var date_min = "{{doctor.start_time}}";
-        var date_max = "{{doctor.end_time}}";
-        var h_table = $(window).height() - 220;
-        var d_min = date_min.split(":");
-        var d_max = date_max.split(":");
-        var nb_slots = 1+(2*(d_max[0]-d_min[0])) + Math.ceil((d_max[1]-d_min[1])/30);
-        var ratio = (Math.floor($("#calendar").width()*1000/(32 * nb_slots))/1000);
-        $('#calendar').fullCalendar('option', 'aspectRatio', ratio);*/
+        $('.datepicker').datepicker({
+          format: "dd/mm/yyyy",
+          language: "fr",
+          autoclose: true
+        });
+        $('.clockpicker').clockpicker();
       });
 
     </script>
@@ -69,7 +130,7 @@ height: 32px;
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <p class="text-center"><h2 class="text-center">{% blocktrans %}Calendrier{% endblocktrans %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2></p>
+    <p class="text-center"><h2 class="text-center">{% blocktrans %}Calendar{% endblocktrans %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2></p>
   </div>
 </div>
 <div class="row form-group">
@@ -90,13 +151,6 @@ height: 32px;
     <div class="circle" style="background:{{doctor.free_price_free_slot_color}}"><span class="info">{% blocktrans %} Tarif libre{% endblocktrans %}</div>
   </div>
 </div>
-<input id="datepick" name="datepick" type="text" class="form-control">
-<script type="text/javascript">
-$('#datepick').datepicker({
-    format: "dd/mm/yyyy",
-    language: "fr",
-    autoclose: true
-});
 </script>
 <!-- Modal -->
 <div id="addslots" class="modal fade" role="dialog">
@@ -142,7 +196,7 @@ $('#datepick').datepicker({
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% blocktrans %}Duration{% endblocktrans %} :</label>
           <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
-            <select id="duration" name="duration">
+            <select id="duration" name="duration" class="form-control">
               <option value="0">0</option>
               <option value="5">5</option>
               <option value="10">10</option>
@@ -157,8 +211,8 @@ $('#datepick').datepicker({
         </div>
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="break_time">{% blocktrans %}Break{% endblocktrans %} :</label>
-          <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
-            <select  id="break_time" name="break_time">
+          <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
+            <select  id="break_time" name="break_time" class="form-control">
               <option value="0" selected="selected">0</option>
               <option value="5">5</option>
               <option value="10">10</option>
@@ -172,15 +226,12 @@ $('#datepick').datepicker({
         <div class="row form-group">
           <label class="col-md-2 col-md-offset-1 control-label" for="pricing">{% blocktrans %}Pricing{% endblocktrans %} :</label>
           <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
-            <select id="pricing" name="pricing">
+            <select id="pricing" name="pricing" class="form-control">
               <option value="1">{% blocktrans %}Free pricing{% endblocktrans %}</option>
               <option value="2">{% blocktrans %}National health service pricing{% endblocktrans %}</option>
             </select>
           </div>
         </div>
-        <script type="text/javascript">
-          $('.clockpicker').clockpicker();
-        </script>
       </div>
         <div class="modal-footer">
           <button id="btn_addslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% blocktrans %}Submit{% endblocktrans %}</button>
@@ -213,23 +264,34 @@ $('#datepick').datepicker({
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% blocktrans %}Apply slots{% endblocktrans %}</h4>
+        <h4 class="modal-title">{% blocktrans %}Apply slots to range{% endblocktrans %}</h4>
       </div>
       <div class="modal-body">
         <form id="form_applyslots">
           <div class="row form-group">
-            <div class="input-daterange input-group" id="datepicker">
-              <input type="text" class="input-sm form-control datepicker" name="start" />
-              <span class="input-group-addon">to</span>
-              <input type="text" class="input-sm form-control datepicker" name="end" />
+            <label class="col-md-4 col-md-offset-1 control-label" for="start_date">{% blocktrans %}Start Date{% endblocktrans %} :</label>
+            <div class="col-md-4 input-group" data-placement="right" data-align="top" data-autoclose="true">
+              <input id="start_date" name="start_date" type="text" class="form-control datepicker">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+          </div>
+          <div class="row form-group">
+            <label class="col-md-4 col-md-offset-1 control-label" for="end_date">{% blocktrans %}End Date{% endblocktrans %} :</label>
+            <div class="col-md-4 input-group" data-placement="right" data-align="top" data-autoclose="true">
+              <input id="end_date" name="end_date" type="text" class="form-control datepicker">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
             </div>
           </div>
           <script type="text/javascript">
-            $('.datepicker').datepicker({
-              format: "dd/mm/yyyy",
-              language: "fr",
-              autoclose: true
-            });
+            var date = moment();
+            $("#start_date").datepicker({format:"dd/mm/yyyy",
+        autoclose: true,}).datepicker("setDate", date.format('DD/MM/YYYY'));
+            $("#end_date").datepicker({format:"dd/mm/yyyy",
+        autoclose: true,}).datepicker("setDate", date.add(4,'weeks').format('DD/MM/YYYY'));
+            $("#start_date").change(function(){ 
+               var s_date = $("#start_date").val();
+               console.log(s_date); /* TODO */
+                /*$("#end_date").datepicker({startDate: moment.format('DD/MM/YYYY')})*/}).change();
           </script>
         </form>
       </div>
