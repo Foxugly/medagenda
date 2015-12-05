@@ -283,15 +283,38 @@ height: 32px;
             </div>
           </div>
           <script type="text/javascript">
-            var date = moment();
-            $("#start_date").datepicker({format:"dd/mm/yyyy",
-        autoclose: true,}).datepicker("setDate", date.format('DD/MM/YYYY'));
-            $("#end_date").datepicker({format:"dd/mm/yyyy",
-        autoclose: true,}).datepicker("setDate", date.add(4,'weeks').format('DD/MM/YYYY'));
-            $("#start_date").change(function(){ 
-               var s_date = $("#start_date").val();
-               console.log(s_date); /* TODO */
-                /*$("#end_date").datepicker({startDate: moment.format('DD/MM/YYYY')})*/}).change();
+            var startDate = new Date();
+            var FromEndDate = new Date();
+            var ToEndDate = new Date();
+            ToEndDate.setDate(ToEndDate.getDate()+365);
+
+            $('#start_date').datepicker({
+                /*weekStart: 1,*/
+                format: 'dd/mm/yyyy',
+                startDate: startDate,
+                /*endDate: FromEndDate,*/ 
+                autoclose: true
+            })
+                .on('changeDate', function(selected){
+                    startDate = new Date(selected.date.valueOf());
+                    startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+                    $('#end_date').datepicker('setStartDate', startDate);
+                }); 
+            $('#end_date')
+                .datepicker({
+                    
+                    /*weekStart: 1,*/
+                    format: 'dd/mm/yyyy'
+                    startDate: startDate,
+                    endDate: ToEndDate,
+                    autoclose: true
+                })
+                .on('changeDate', function(selected){
+                    FromEndDate = new Date(selected.date.valueOf());
+                    FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
+                    $('#start_date').datepicker('setEndDate', FromEndDate);
+                });
+
           </script>
         </form>
       </div>
