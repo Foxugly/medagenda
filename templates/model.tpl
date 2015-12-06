@@ -95,39 +95,6 @@ height: 32px;
     <script src="/static/datepicker/bootstrap-datepicker.vi.js" charset="UTF-8"></script>
     <script src="/static/datepicker/bootstrap-datepicker.zh-CN.js" charset="UTF-8"></script>
     <script src="/static/datepicker/bootstrap-datepicker.zh-TW.js" charset="UTF-8"></script>
-    <script>
-      $(document).ready(function() {
-        $('#calendar').fullCalendar({
-          header: false,
-          lang: 'fr',
-          columnFormat: 'dddd',
-          aspectRatio : 2,
-          contentHeight: 'auto',
-          minTime : '{{doctor.start_time}}',
-          maxTime : '{{doctor.end_time}}',
-          defaultDate : '{{fullcalendar_ref_date}}',
-          allDaySlot : false,
-          defaultView : 'agendaWeek',
-          editable: false,
-          slotLabelFormat : 'H:mm',
-          eventLimit: false, // allow "more" link when too many events
-          events:  {{templateslots|safe}},
-          eventClick: function(calEvent, jsEvent, view) {
-              $('#slot').val(calEvent.id);
-              console.log(calEvent.id);
-              $('#removeslot').modal('show');
-              alert('Event: ' + calEvent.id);
-          }
-          
-        });
-        /*$('.datepicker').datepicker({
-          format: "dd/mm/yyyy",
-          language: "fr",
-          autoclose: true
-        });*/
-        $('.clockpicker').clockpicker();
-      });
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -263,11 +230,11 @@ height: 32px;
   </div>
 </div>
 
-<div id="removeslot" class="modal fade" role="dialog">
+<div id="removeslot" class="modal" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" id="removeslot_close" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">{% blocktrans %}Remove a slot{% endblocktrans %}</h4>
       </div>
       <div class="modal-body">
@@ -277,8 +244,8 @@ height: 32px;
         {% blocktrans %}Do you really want to remove this slot ?{% endblocktrans %}
       </div>
         <div class="modal-footer">
-          <button id="btn_removeslots" type="submit" class="btn btn-danger" data-dismiss="modal">{% blocktrans %}Yes{% endblocktrans %}</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">{% blocktrans %}No{% endblocktrans %}</button>
+          <button id="removeslot_yes" type="submit" class="btn btn-danger" data-dismiss="modal">{% blocktrans %}Yes{% endblocktrans %}</button>
+          <button id="removeslot_no" type="button" class="btn btn-default" data-dismiss="modal">{% blocktrans %}No{% endblocktrans %}</button>
         </div>
     </div>
   </div>
@@ -321,80 +288,131 @@ height: 32px;
 
 
 <script type="text/javascript">
-var startDate = new Date();
-var FromEndDate = new Date();
-var ToEndDate = new Date();
-ToEndDate.setDate(ToEndDate.getDate()+365);
+$(document).ready(function() {
+  var event;
+  $('#calendar').fullCalendar({
+    header: false,
+    lang: 'fr',
+    columnFormat: 'dddd',
+    aspectRatio : 2,
+    contentHeight: 'auto',
+    minTime : '{{doctor.start_time}}',
+    maxTime : '{{doctor.end_time}}',
+    defaultDate : '{{fullcalendar_ref_date}}',
+    allDaySlot : false,
+    defaultView : 'agendaWeek',
+    editable: false,
+    slotLabelFormat : 'H:mm',
+    eventLimit: false, // allow "more" link when too many events
+    events:  {{templateslots|safe}},
+    eventClick: function(calEvent, jsEvent, view) {
+        event = calEvent;
+        $('#slot').val(calEvent.id);
+        //console.log(calEvent.id);
 
-$('#start_date').datepicker({
-    language: "fr",
-    startDate: startDate,
-    autoclose: true
-})
-    .on('changeDate', function(selected){
-        startDate = new Date(selected.date.valueOf());
-        startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
-        $('#end_date').datepicker('setStartDate', startDate);
-    }); 
-$('#end_date')
-    .datepicker({
-        language: "fr",
-        startDate: startDate,
-        endDate: ToEndDate,
-        autoclose: true
-    })
-    .on('changeDate', function(selected){
-        FromEndDate = new Date(selected.date.valueOf());
-        FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
-        $('#start_date').datepicker('setEndDate', FromEndDate);
-    });
-
-$('#btn_addslots').on("click", function(){
-  var form = $('#form_addslots');
-  var url = '/slot/ajax/{{doctor.slug}}/add/';
-  $.ajax({
-      url: url,
-      type: 'GET',
-      data: form.serialize(),
-      traditional: true,
-      dataType: 'json',
-      success: function(result){
-        for (var i=0; i < result['slottemplates'].length; i++){
-          $('#calendar').fullCalendar('renderEvent',result['slottemplates'][0]);
+        $('#removeslot').show();
+    }
+    
+  });
+  $('#removeslot_close').click(function(){
+    $('#removeslot').hide();
+  });
+  $('#removeslot_no').click(function(){
+    $('#removeslot').hide();
+  });
+  $('#removeslot_yes').click(function(){
+    var url = '/slot/ajax/{{doctor.slug}}/st/remove/' + $('#slot').val() + '/';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: '',
+        traditional: true,
+        dataType: 'json',
+        success: function(result){
+          $('#calendar').fullCalendar( 'removeEvents' ,$('#slot').val());
+          $('#removeslot').hide();
         }
-        location.reload();
-      }
+    });  
+  });
+
+  $('.clockpicker').clockpicker();
+
+  var startDate = new Date();
+  var FromEndDate = new Date();
+  var ToEndDate = new Date();
+  ToEndDate.setDate(ToEndDate.getDate()+365);
+
+  $('#start_date').datepicker({
+      language: "fr",
+      startDate: startDate,
+      autoclose: true
+  })
+      .on('changeDate', function(selected){
+          startDate = new Date(selected.date.valueOf());
+          startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+          $('#end_date').datepicker('setStartDate', startDate);
+      }); 
+  $('#end_date')
+      .datepicker({
+          language: "fr",
+          startDate: startDate,
+          endDate: ToEndDate,
+          autoclose: true
+      })
+      .on('changeDate', function(selected){
+          FromEndDate = new Date(selected.date.valueOf());
+          FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
+          $('#start_date').datepicker('setEndDate', FromEndDate);
+      });
+
+  $('#btn_addslots').on("click", function(){
+    var form = $('#form_addslots');
+    var url = '/slot/ajax/{{doctor.slug}}/st/add/';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: form.serialize(),
+        traditional: true,
+        dataType: 'json',
+        success: function(result){
+          for (var i=0; i < result['slottemplates'].length; i++){
+            $('#calendar').fullCalendar('renderEvent',result['slottemplates'][0]);
+          }
+          location.reload();
+        }
+    });
+  });
+
+  $('#btn_removeslots').on("click", function(){
+    var url = '/slot/ajax/{{doctor.slug}}/st/clean/';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: '',
+        traditional: true,
+        dataType: 'json',
+        success: function(result){
+          $('#calendar').fullCalendar('removeEvents');
+        }
+    });
+  });
+
+  $('#btn_applyslots').on("click", function(){
+    var form = $('#form_apply').serializeArray();
+    form.push({name: 'format',value:$.fn.datepicker.dates['fr']['format']});
+    var url = '/slot/ajax/{{doctor.slug}}/st/apply/';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: form,
+        traditional: true,
+        dataType: 'json',
+        success: function(result){
+          console.log('retour');
+        }
+    });
   });
 });
 
-$('#btn_removeslots').on("click", function(){
-  var url = '/slot/ajax/{{doctor.slug}}/remove/';
-  $.ajax({
-      url: url,
-      type: 'GET',
-      data: '',
-      traditional: true,
-      dataType: 'json',
-      success: function(result){
-        $('#calendar').fullCalendar('removeEvents');
-      }
-  });
-});
-
-$('#btn_applyslots').on("click", function(){
-  var form = $('#form_apply').serializeArray();
-  form.push({name: 'format',value:$.fn.datepicker.dates['fr']['format']});
-  var url = '/slot/ajax/{{doctor.slug}}/apply/';
-  $.ajax({
-      url: url,
-      type: 'GET',
-      data: form,
-      traditional: true,
-      dataType: 'json',
-      success: function(result){
-        console.log('retour');
-      }
-  });
-});
 </script>
 {% endblock %}

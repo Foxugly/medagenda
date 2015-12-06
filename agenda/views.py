@@ -18,7 +18,7 @@ import json
 
 
 @login_required
-def agenda_add(request, slug):
+def st_add(request, slug):
     if request.is_ajax():
         user = get_context(request)['userprofile']
         days = ['check_monday', 'check_tuesday', 'check_wednesday', 'check_thursday', 'check_friday', 'check_saturday', 'check_sunday']
@@ -48,7 +48,7 @@ def agenda_add(request, slug):
 
 
 @login_required
-def agenda_remove(request, slug):
+def st_clean(request, slug):
     if request.is_ajax():
         user = get_context(request)['userprofile']
         user.remove_all_slottemplates()
@@ -59,7 +59,8 @@ def agenda_remove(request, slug):
 
 
 @login_required
-def agenda_apply(request, slug):
+def st_apply(request, slug):
+    results = {}
     if request.is_ajax():
         if 'start_date' in request.GET and 'end_date' in request.GET :
             user = get_context(request)['userprofile']
@@ -79,10 +80,10 @@ def agenda_apply(request, slug):
                     if sts :
                         for st in sts :
                             current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
-                            for s in user.slots.filter(date=datetime.date(current_day),st__start__lt=current_day, st__start__gt=current_day):
+                            for s in user.slots.filter(date=datetime.date(current_day),st__start__lte=current_day, st__end__gt=current_day):
                                 user.slots.remove(s)
                             current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
-                            for s in user.slots.filter(date=datetime.date(current_day), st__end__lt=current_day, st__end__gt=current_day):
+                            for s in user.slots.filter(date=datetime.date(current_day), st__start__lt=current_day, st__end__gte=current_day):
                                 user.slots.remove(s)
                             new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=user)
                             new_slot.save()
@@ -92,3 +93,18 @@ def agenda_apply(request, slug):
         else :
             results['return'] = False
         return HttpResponse(json.dumps(results))
+
+
+@login_required
+def st_remove(request, slug, st_id):
+    results = {}
+    if request.is_ajax():
+        user = get_context(request)['userprofile']
+        print st_id
+        st = SlotTemplate.objects.get(id=int(st_id))
+        for dt in user.weektemplate.days.all():
+            dt.remove_slottemplate(st)
+        results['return'] = True
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
