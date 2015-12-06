@@ -113,6 +113,9 @@ height: 32px;
           eventLimit: false, // allow "more" link when too many events
           events:  {{templateslots|safe}},
           eventClick: function(calEvent, jsEvent, view) {
+              $('#slot').val(calEvent.id);
+              console.log(calEvent.id);
+              $('#removeslot').modal('show');
               alert('Event: ' + calEvent.id);
           }
           
@@ -253,7 +256,28 @@ height: 32px;
         {% blocktrans %}Do you really want to remove all slots ?{% endblocktrans %}
       </div>
         <div class="modal-footer">
-          <button id="btn_removeslots" type="submit" class="btn btn-primary" data-dismiss="modal">{% blocktrans %}Yes{% endblocktrans %}</button>
+          <button id="btn_removeslots" type="submit" class="btn btn-danger" data-dismiss="modal">{% blocktrans %}Yes{% endblocktrans %}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">{% blocktrans %}No{% endblocktrans %}</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div id="removeslot" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{% blocktrans %}Remove a slot{% endblocktrans %}</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form_remove_slot" name="form_remove_slot">
+        <input id="slot" name="slot" type="hidden"> 
+        </form>
+        {% blocktrans %}Do you really want to remove this slot ?{% endblocktrans %}
+      </div>
+        <div class="modal-footer">
+          <button id="btn_removeslots" type="submit" class="btn btn-danger" data-dismiss="modal">{% blocktrans %}Yes{% endblocktrans %}</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">{% blocktrans %}No{% endblocktrans %}</button>
         </div>
     </div>

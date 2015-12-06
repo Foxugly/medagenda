@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from utils.perms import get_context
 from datetime import datetime, timedelta
 from django.conf import settings
-from agenda.models import SlotTemplate
+from agenda.models import SlotTemplate, Slot
 import json
 
 
@@ -33,7 +33,10 @@ def agenda_add(request, slug):
                 while current < end:
                     current_end = current + timedelta(minutes=int(request.GET['duration']))
                     if dt.n_slottemplates() > 0:
-                        print 'MANAGE OTHER SLOTS'  # TODO
+                        for old_slot in dt.slots.filter(start__lte=current, end__gt=current):
+                            dt.slots.remove(old_slot)
+                        for old_slot in dt.slots.filter(start__lt=current_end, end__gte=current_end):
+                            dt.slots.remove(old_slot)  
                     pricing = False if request.GET['pricing'] == "1" else True
                     st = SlotTemplate(start=current, end=current_end, national_health_service_price=pricing)
                     st.save()
@@ -68,22 +71,23 @@ def agenda_apply(request, slug):
             start_date = datetime.strptime(request.GET['start_date'], format_date)
             end_date = datetime.strptime(request.GET['end_date'], format_date)
             ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE , settings.FULLCALENDAR_REF_DATEFORMAT)
-
-            #print start_date
-            #print end_date
-            #print ref_date
-            for i in range(0,7):
+            for i in range(0,7): #datetime.weekday() #0 = Monday - 6= Sunday
                 ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date :
-                    # check si ya des slots sur ce jour et des recouvrements
-                    # ajouter les slots
-                    print (str(current_day) + "(" + str(current_day.weekday()) + ")")
+                    sts = user.weektemplate.get_slottemplates_of_day(1+(int(start_date.weekday()) + i)%7)
+                    if sts :
+                        for st in sts :
+                            current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
+                            for s in user.slots.filter(date=datetime.date(current_day),st__start__lt=current_day, st__start__gt=current_day):
+                                user.slots.remove(s)
+                            current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
+                            for s in user.slots.filter(date=datetime.date(current_day), st__end__lt=current_day, st__end__gt=current_day):
+                                user.slots.remove(s)
+                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=user)
+                            new_slot.save()
+                            user.slots.add(new_slot)
                     current_day += timedelta(days=7)
-
-            #datetime.weekday() #0 = Monday - 6= Sunday
-            # TODO
-            # results = [y.as_json() for y in c.years.filter(active=True)]
             results['return'] = True
         else :
             results['return'] = False

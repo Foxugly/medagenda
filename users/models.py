@@ -150,4 +150,4 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate',)
+        exclude = ('user', 'slug', 'weektemplate', 'slots')

@@ -62,6 +62,9 @@ class DayTemplate(models.Model):
     def n_slottemplates(self):
         return len(self.slots.all())
 
+    def get_slottemplates(self):
+        return self.slots.all()
+
     def __str__(self):
          return u"[%d] %s" % (self.id, dict(settings.DAY_CHOICES)[self.day])
 
@@ -87,39 +90,43 @@ class WeekTemplate(models.Model):
             if dt.day == d:
                 self.days.remove(dt)
 
+    def get_slottemplates_of_day(self,d):
+        for dt in self.days.all():
+            if dt.day == d:
+                return dt.get_slottemplates()
+
     def __str__(self):
         return u"WeekTemplate %d" % self.id
 
 class Slot(models.Model):
     date = models.DateField()
-    slotTemplate = models.ForeignKey(SlotTemplate, blank=True, null=True)
+    st = models.ForeignKey(SlotTemplate, blank=True, null=True)
     patient = models.ForeignKey(Patient, blank=True, null=True)
     refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
 
     def start(self):
-        return self.date.strftime('%Y-%m-%d') + "T" + self.slotTemplate.start.strftime('%H:%M:%S')
+        return self.date.strftime('%Y-%m-%d') + "T" + self.st.start.strftime('%H:%M:%S')
 
     def end(self):
-        return self.date.strftime('%Y-%m-%d') + "T" + self.slotTemplate.end.strftime('%H:%M:%S')
+        return self.date.strftime('%Y-%m-%d') + "T" + self.st.end.strftime('%H:%M:%S')
 
     def as_json(self):
-        # nhsp=self.slotTemplate.national_health_service_price
         color = 'black'
         if self.patient :
             if refer_doctor.view_busy_slot :
-                if self.slotTemplate.national_health_service_price:
+                if self.st.national_health_service_price:
                     color = str(self.refer_doctor.nhs_price_booked_slot_color)
                 else:
                     color = str(self.refer_doctor.free_price_booked_slot_color)
-                return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Réservé')), color=color)     
+                return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Booked')), color=color)     
             else:
                 return None
         else:
-            if self.slotTemplate.national_health_service_price:
+            if self.st.national_health_service_price:
                 color = str(self.refer_doctor.nhs_price_free_slot_color)
             else:
                 color = str(self.refer_doctor.free_price_free_slot_color)
-            return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Libre')), color=color)      
+            return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Free')), color=color)      
 
     def __str__(self):
         return u"slot %d" % self.id

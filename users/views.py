@@ -68,7 +68,13 @@ def calendar_user(request, slug):
     c['doctor'] = user
     today = datetime.now().date()
     c['slots'] = []
-    slots = user.slots.filter(date__gte=today)
+    slots = []
+    if request.user.is_authenticated():
+        slots = user.slots.all()
+    elif user.view_busy_slot == True:
+        slots = user.slots.filter(date__gte=today)
+    else:
+        slots = user.slots.filter(date__gte=today, patient_id__isnull=False)
     for s in slots:
         c['slots'].append(s.as_json())
     if len(c['slots']) == 0:
