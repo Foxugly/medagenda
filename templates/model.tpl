@@ -111,10 +111,11 @@ height: 32px;
           editable: false,
           slotLabelFormat : 'H:mm',
           eventLimit: false, // allow "more" link when too many events
+          events:  {{templateslots|safe}},
           eventClick: function(calEvent, jsEvent, view) {
               alert('Event: ' + calEvent.id);
-          },
-          events:  {{templateslots|safe}}
+          }
+          
         });
         /*$('.datepicker').datepicker({
           format: "dd/mm/yyyy",

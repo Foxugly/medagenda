@@ -2,11 +2,31 @@
 {% load bootstrap3 %}
 {% load i18n %}
 {% load tools %}
+
+{% block css %}
+<link href='/static/fullcalendar-2.5.0/fullcalendar.css' rel='stylesheet' />
+<link href='/static/fullcalendar-2.5.0/fullcalendar.print.css' rel='stylesheet' media='print' />
+<style>
+  #calendar {
+    /*max-width: 900px;*/
+    margin: 0 auto;
+  }
+  .fc-agendaWeek-view tr {
+height: 35px;
+}
+
+.fc-agendaDay-view tr {
+height: 35px;
+}
+</style>
+{% endblock %}
+
+
 {% block js %}
-    <script type="text/javascript" src="/static/fullcalendar-2.4.0/lib/moment.min.js"></script>
-    <script type="text/javascript" src="/static/fullcalendar-2.4.0/lib/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/fullcalendar-2.4.0/fullcalendar.min.js"></script>
-    <script type="text/javascript" src="/static/fullcalendar-2.4.0/lang-all.js"></script>
+    <script type="text/javascript" src="/static/fullcalendar-2.5.0/lib/moment.min.js"></script>
+    <script type="text/javascript" src="/static/fullcalendar-2.5.0/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/fullcalendar-2.5.0/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="/static/fullcalendar-2.5.0/lang-all.js"></script>
     <script>
       $(document).ready(function() {
 
@@ -30,34 +50,19 @@
           editable: false,
           slotLabelFormat : 'H:mm',
           eventLimit: false, // allow "more" link when too many events
+          {% if slots %}
+          events:  {{slots|safe}},
+          {% endif %}
           eventClick: function(calEvent, jsEvent, view) {
               alert('Event: ' + calEvent.id);
-          },
-          events: {{slots|safe}}
+          }
+          
         });
         
       });
 
     </script>
 {% endblock %}
-{% block css %}
-<link href='/static/fullcalendar-2.4.0/fullcalendar.css' rel='stylesheet' />
-<link href='/static/fullcalendar-2.4.0/fullcalendar.print.css' rel='stylesheet' media='print' />
-<style>
-  #calendar {
-    /*max-width: 900px;*/
-    margin: 0 auto;
-  }
-  .fc-agendaWeek-view tr {
-height: 35px;
-}
-
-.fc-agendaDay-view tr {
-height: 35px;
-}
-</style>
-{% endblock %}
-
 
 {% block content %}
 <div class="row">

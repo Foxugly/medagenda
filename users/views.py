@@ -71,6 +71,8 @@ def calendar_user(request, slug):
     slots = user.slots.filter(date__gte=today)
     for s in slots:
         c['slots'].append(s.as_json())
+    if len(c['slots']) == 0:
+        del c['slots']
     return render(request, 'calendar.tpl', c)
 
 
