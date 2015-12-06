@@ -13,5 +13,5 @@ from agenda.views import agenda_add, agenda_remove, agenda_apply
 urlpatterns = (
     url(r'^ajax/(?P<slug>[\w-]+)/add/$', agenda_add, name='agenda_add'),
     url(r'^ajax/(?P<slug>[\w-]+)/remove/$', agenda_remove, name='agenda_remove'),
-    url(r'^ajax/(?P<slug>[\w-]+)/model/$', agenda_apply, name='agenda_apply'),
+    url(r'^ajax/(?P<slug>[\w-]+)/apply/$', agenda_apply, name='agenda_apply'),
 )

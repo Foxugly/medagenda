@@ -116,14 +116,13 @@ height: 32px;
           },
           events:  {{templateslots|safe}}
         });
-        $('.datepicker').datepicker({
+        /*$('.datepicker').datepicker({
           format: "dd/mm/yyyy",
           language: "fr",
           autoclose: true
-        });
+        });*/
         $('.clockpicker').clockpicker();
       });
-
     </script>
 {% endblock %}
 
@@ -145,13 +144,13 @@ height: 32px;
 <div id="calendar"></div>
 <div class="row" style="margin-top:20px;">
   <div class="col-md-3 col-md-offset-3">
-    <div class="circle" style="background:{{doctor.nhs_price_free_slot_color}}"><span class="info">{% blocktrans %}Tarif conventionné{% endblocktrans %}</div>
+    <div class="circle" style="background:{{doctor.nhs_price_free_slot_color}}"><span class="info">{% blocktrans %}Tarif conventionné{% endblocktrans %}</span></div>
   </div>
   <div class="col-md-3">
-    <div class="circle" style="background:{{doctor.free_price_free_slot_color}}"><span class="info">{% blocktrans %} Tarif libre{% endblocktrans %}</div>
+    <div class="circle" style="background:{{doctor.free_price_free_slot_color}}"><span class="info">{% blocktrans %} Tarif libre{% endblocktrans %}</span></div>
   </div>
 </div>
-</script>
+
 <!-- Modal -->
 <div id="addslots" class="modal fade" role="dialog">
   <div class="modal-dialog modal-lg">
@@ -162,76 +161,77 @@ height: 32px;
       </div>
       <div class="modal-body">
         <form name="form_addslots" id="form_addslots">
-        <div class="row form-group"><label class="col-md-2 col-md-offset-1 control-label" for="check_monday">{% blocktrans %}Days{% endblocktrans %} :</label>
-          <div class="col-md-8 btn-group" data-toggle="buttons">
-            <label class="btn btn-default"><input id="check_monday" name="check_monday" type="checkbox" autocomplete="off"> {% blocktrans %}Monday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_tuesday" name="check_tuesday" type="checkbox" autocomplete="off"> {% blocktrans %}Tuesday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_wednesday" name="check_wednesday" type="checkbox" autocomplete="off"> {% blocktrans %}Wednesday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_thursday" name="check_thursday" type="checkbox" autocomplete="off"> {% blocktrans %}Thursday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_friday" name="check_friday" type="checkbox" autocomplete="off"> {% blocktrans %}Friday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_saturday" name="check_saturday" type="checkbox" autocomplete="off"> {% blocktrans %}Saturday{% endblocktrans %}</label>
-            <label class="btn btn-default"><input id="check_sunday" name="check_sunday" type="checkbox" autocomplete="off"> {% blocktrans %}Sunday{% endblocktrans %}</label>
+          <div class="row form-group"><label class="col-md-2 col-md-offset-1 control-label" for="check_monday">{% blocktrans %}Days{% endblocktrans %} :</label>
+            <div class="col-md-8 btn-group" data-toggle="buttons">
+              <label class="btn btn-default"><input id="check_monday" name="check_monday" type="checkbox" autocomplete="off"> {% blocktrans %}Monday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_tuesday" name="check_tuesday" type="checkbox" autocomplete="off"> {% blocktrans %}Tuesday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_wednesday" name="check_wednesday" type="checkbox" autocomplete="off"> {% blocktrans %}Wednesday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_thursday" name="check_thursday" type="checkbox" autocomplete="off"> {% blocktrans %}Thursday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_friday" name="check_friday" type="checkbox" autocomplete="off"> {% blocktrans %}Friday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_saturday" name="check_saturday" type="checkbox" autocomplete="off"> {% blocktrans %}Saturday{% endblocktrans %}</label>
+              <label class="btn btn-default"><input id="check_sunday" name="check_sunday" type="checkbox" autocomplete="off"> {% blocktrans %}Sunday{% endblocktrans %}</label>
+            </div>
           </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="start_time">{% blocktrans %}Start Time{% endblocktrans %} :</label>
-          <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="start_time" name="start_time" type="text" class="form-control">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label" for="start_time">{% blocktrans %}Start Time{% endblocktrans %} :</label>
+            <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
+              <input id="start_time" name="start_time" type="text" class="form-control">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+            </div>
+            <script>
+              $("#start_time").val("{{doctor.start_time}}");
+            </script>
           </div>
-          <script>
-            $("#start_time").val("{{doctor.start_time}}");
-          </script>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="end_time">{% blocktrans %}End Time{% endblocktrans %} :</label>
-          <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
-            <input id="end_time" name="end_time" type="text" class="form-control">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label" for="end_time">{% blocktrans %}End Time{% endblocktrans %} :</label>
+            <div class="col-md-2 input-group clockpicker" data-placement="right" data-align="top" data-autoclose="true">
+              <input id="end_time" name="end_time" type="text" class="form-control">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+            </div>
+            <script>
+              $("#end_time").val("{{doctor.end_time}}");
+            </script>
           </div>
-          <script>
-            $("#end_time").val("{{doctor.end_time}}");
-          </script>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% blocktrans %}Duration{% endblocktrans %} :</label>
-          <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
-            <select id="duration" name="duration" class="form-control">
-              <option value="0">0</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="30" selected="selected">30</option>
-              <option value="45">45</option>
-              <option value="60">60</option>
-            </select>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% blocktrans %}Duration{% endblocktrans %} :</label>
+            <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
+              <select id="duration" name="duration" class="form-control">
+                <option value="0">0</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30" selected="selected">30</option>
+                <option value="45">45</option>
+                <option value="60">60</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="break_time">{% blocktrans %}Break{% endblocktrans %} :</label>
-          <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
-            <select  id="break_time" name="break_time" class="form-control">
-              <option value="0" selected="selected">0</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="30">30</option>
-            </select>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label" for="break_time">{% blocktrans %}Break{% endblocktrans %} :</label>
+            <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
+              <select  id="break_time" name="break_time" class="form-control">
+                <option value="0" selected="selected">0</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-md-2 col-md-offset-1 control-label" for="pricing">{% blocktrans %}Pricing{% endblocktrans %} :</label>
-          <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
-            <select id="pricing" name="pricing" class="form-control">
-              <option value="1">{% blocktrans %}Free pricing{% endblocktrans %}</option>
-              <option value="2">{% blocktrans %}National health service pricing{% endblocktrans %}</option>
-            </select>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label" for="pricing">{% blocktrans %}Pricing{% endblocktrans %} :</label>
+            <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
+              <select id="pricing" name="pricing" class="form-control">
+                <option value="1">{% blocktrans %}Free pricing{% endblocktrans %}</option>
+                <option value="2">{% blocktrans %}National health service pricing{% endblocktrans %}</option>
+              </select>
+            </div>
           </div>
-        </div>
+          </form>
       </div>
         <div class="modal-footer">
           <button id="btn_addslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% blocktrans %}Submit{% endblocktrans %}</button>
@@ -258,20 +258,22 @@ height: 32px;
     </div>
   </div>
 </div>
+
+
 <!-- Modal -->
 <div id="applyslots" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% blocktrans %}Apply slots to range{% endblocktrans %}</h4>
+        <h4 class="modal-title">{% blocktrans %}Add slots{% endblocktrans %}</h4>
       </div>
       <div class="modal-body">
-        <form id="form_applyslots">
+        <form name="form_apply" id="form_apply">
           <div class="row form-group">
             <label class="col-md-4 col-md-offset-1 control-label" for="start_date">{% blocktrans %}Start Date{% endblocktrans %} :</label>
             <div class="col-md-4 input-group" data-placement="right" data-align="top" data-autoclose="true">
-              <input id="start_date" name="start_date" type="text" class="form-control datepicker">
+              <input id="start_date" name="start_date" type="text" class="form-control">
               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
             </div>
           </div>
@@ -282,40 +284,6 @@ height: 32px;
               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
             </div>
           </div>
-          <script type="text/javascript">
-            var startDate = new Date();
-            var FromEndDate = new Date();
-            var ToEndDate = new Date();
-            ToEndDate.setDate(ToEndDate.getDate()+365);
-
-            $('#start_date').datepicker({
-                /*weekStart: 1,*/
-                format: 'dd/mm/yyyy',
-                startDate: startDate,
-                /*endDate: FromEndDate,*/ 
-                autoclose: true
-            })
-                .on('changeDate', function(selected){
-                    startDate = new Date(selected.date.valueOf());
-                    startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
-                    $('#end_date').datepicker('setStartDate', startDate);
-                }); 
-            $('#end_date')
-                .datepicker({
-                    
-                    /*weekStart: 1,*/
-                    format: 'dd/mm/yyyy'
-                    startDate: startDate,
-                    endDate: ToEndDate,
-                    autoclose: true
-                })
-                .on('changeDate', function(selected){
-                    FromEndDate = new Date(selected.date.valueOf());
-                    FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
-                    $('#start_date').datepicker('setEndDate', FromEndDate);
-                });
-
-          </script>
         </form>
       </div>
         <div class="modal-footer">
@@ -325,7 +293,37 @@ height: 32px;
     </div>
   </div>
 </div>
+
+
 <script type="text/javascript">
+var startDate = new Date();
+var FromEndDate = new Date();
+var ToEndDate = new Date();
+ToEndDate.setDate(ToEndDate.getDate()+365);
+
+$('#start_date').datepicker({
+    language: "fr",
+    startDate: startDate,
+    autoclose: true
+})
+    .on('changeDate', function(selected){
+        startDate = new Date(selected.date.valueOf());
+        startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+        $('#end_date').datepicker('setStartDate', startDate);
+    }); 
+$('#end_date')
+    .datepicker({
+        language: "fr",
+        startDate: startDate,
+        endDate: ToEndDate,
+        autoclose: true
+    })
+    .on('changeDate', function(selected){
+        FromEndDate = new Date(selected.date.valueOf());
+        FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
+        $('#start_date').datepicker('setEndDate', FromEndDate);
+    });
+
 $('#btn_addslots').on("click", function(){
   var form = $('#form_addslots');
   var url = '/slot/ajax/{{doctor.slug}}/add/';
@@ -343,9 +341,9 @@ $('#btn_addslots').on("click", function(){
       }
   });
 });
+
 $('#btn_removeslots').on("click", function(){
   var url = '/slot/ajax/{{doctor.slug}}/remove/';
-  console.log(url);
   $.ajax({
       url: url,
       type: 'GET',
@@ -357,19 +355,18 @@ $('#btn_removeslots').on("click", function(){
       }
   });
 });
+
 $('#btn_applyslots').on("click", function(){
-  console.log('applyslots');
-  var form = $('#form_applyslots');
+  var form = $('#form_apply').serializeArray();
+  form.push({name: 'format',value:$.fn.datepicker.dates['fr']['format']});
   var url = '/slot/ajax/{{doctor.slug}}/apply/';
-  console.log(url);
   $.ajax({
       url: url,
       type: 'GET',
-      data: form.serialize(),
+      data: form,
       traditional: true,
       dataType: 'json',
       success: function(result){
-        $('#calendar').fullCalendar('options', 'events', result['slots']);
         console.log('retour');
       }
   });

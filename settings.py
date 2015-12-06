@@ -85,6 +85,7 @@ LOGIN_REDIRECT_URL = '/user/'
 LOGIN_URL = '/user/login/'
 
 FULLCALENDAR_REF_DATE = '2016-02-01'
+FULLCALENDAR_REF_DATEFORMAT = '%Y-%m-%d'
 
 LANGUAGES = (
   ('fr', _('Francais')),

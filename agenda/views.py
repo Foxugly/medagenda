@@ -39,6 +39,7 @@ def agenda_add(request, slug):
                     st.save()
                     dt.add_slottemplate(st)
                     current = current_end + timedelta(minutes=int(request.GET['break_time']))
+        results['return'] = True
         results['slottemplates'] = user.get_all_slottemplates()
         return HttpResponse(json.dumps(results))
 
@@ -50,13 +51,40 @@ def agenda_remove(request, slug):
         user.remove_all_slottemplates()
         results = {}
         results['slottemplates'] = user.get_all_slottemplates()
+        results['return'] = True
         return HttpResponse(json.dumps(results))
 
 
 @login_required
 def agenda_apply(request, slug):
     if request.is_ajax():
-        results = {}
-        # TODO
-        # results = [y.as_json() for y in c.years.filter(active=True)]
+        if 'start_date' in request.GET and 'end_date' in request.GET :
+            user = get_context(request)['userprofile']
+            results = {}
+            format_date = request.GET['format']
+            format_date = format_date.replace('yyyy','%Y')
+            format_date = format_date.replace('mm','%m')
+            format_date = format_date.replace('dd','%d')
+            start_date = datetime.strptime(request.GET['start_date'], format_date)
+            end_date = datetime.strptime(request.GET['end_date'], format_date)
+            ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE , settings.FULLCALENDAR_REF_DATEFORMAT)
+
+            #print start_date
+            #print end_date
+            #print ref_date
+            for i in range(0,7):
+                ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
+                current_day = start_date + timedelta(days=i)
+                while current_day <= end_date :
+                    # check si ya des slots sur ce jour et des recouvrements
+                    # ajouter les slots
+                    print (str(current_day) + "(" + str(current_day.weekday()) + ")")
+                    current_day += timedelta(days=7)
+
+            #datetime.weekday() #0 = Monday - 6= Sunday
+            # TODO
+            # results = [y.as_json() for y in c.years.filter(active=True)]
+            results['return'] = True
+        else :
+            results['return'] = False
         return HttpResponse(json.dumps(results))
