@@ -55,7 +55,8 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{userprofile.user.first_name}} {{userprofile.user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu" style='background:black;color:white;'>
-                <li><a class="glyphicon glyphicon-cog" href="/user/settings/">{% blocktrans %} Profil{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-home" href="/">{% blocktrans %} Home{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-cog" href="/user/config/">{% blocktrans %} Configuration{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-calendar" href="/user/{{userprofile.slug}}/calendar/">{% blocktrans %} Calendar{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-equalizer" href="/user/{{userprofile.slug}}/model/">{% blocktrans %} Modèle{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/">{% blocktrans %} Déconnexion{% endblocktrans %} </a></li>

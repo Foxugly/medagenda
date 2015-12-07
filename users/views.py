@@ -11,7 +11,7 @@
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, UserProfileForm
+from users.models import UserProfile, UserProfileForm, ProfileForm
 from utils.perms import get_context
 from django.contrib.auth.decorators import user_passes_test, login_required
 import json
@@ -103,3 +103,20 @@ def remove_slot(request, slug, slot_id):
 def find_slot(request, slug, input):
     # AJAX TOUSSA
     return HttpResponseRedirect('/')
+
+
+def config_user(request):
+    c = get_context(request)
+    user = c['userprofile']
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/user/config/')
+        else:
+            messages.error(request, "Error")
+    else:
+        c['form'] = ProfileForm(instance=user)
+        c['url'] = "/user/config/"
+        c['title'] = _("Change Configuration")
+    return render(request, 'form.tpl', c)

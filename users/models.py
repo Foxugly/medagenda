@@ -108,6 +108,9 @@ class UserProfileForm(ModelForm):
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
 
+        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
+        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
+
         self.fields.keyOrder = [
             'username'
             'first_name',
@@ -121,9 +124,14 @@ class UserProfileForm(ModelForm):
             'vat_number',
             'telephone',
             'address',
-            'free_slot_color',
-            'busy_slot_color',
-            'view_busy_slot'
+            'start_time',
+            'end_time',
+            'free_price_free_slot_color',
+            'free_price_booked_slot_color',
+            'nhs_price_free_slot_color',
+            'nhs_price_booked_slot_color',
+            'view_busy_slot',
+            'view_in_list'
             ]
 
     # def clean(self):
@@ -151,3 +159,32 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user', 'slug', 'weektemplate', 'slots')
+
+
+class ProfileForm(ModelForm):
+    first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
+    last_name = forms.CharField(label=_(u'Nom'), max_length=50)
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kw):
+        super(ProfileForm, self).__init__(*args, **kw)
+        self.fields['first_name'].initial = kw['instance'].user.first_name
+        self.fields['last_name'].initial = kw['instance'].user.last_name
+        self.fields['email'].initial = kw['instance'].user.email
+        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
+        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
+
+    def save(self, *args, **kw):
+        up = super(ProfileForm, self).save(commit=False)
+        up.user.last_name = self.cleaned_data.get('last_name')
+        up.user.first_name = self.cleaned_data.get('first_name')
+        up.user.save()
+        up.save()
+        return up
+
+    class Meta:
+        model = UserProfile
+        exclude = ('user', 'slug', 'weektemplate', 'slots')
+        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
+            'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color',
+            'view_busy_slot', 'view_in_list' ]
