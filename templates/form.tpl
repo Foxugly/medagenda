@@ -28,7 +28,7 @@
   </fieldset>
 </form>
 <script type="text/javascript">
-$(".colorfield_field").addClass('form-control');
+  $(".colorfield_field").addClass('form-control');
 
   $(".clockpicker").parent().clockpicker({
     autoclose: true

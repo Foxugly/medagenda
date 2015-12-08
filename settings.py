@@ -89,9 +89,9 @@ FULLCALENDAR_REF_DATE = '2016-02-01'
 FULLCALENDAR_REF_DATEFORMAT = '%Y-%m-%d'
 
 LANGUAGES = (
-  ('fr', _('Francais')),
-  ('nl', _('Nederlands')),
-  ('en', _('English')),
+    ('fr', _('Francais')),
+    ('nl', _('Nederlands')),
+    ('en', _('English')),
 )
 
 DAY_CHOICES = (
@@ -183,8 +183,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 LOGGING = {
     'version': 1,

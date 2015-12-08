@@ -15,13 +15,16 @@ from agenda.models import Slot, DayTemplate, WeekTemplate, SlotTemplate
 class SlotAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(DayTemplate)
 class DayTemplateAdmin(admin.ModelAdmin):
-    filter_horizontal = ['slots',]
+    filter_horizontal = ['slots', ]
+
 
 @admin.register(WeekTemplate)
 class WeekTemplateAdmin(admin.ModelAdmin):
-    filter_horizontal = ['days',]
+    filter_horizontal = ['days', ]
+
 
 @admin.register(SlotTemplate)
 class SlotTemplateAdmin(admin.ModelAdmin):

@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient
 from datetime import datetime, timedelta
 
+
 class SlotTemplate(models.Model):
     start = models.TimeField(verbose_name=_(u'Début'), blank=False)
     end = models.TimeField(verbose_name=_(u'Fin'), blank=False)
@@ -21,13 +22,12 @@ class SlotTemplate(models.Model):
 
     def __str__(self):
         pricing = _(u"National health service pricing") if self.national_health_service_price else _(u'Free pricing')
-        return u"%s - %s (%s)" %(self.start, self.end, pricing)
+        return u"%s - %s (%s)" % (self.start, self.end, pricing)
 
     def t_start(self, i):
         date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
         date += timedelta(days=(i-1))
         return str(date.strftime('%Y-%m-%d')) + str('T') + str(self.start)
-
 
     def t_end(self, i):
         date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
@@ -39,9 +39,9 @@ class SlotTemplate(models.Model):
             color = str(doctor.nhs_price_free_slot_color)
         else:
             color = str(doctor.free_price_free_slot_color)
-        return dict(id=self.id, start=self.t_start(i), end=self.t_end(i), title=str(_('Free')),color=color) 
+        return dict(id=self.id, start=self.t_start(i), end=self.t_end(i), title=str(_('Free')), color=color)
 
-# use date.isoweekday()
+
 class DayTemplate(models.Model):
     day = models.IntegerField(choices=settings.DAY_CHOICES)
     slots = models.ManyToManyField(SlotTemplate, verbose_name=_(u'Slots'), blank=True)
@@ -66,7 +66,7 @@ class DayTemplate(models.Model):
         return self.slots.all()
 
     def __str__(self):
-         return u"[%d] %s" % (self.id, dict(settings.DAY_CHOICES)[self.day])
+        return u"[%d] %s" % (self.id, dict(settings.DAY_CHOICES)[self.day])
 
 
 class WeekTemplate(models.Model):
@@ -90,13 +90,14 @@ class WeekTemplate(models.Model):
             if dt.day == d:
                 self.days.remove(dt)
 
-    def get_slottemplates_of_day(self,d):
+    def get_slottemplates_of_day(self, d):
         for dt in self.days.all():
             if dt.day == d:
                 return dt.get_slottemplates()
 
     def __str__(self):
         return u"WeekTemplate %d" % self.id
+
 
 class Slot(models.Model):
     date = models.DateField()
@@ -112,13 +113,13 @@ class Slot(models.Model):
 
     def as_json(self):
         color = 'black'
-        if self.patient :
-            if refer_doctor.view_busy_slot :
+        if self.patient:
+            if refer_doctor.view_busy_slot:
                 if self.st.national_health_service_price:
                     color = str(self.refer_doctor.nhs_price_booked_slot_color)
                 else:
                     color = str(self.refer_doctor.free_price_booked_slot_color)
-                return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Booked')), color=color)     
+                return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Booked')), color=color)
             else:
                 return None
         else:
@@ -126,7 +127,7 @@ class Slot(models.Model):
                 color = str(self.refer_doctor.nhs_price_free_slot_color)
             else:
                 color = str(self.refer_doctor.free_price_free_slot_color)
-            return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Free')), color=color)      
+            return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Free')), color=color)
 
     def __str__(self):
         return u"slot %d" % self.id

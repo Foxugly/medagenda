@@ -56,7 +56,7 @@ class UserProfile(models.Model):
     confirm = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.user.username)
+        return "userprofile : " + str(self.user.username)
 
     def real_name(self):
         return str(self.user.first_name + " " + self.user.last_name)
@@ -88,6 +88,7 @@ class UserProfile(models.Model):
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
+
 class BaseProfileForm(ModelForm):
     first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
     last_name = forms.CharField(label=_(u'Nom'), max_length=50)
@@ -118,10 +119,8 @@ class ProfileForm(BaseProfileForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots' , 'confirm', 'picture')
-        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
-            'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color',
-            'view_busy_slot', 'view_in_list' ]
+        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
+        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'start_time', 'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color', 'view_busy_slot', 'view_in_list']
 
 
 class UserProfileForm(BaseProfileForm):
@@ -132,7 +131,6 @@ class UserProfileForm(BaseProfileForm):
 
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
-
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
@@ -148,7 +146,4 @@ class UserProfileForm(BaseProfileForm):
     class Meta:
         model = UserProfile
         exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
-        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
-            'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color',
-            'view_busy_slot', 'view_in_list' ]
-
+        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'start_time', 'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color', 'view_busy_slot', 'view_in_list']

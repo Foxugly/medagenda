@@ -10,7 +10,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
-from utils.perms import get_context
 from datetime import datetime, timedelta
 from django.conf import settings
 from agenda.models import SlotTemplate, Slot
@@ -20,12 +19,11 @@ import json
 @login_required
 def st_add(request, slug):
     if request.is_ajax():
-        user = get_context(request)['userprofile']
         days = ['check_monday', 'check_tuesday', 'check_wednesday', 'check_thursday', 'check_friday', 'check_saturday', 'check_sunday']
         results = {}
         for day in days:
             if day in request.GET:
-                dt = user.get_daytemplate(days.index(day)+1)
+                dt = request.user.userprofile.get_daytemplate(days.index(day)+1)
                 current = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.GET['start_time'], '%Y-%m-%d %H:%M')
                 current += timedelta(days=days.index(day))
                 end = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.GET['end_time'], '%Y-%m-%d %H:%M')
@@ -36,24 +34,23 @@ def st_add(request, slug):
                         for old_slot in dt.slots.filter(start__lte=current, end__gt=current):
                             dt.slots.remove(old_slot)
                         for old_slot in dt.slots.filter(start__lt=current_end, end__gte=current_end):
-                            dt.slots.remove(old_slot)  
+                            dt.slots.remove(old_slot)
                     pricing = False if request.GET['pricing'] == "1" else True
                     st = SlotTemplate(start=current, end=current_end, national_health_service_price=pricing)
                     st.save()
                     dt.add_slottemplate(st)
                     current = current_end + timedelta(minutes=int(request.GET['break_time']))
         results['return'] = True
-        results['slottemplates'] = user.get_all_slottemplates()
+        results['slottemplates'] = request.user.userprofile.get_all_slottemplates()
         return HttpResponse(json.dumps(results))
 
 
 @login_required
 def st_clean(request, slug):
     if request.is_ajax():
-        user = get_context(request)['userprofile']
-        user.remove_all_slottemplates()
+        request.user.userprofile.remove_all_slottemplates()
         results = {}
-        results['slottemplates'] = user.get_all_slottemplates()
+        results['slottemplates'] = request.user.userprofile.get_all_slottemplates()
         results['return'] = True
         return HttpResponse(json.dumps(results))
 
@@ -62,35 +59,34 @@ def st_clean(request, slug):
 def st_apply(request, slug):
     results = {}
     if request.is_ajax():
-        if 'start_date' in request.GET and 'end_date' in request.GET :
-            user = get_context(request)['userprofile']
+        if 'start_date' in request.GET and 'end_date' in request.GET:
             results = {}
             format_date = request.GET['format']
-            format_date = format_date.replace('yyyy','%Y')
-            format_date = format_date.replace('mm','%m')
-            format_date = format_date.replace('dd','%d')
+            format_date = format_date.replace('yyyy', '%Y')
+            format_date = format_date.replace('mm', '%m')
+            format_date = format_date.replace('dd', '%d')
             start_date = datetime.strptime(request.GET['start_date'], format_date)
             end_date = datetime.strptime(request.GET['end_date'], format_date)
-            ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE , settings.FULLCALENDAR_REF_DATEFORMAT)
-            for i in range(0,7): #datetime.weekday() #0 = Monday - 6= Sunday
+            ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, settings.FULLCALENDAR_REF_DATEFORMAT)
+            for i in range(0, 7):  # datetime.weekday() #0 = Monday - 6= Sunday
                 ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
                 current_day = start_date + timedelta(days=i)
-                while current_day <= end_date :
-                    sts = user.weektemplate.get_slottemplates_of_day(1+(int(start_date.weekday()) + i)%7)
-                    if sts :
-                        for st in sts :
+                while current_day <= end_date:
+                    sts = request.user.userprofile.weektemplate.get_slottemplates_of_day(1+(int(start_date.weekday()) + i) % 7)
+                    if sts:
+                        for st in sts:
                             current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
-                            for s in user.slots.filter(date=datetime.date(current_day),st__start__lte=current_day, st__end__gt=current_day):
-                                user.slots.remove(s)
+                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day), st__start__lte=current_day, st__end__gt=current_day):
+                                request.user.userprofile.slots.remove(s)
                             current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
-                            for s in user.slots.filter(date=datetime.date(current_day), st__start__lt=current_day, st__end__gte=current_day):
-                                user.slots.remove(s)
-                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=user)
+                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day), st__start__lt=current_day, st__end__gte=current_day):
+                                request.user.userprofile.slots.remove(s)
+                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=request.user.userprofile)
                             new_slot.save()
-                            user.slots.add(new_slot)
+                            request.user.userprofile.slots.add(new_slot)
                     current_day += timedelta(days=7)
             results['return'] = True
-        else :
+        else:
             results['return'] = False
         return HttpResponse(json.dumps(results))
 
@@ -99,10 +95,9 @@ def st_apply(request, slug):
 def st_remove(request, slug, st_id):
     results = {}
     if request.is_ajax():
-        user = get_context(request)['userprofile']
         print st_id
         st = SlotTemplate.objects.get(id=int(st_id))
-        for dt in user.weektemplate.days.all():
+        for dt in request.user.userprofile.weektemplate.days.all():
             dt.remove_slottemplate(st)
         results['return'] = True
     else:
