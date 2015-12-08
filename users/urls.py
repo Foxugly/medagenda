@@ -10,22 +10,23 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user, profile_user, calendar_user, reminder_slot, remove_slot, find_slot, model_calendar, config_user
+from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, find_slot, model_calendar, update_user, create_user, password_change, password_change_done
 
 urlpatterns = (
-    url(r'^adduser/$', add_user, name='add_user'),
-    url(r'^config/$', config_user, name='config_user'),
-    url(r'^(?P<slug>[\w-]+)/$', profile_user, name='profile_user'),
-    url(r'^(?P<slug>[\w-]+)/calendar/$', calendar_user, name='calendar_user'),
-    url(r'^(?P<slug>[\w-]+)/model/$', login_required(model_calendar), name='model_calendar'),
-    url(r'^(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_user'),
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}),
     url(r'^logout/$', login_required(views.logout), {'template_name': 'logout.tpl'}, name='logout'),
-    url(r'^password_change/$', login_required(views.password_change), name='password_change'),
-    url(r'^password_change/done/$', login_required(views.password_change_done), name='password_change_done'),
+    url(r'^add_user/$', add_user, name='add_user'),
+    url(r'^create_user/$', create_user, name='create_user'),
+    url(r'^update_user/$', update_user, name='update_user'),
+    url(r'^password_change/$', login_required(password_change), name='password_change'),
+    url(r'^password_change/done/$', login_required(password_change_done), {'template_name': 'valid.tpl'}, name='password_change_done'),
     url(r'^password_reset/$', login_required(views.password_reset), name='password_reset'),
     url(r'^password_reset/done/$', login_required(views.password_reset_done), name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         login_required(views.password_reset_confirm), name='password_reset_confirm'),
     url(r'^reset/done/$', login_required(views.password_reset_complete), name='password_reset_complete'),
+    url(r'^profil/(?P<slug>[\w-]+)/$', profile, name='profile'),
+    url(r'^profil/(?P<slug>[\w-]+)/calendar/$', calendar_user, name='calendar_user'),
+    url(r'^profil/(?P<slug>[\w-]+)/model/$', login_required(model_calendar), name='model_calendar'),
+    url(r'^profil/(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_user'),
 )
