@@ -8,11 +8,15 @@
 # your option) any later version.
 
 from django.conf.urls import patterns, url
-from agenda.views import st_add, st_remove, st_apply, st_clean
+from agenda.views import st_add, st_remove, st_apply, st_clean, get_slot, book_slot, remove_slot
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = (
-    url(r'^ajax/(?P<slug>[\w-]+)/st/add/$', st_add, name='st_add'),
-    url(r'^ajax/(?P<slug>[\w-]+)/st/clean/$', st_clean, name='st_clean'),
-    url(r'^ajax/(?P<slug>[\w-]+)/st/apply/$', st_apply, name='st_apply'),
-    url(r'^ajax/(?P<slug>[\w-]+)/st/remove/(?P<st_id>\w+)/$', st_remove, name='st_remove'),
+    url(r'^ajax/s/get/(?P<slot_id>[\w-]+)/$', get_slot, name='get_slot'),
+    url(r'^ajax/st/add/$', login_required(st_add), name='st_add'),
+    url(r'^ajax/st/clean/$', login_required(st_clean), name='st_clean'),
+    url(r'^ajax/st/apply/$', login_required(st_apply), name='st_apply'),
+    url(r'^ajax/st/remove/(?P<st_id>\w+)/$', login_required(st_remove), name='st_remove'),
+    url(r'^ajax/s/book/(?P<slot_id>[\w-]+)/$', book_slot, name='book_slot'),
+    url(r'^ajax/s/remove/(?P<slot_id>[\w-]+)/$', login_required(remove_slot), name='book_slot'),
 )

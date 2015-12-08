@@ -8,8 +8,7 @@
 # your option) any later version.
 
 
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from users.models import UserProfile, UserProfileForm, ProfileForm
 from utils.perms import string_random
@@ -64,16 +63,16 @@ def profile(request, slug):
 def calendar_user(request, slug):
     c = {}
     userp = get_object_or_404(UserProfile, slug=slug)
-    c['doctor'] = user
+    c['doctor'] = userp
     today = datetime.now().date()
     c['slots'] = []
     slots = []
     if request.user.is_authenticated():
         slots = userp.slots.all()
     elif userp.view_busy_slot is True:
-        slots = user.slots.filter(date__gte=today)
+        slots = userp.slots.filter(date__gte=today)
     else:
-        slots = user.slots.filter(date__gte=today, patient_id__isnull=False)
+        slots = userp.slots.filter(date__gte=today, patient_id__isnull=False)
     for s in slots:
         c['slots'].append(s.as_json())
     if len(c['slots']) == 0:

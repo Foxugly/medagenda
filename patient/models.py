@@ -9,17 +9,26 @@
 
 from django.db import models
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 # Create your models here.
 
 
 class Patient(models.Model):
-    mail = models.EmailField(verbose_name=_(u'Email'), blank=True, null=True)
-    first_name = models.CharField(verbose_name=_(u'First name'), max_length=100)
-    last_name = models.CharField(verbose_name=_(u'Last_name'), max_length=100)
-    telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20)
+    email = models.EmailField(verbose_name=_(u'Email'), blank=True, null=True)
+    first_name = models.CharField(verbose_name=_(u'First name'), max_length=100, blank=True, null=True)
+    last_name = models.CharField(verbose_name=_(u'Last_name'), max_length=100, blank=True, null=True)
+    telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True, null=True)
 
+    def __str__(self):
+    	return str(self.email)
+
+    def ad_json():
+    	return dict(id=self.id, email=self.email, first_name=first_name, last_name=last_name)
 
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
-        fields = '__all__'
+        fields = ['email', 'first_name', 'last_name', 'telephone']
+
+
+

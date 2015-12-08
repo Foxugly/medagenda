@@ -27,5 +27,9 @@ urlpatterns = (
     url(r'^profil/(?P<slug>[\w-]+)/$', profile, name='profile'),
     url(r'^profil/(?P<slug>[\w-]+)/calendar/$', calendar_user, name='calendar_user'),
     url(r'^profil/(?P<slug>[\w-]+)/model/$', login_required(model_calendar), name='model_calendar'),
-    url(r'^profil/(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_user'),
+    url(r'^profil/(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_slot'),
+
 )
+
+handler404 = 'views.custom_404'
+handler404 = 'views.custom_500'

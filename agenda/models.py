@@ -104,22 +104,29 @@ class Slot(models.Model):
     st = models.ForeignKey(SlotTemplate, verbose_name=_(u'Slot template'), blank=True, null=True)
     patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
     refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
+    informations = models.TextField(verbose_name=_(u'Usefull informations+'), blank=True, null=True)
 
-    def start(self):
-        return self.date.strftime('%Y-%m-%d') + "T" + self.st.start.strftime('%H:%M:%S')
+    def date_t(self):
+        return self.date.strftime('%d/%m/%Y')
 
-    def end(self):
-        return self.date.strftime('%Y-%m-%d') + "T" + self.st.end.strftime('%H:%M:%S')
+    def hour_t(self, t):
+        return t.strftime('%H:%M:%S')
+
+    def start_t(self):
+        return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.start)
+
+    def end_t(self):
+        return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.end)
 
     def as_json(self):
         color = 'black'
         if self.patient:
-            if refer_doctor.view_busy_slot:
+            if self.refer_doctor.view_busy_slot:
                 if self.st.national_health_service_price:
                     color = str(self.refer_doctor.nhs_price_booked_slot_color)
                 else:
                     color = str(self.refer_doctor.free_price_booked_slot_color)
-                return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Booked')), color=color)
+                return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=str(_('Booked')), color=color)
             else:
                 return None
         else:
@@ -127,7 +134,10 @@ class Slot(models.Model):
                 color = str(self.refer_doctor.nhs_price_free_slot_color)
             else:
                 color = str(self.refer_doctor.free_price_free_slot_color)
-            return dict(id=self.id, start=self.start(), end=self.end(), title=str(_('Free')), color=color)
+            return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=str(_('Free')), color=color)
+
+    def as_json2(self):
+        return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
 
     def __str__(self):
-        return u"slot %d" % self.id
+        return u"Slot %d" % self.id

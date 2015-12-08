@@ -8,16 +8,17 @@
 # your option) any later version.
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime, timedelta
 from django.conf import settings
 from agenda.models import SlotTemplate, Slot
+from patient.models import Patient
 import json
 
 
 @login_required
-def st_add(request, slug):
+def st_add(request):
     if request.is_ajax():
         days = ['check_monday', 'check_tuesday', 'check_wednesday', 'check_thursday', 'check_friday', 'check_saturday', 'check_sunday']
         results = {}
@@ -46,7 +47,7 @@ def st_add(request, slug):
 
 
 @login_required
-def st_clean(request, slug):
+def st_clean(request):
     if request.is_ajax():
         request.user.userprofile.remove_all_slottemplates()
         results = {}
@@ -56,7 +57,7 @@ def st_clean(request, slug):
 
 
 @login_required
-def st_apply(request, slug):
+def st_apply(request):
     results = {}
     if request.is_ajax():
         if 'start_date' in request.GET and 'end_date' in request.GET:
@@ -92,7 +93,7 @@ def st_apply(request, slug):
 
 
 @login_required
-def st_remove(request, slug, st_id):
+def st_remove(request, st_id):
     results = {}
     if request.is_ajax():
         print st_id
@@ -103,3 +104,42 @@ def st_remove(request, slug, st_id):
     else:
         results['return'] = False
     return HttpResponse(json.dumps(results))
+
+
+def get_slot(request, slot_id):
+    results = {}
+    if request.is_ajax():
+        s = Slot.objects.get(id=int(slot_id))
+        if request.user.is_authenticated():
+            results['slot'] = s.as_json2()
+            results['return'] = True
+        else:
+            if not s.patient :
+                results['return'] = True
+                results['slot'] = s.as_json2()
+            else:
+                results['return'] = False
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+def book_slot(request, slot_id):
+    if request.is_ajax():
+        s = Slot.objects.get(id=slot_id)
+        if request.GET["patient"] is None or int(request.GET["patient"]) == 0:
+            #new Patient
+            s.informations = request.GET["informations"]
+            p = Patient(email=str(request.GET["email"]), first_name=str(request.GET["first_name"]), last_name=str(request.GET["last_name"]), telephone=str(request.GET["telephone"]))
+            p.save()
+            s.patient = p
+        else :
+            s.patient = Patient.objects.get(id=int(request.GET["patient"]))
+        s.save()
+        return HttpResponse(json.dumps({'return':True}))
+
+@login_required
+def remove_slot(request, slot_id):
+    if request.is_ajax():
+        Slot.objects.get(id=slot_id).delete()
+        return HttpResponse(json.dumps({'return':True}))

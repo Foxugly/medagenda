@@ -321,7 +321,7 @@ $(document).ready(function() {
     $('#removeslot').hide();
   });
   $('#removeslot_yes').click(function(){
-    var url = '/slot/ajax/{{doctor.slug}}/st/remove/' + $('#slot').val() + '/';
+    var url = '/slot/ajax/st/remove/' + $('#slot').val() + '/';
     $.ajax({
         url: url,
         type: 'GET',
@@ -367,7 +367,7 @@ $(document).ready(function() {
 
   $('#btn_addslots').on("click", function(){
     var form = $('#form_addslots');
-    var url = '/slot/ajax/{{doctor.slug}}/st/add/';
+    var url = '/slot/ajax/st/add/';
     $.ajax({
         url: url,
         type: 'GET',
@@ -384,7 +384,7 @@ $(document).ready(function() {
   });
 
   $('#btn_removeslots').on("click", function(){
-    var url = '/slot/ajax/{{doctor.slug}}/st/clean/';
+    var url = '/slot/ajax/st/clean/';
     $.ajax({
         url: url,
         type: 'GET',
@@ -400,7 +400,7 @@ $(document).ready(function() {
   $('#btn_applyslots').on("click", function(){
     var form = $('#form_apply').serializeArray();
     form.push({name: 'format',value:$.fn.datepicker.dates['fr']['format']});
-    var url = '/slot/ajax/{{doctor.slug}}/st/apply/';
+    var url = '/slot/ajax/st/apply/';
     $.ajax({
         url: url,
         type: 'GET',

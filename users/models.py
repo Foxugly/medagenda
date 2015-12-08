@@ -43,8 +43,8 @@ class UserProfile(models.Model):
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
     telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True)
     address = AddressField()
-    start_time = models.TimeField(verbose_name=_(u'Start time') blank=False, default="09:00:00")
-    end_time = models.TimeField(verbose_name=_(u'End time'), blank=False, default="18:00:00")
+    start_time = models.TimeField(verbose_name=_(u'Start time'), blank=False, default="09:00")
+    end_time = models.TimeField(verbose_name=_(u'End time'), blank=False, default="18:00")
     free_price_free_slot_color = ColorField(default='#73B5EB')
     free_price_booked_slot_color = ColorField(default='#F64636')
     nhs_price_free_slot_color = ColorField(default='#73EB79')  # nhs = national health service price

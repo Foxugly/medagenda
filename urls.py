@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, include, url, handler404, handler500
 from django.contrib import admin
 from django.shortcuts import redirect, render, render_to_response
 from django.contrib.auth.decorators import login_required
@@ -25,11 +25,23 @@ from users.views import home, confirm_user
 
 admin.autodiscover()
 
+
+def custom_404(request):
+    return render(request, "404.tpl")
+
+def custom_500(request):
+    return render(request, "500.tpl")
+
 urlpatterns = [
     url(r'^confirm/(?P<user_id>[\w-]+)/(?P<text>[\w-]+)/',
         confirm_user, name='confirm_user'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^user/', include('users.urls'), name='users'),
+    url(r'^patient/', include('patient.urls'), name='patient'),
     url(r'^slot/', include('agenda.urls'), name='agenda'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^$', home, name='index'), ] + patterns('', (r'^media/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}), ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+handler404 = 'urls.custom_404'
+handler500 = 'urls.custom_500'
