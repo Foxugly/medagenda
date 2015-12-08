@@ -16,8 +16,8 @@ from datetime import datetime, timedelta
 
 
 class SlotTemplate(models.Model):
-    start = models.TimeField(verbose_name=_(u'Début'), blank=False)
-    end = models.TimeField(verbose_name=_(u'Fin'), blank=False)
+    start = models.TimeField(verbose_name=_(u'Start'), blank=False)
+    end = models.TimeField(verbose_name=_(u'End'), blank=False)
     national_health_service_price = models.BooleanField(verbose_name=_(u"National health service pricing"))
 
     def __str__(self):
@@ -43,7 +43,7 @@ class SlotTemplate(models.Model):
 
 
 class DayTemplate(models.Model):
-    day = models.IntegerField(choices=settings.DAY_CHOICES)
+    day = models.IntegerField(verbose_name=_(u'Day'), choices=settings.DAY_CHOICES)
     slots = models.ManyToManyField(SlotTemplate, verbose_name=_(u'Slots'), blank=True)
 
     def add_slottemplate(self, st):
@@ -100,9 +100,9 @@ class WeekTemplate(models.Model):
 
 
 class Slot(models.Model):
-    date = models.DateField()
-    st = models.ForeignKey(SlotTemplate, blank=True, null=True)
-    patient = models.ForeignKey(Patient, blank=True, null=True)
+    date = models.DateField(verbose_name=_(u'Date'))
+    st = models.ForeignKey(SlotTemplate, verbose_name=_(u'Slot template'), blank=True, null=True)
+    patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
     refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
 
     def start(self):
