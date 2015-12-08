@@ -67,23 +67,34 @@ class UserProfile(models.Model):
 
     def get_all_slottemplates(self):
         out = []
-        for dt in self.weektemplate.days.all():
-            for s in dt.slots.all():
-                out.append(s.as_json(dt.day, self))
+        if len(self.get_weektemplate().days.all()) > 0 :
+            for dt in self.get_weektemplate().days.all():
+                for s in dt.slots.all():
+                    out.append(s.as_json(dt.day, self))
         return out
 
     def remove_all_slottemplates(self):
-        self.weektemplate.remove_all_slottemplates()
+        self.get_weektemplate().remove_all_slottemplates()
+
+    def get_weektemplate(self):
+        if self.weektemplate:
+            return self.weektemplate
+        else:
+            wk = WeekTemplate()
+            wk.save()
+            self.weektemplate = wk
+            return wk
 
     def get_daytemplate(self, i):
         d = None
-        for day in self.weektemplate.days.all():
-            if day.day == i:
-                d = day
-        if not d:
-            d = DayTemplate(day=i)
-            d.save()
-            self.weektemplate.add_daytemplate(d)
+        if len(self.get_weektemplate().days.all()) > 0:
+            for day in self.get_weektemplate().days.all():
+                if day.day == i:
+                    d = day
+            if not d:
+                d = DayTemplate(day=i)
+                d.save()
+                self.get_weektemplate().add_daytemplate(d)
         return d
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])

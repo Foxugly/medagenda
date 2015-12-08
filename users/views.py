@@ -161,4 +161,4 @@ def confirm_user(request, user_id, text):
         up.user.is_active = True
         up.user.save()
         up.save()
-        return render(request, 'valid.tpl', c)
+        return render(request, 'valid.tpl')
