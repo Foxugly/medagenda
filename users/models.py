@@ -31,17 +31,8 @@ class CreateUserForm(forms.Form):
 
 
 class UserProfile(models.Model):
-    MEDECINE_CHOICES = (
-        (1, _(u'Aucune')),
-        (2, _(u'Médecine Générale')),
-        (3, _(u'Médecine Interne')),
-    )
-    TITLE_CHOICES = (
-        (1, _(u'Professeur')),
-        (2, _(u'Docteur')),
-        (3, _(u'Madame')),
-        (4, _(u'Monsieur')),
-    )
+    MEDECINE_CHOICES = settings.MEDECINE_CHOICES
+    TITLE_CHOICES = settings.TITLE_CHOICES
 
     title = models.IntegerField(choices=TITLE_CHOICES, default=2)
     user = models.OneToOneField(User, verbose_name=_('user'))
@@ -62,6 +53,7 @@ class UserProfile(models.Model):
     view_in_list = models.BooleanField()
     weektemplate = models.ForeignKey(WeekTemplate, blank=True, null=True)
     slots = models.ManyToManyField(Slot, verbose_name=_(u'slots'), blank=True)
+    confirm = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return str(self.user.username)
@@ -96,11 +88,44 @@ class UserProfile(models.Model):
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
-
-class UserProfileForm(ModelForm):
-    username = forms.CharField(label=_(u"Nom d'utilisateur"), max_length=50)
+class BaseProfileForm(ModelForm):
     first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
     last_name = forms.CharField(label=_(u'Nom'), max_length=50)
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kw):
+        super(BaseProfileForm, self).__init__(*args, **kw)
+        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
+        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
+
+
+class ProfileForm(BaseProfileForm):
+
+    def __init__(self, *args, **kw):
+        super(ProfileForm, self).__init__(*args, **kw)
+        self.fields['first_name'].initial = kw['instance'].user.first_name
+        self.fields['last_name'].initial = kw['instance'].user.last_name
+        self.fields['email'].initial = kw['instance'].user.email
+
+    def save(self, *args, **kw):
+        up = super(ProfileForm, self).save(commit=False)
+        up.user.last_name = self.cleaned_data.get('last_name')
+        up.user.first_name = self.cleaned_data.get('first_name')
+        up.user.email = self.cleaned_data.get('email')
+        up.user.save()
+        up.save()
+        return up
+
+    class Meta:
+        model = UserProfile
+        exclude = ('user', 'slug', 'weektemplate', 'slots' , 'confirm', 'picture')
+        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
+            'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color',
+            'view_busy_slot', 'view_in_list' ]
+
+
+class UserProfileForm(BaseProfileForm):
+    username = forms.CharField(label=_(u"Nom d'utilisateur"), max_length=50)
     password = forms.CharField(widget=forms.PasswordInput)
     repeat_password = forms.CharField(widget=forms.PasswordInput)
     email = forms.EmailField()
@@ -108,49 +133,13 @@ class UserProfileForm(ModelForm):
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
 
-        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
-
-        self.fields.keyOrder = [
-            'username'
-            'first_name',
-            'last_name',
-            'email'
-            'password',
-            'repeat_password',
-            'picture',
-            'speciality',
-            'language',
-            'vat_number',
-            'telephone',
-            'address',
-            'start_time',
-            'end_time',
-            'free_price_free_slot_color',
-            'free_price_booked_slot_color',
-            'nhs_price_free_slot_color',
-            'nhs_price_booked_slot_color',
-            'view_busy_slot',
-            'view_in_list'
-            ]
-
-    # def clean(self):
-    #    print 'clean'
-    #    cleaned_data = super(UserProfileForm, self).clean()
-    #    password = cleaned_data.get("password")
-    #    repeat_password = cleaned_data.get("repeat_password")
-    #    if password is not repeat_password:
-    #            raise forms.ValidationError(
-    #                _("Les mots de passes ne sont pas identiques.")
-    #            )
-    #    else :
-    #        return cleaned_data
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
         new_user = User.objects.create_user(self.cleaned_data.get('username'), email=self.cleaned_data.get('email'), password=self.cleaned_data.get('password'))
         new_user.last_name = self.cleaned_data.get('last_name')
         new_user.first_name = self.cleaned_data.get('first_name')
+        new_user.email = self.cleaned_data.get('email')
         new_user.save()
         up.user = new_user
         up.save()
@@ -158,33 +147,8 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots')
-
-
-class ProfileForm(ModelForm):
-    first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
-    last_name = forms.CharField(label=_(u'Nom'), max_length=50)
-    email = forms.EmailField()
-
-    def __init__(self, *args, **kw):
-        super(ProfileForm, self).__init__(*args, **kw)
-        self.fields['first_name'].initial = kw['instance'].user.first_name
-        self.fields['last_name'].initial = kw['instance'].user.last_name
-        self.fields['email'].initial = kw['instance'].user.email
-        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
-
-    def save(self, *args, **kw):
-        up = super(ProfileForm, self).save(commit=False)
-        up.user.last_name = self.cleaned_data.get('last_name')
-        up.user.first_name = self.cleaned_data.get('first_name')
-        up.user.save()
-        up.save()
-        return up
-
-    class Meta:
-        model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots')
-        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
+        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
+        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number','language','start_time',
             'end_time', 'free_price_free_slot_color', 'free_price_booked_slot_color', 'nhs_price_free_slot_color', 'nhs_price_booked_slot_color',
             'view_busy_slot', 'view_in_list' ]
+

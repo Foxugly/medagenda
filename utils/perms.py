@@ -8,10 +8,15 @@
 # your option) any later version.
 
 from users.models import UserProfile
-
+import random
+import string
 
 def get_context(request):
     c = {}
     if request.user.is_authenticated():
         c['userprofile'] = UserProfile.objects.get(user=request.user)
     return c
+
+def string_random(size):
+	s = string.lowercase + string.uppercase + string.digits
+	return ''.join(random.sample(s,size))

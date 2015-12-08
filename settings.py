@@ -74,14 +74,15 @@ DATABASES = {
     }
 }
 
-
+WEBSITE_URL = 'http://127.0.0.1:8000/'
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 AUTH_PROFILE_MODULE = 'users.UserProfile'
-LOGIN_REDIRECT_URL = '/user/'
+
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/user/login/'
 
 FULLCALENDAR_REF_DATE = '2016-02-01'
@@ -103,18 +104,29 @@ DAY_CHOICES = (
     (7, _(u'Dimanche')),
 )
 
+MEDECINE_CHOICES = (
+    (1, _(u'Aucune')),
+    (2, _(u'Médecine Générale')),
+    (3, _(u'Médecine Interne')),
+)
+TITLE_CHOICES = (
+    (1, _(u'Professeur')),
+    (2, _(u'Docteur')),
+    (3, _(u'Madame')),
+    (4, _(u'Monsieur')),
+)
+
 DEFAULT_LANGUAGE = 1
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-UPLOAD_DIR = 'upload'
-STOCK_DIR = 'folders'
+#UPLOAD_DIR = 'upload'
+#STOCK_DIR = 'folders'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -122,26 +134,57 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 )
+
+#TEMPLATE_LOADERS = (
+#    'django.template.loaders.filesystem.Loader',
+#    'django.template.loaders.app_directories.Loader',
+#    # 'django.template.loaders.eggs.Loader',
+#)
 
 
 ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
+#TEMPLATE_DIRS = (
+#    os.path.join(BASE_DIR, 'templates'),
     # '%s/templates/' % BASE_DIR,
-)
+#)
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.request',
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.static',
-)
+#TEMPLATE_CONTEXT_PROCESSORS = (
+#    'django.core.context_processors.request',
+#    'django.contrib.auth.context_processors.auth',
+#    'django.core.context_processors.i18n',
+#    'django.core.context_processors.static',
+#)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.core.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
 
 LOGGING = {
     'version': 1,

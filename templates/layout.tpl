@@ -56,9 +56,11 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{userprofile.user.first_name}} {{userprofile.user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu" style='background:black;color:white;'>
                 <li><a class="glyphicon glyphicon-home" href="/">{% blocktrans %} Home{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-cog" href="/user/config/">{% blocktrans %} Configuration{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/{{userprofile.slug}}/calendar/">{% blocktrans %} Calendar{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/{{userprofile.slug}}/model/">{% blocktrans %} Modèle{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-cog" href="/user/update_user/">{% blocktrans %} Change Settings{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-picture" href="/user/change_avatar/">{% blocktrans %} Change Avatar{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-lock" href="/user/password_change/">{% blocktrans %} Change Password{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{userprofile.slug}}/calendar/">{% blocktrans %} Calendar{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/{{userprofile.slug}}/model/">{% blocktrans %} Modèle{% endblocktrans %} </a></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/">{% blocktrans %} Déconnexion{% endblocktrans %} </a></li>
               </ul>
             </li>
@@ -84,7 +86,7 @@
       <div class='row'>
         
           {% if not userprofile.user.is_authenticated %}
-          	  <div class="col-md-6 col-md-offset-3" style="margin-top:20px"><p><img style="display: block; margin-left: auto; margin-right: auto;" src="http://ltmhs.ca/files/calendar.jpg"/></p></div>
+          	  <div class="col-md-6 col-md-offset-3" style="margin-top:20px"><p><img style="display: block; margin-left: auto; margin-right: auto;" src="/media/img.jpg"/></p></div>
               <div class="col-md-6 col-md-offset-3" style="margin-top:20px">
                 {% blocktrans %}
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tempus vel leo eu ultrices. Nulla vitae sem mattis, blandit lacus scelerisque, pharetra velit. Sed pellentesque sagittis purus eget vehicula. Mauris vulputate felis non tempus dignissim. Nulla ac arcu quis diam laoreet hendrerit. Nam vel felis lectus. Pellentesque sodales nulla id purus facilisis, id egestas mi pulvinar.</p>

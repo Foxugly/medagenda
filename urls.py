@@ -22,11 +22,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from os.path import dirname, abspath, join
 from utils.perms import get_context
-from users.views import home
+from users.views import home, confirm_user
 
 admin.autodiscover()
 
 urlpatterns = [
+    url(r'^confirm/(?P<user_id>[\w-]+)/(?P<text>[\w-]+)/', confirm_user, name='confirm_user'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^user/', include('users.urls'), name='users'),
     url(r'^slot/', include('agenda.urls'), name='agenda'),
