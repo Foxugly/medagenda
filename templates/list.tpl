@@ -2,28 +2,26 @@
 {% load i18n %}
 {% load tools %}
 {% block content %}
-{% if user.is_authenticated %}
-  {% if user.is_superuser %}
 <div class="row">
-  <div class="col-md-3">
+  <div class="col-md-2">
+    {% if user.is_authenticated %}
+      {% if user.is_superuser %}
     <a href="/user/add_user/" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-plus"></span> {% blocktrans %}Create a doctor{% endblocktrans %}</a>
+      {% endif %}
+    {% endif %}
   </div>
   <div class="col-md-8">
     <div class="input-group">
-      <input type="text" class="form-control input-lg" placeholder="Chercher votre médecin"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></button></span>
+      <input type="text" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></button></span>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="btn-group" data-toggle="buttons">
+       <label class="btn btn-default btn-lg active"><input type="radio" id="view_list" name="view" value="list"/><span class="glyphicon glyphicon-th"></span></label>
+       <label class="btn btn-default btn-lg"><input type="radio" id="view_map" name="view" value="map"/><span class="glyphicon glyphicon-map-marker"></span></label>
     </div>
   </div>
 </div>
-  {% endif %}
-{% else %}
-<div class="row">
-  <div class="col-md-8 col-md-offset-2">
-    <div class="input-group">
-      <input type="text" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-    </div>
-  </div>
-</div>
-{% endif %}
 <p></p>
 {% for item in list %}
 {% if forloop.counter0|divisibleby:"4" %}

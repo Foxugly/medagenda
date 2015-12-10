@@ -20,12 +20,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous"/>
     {% block css %}
     {% endblock %}
-    <!--<script type="text/javascript" src="/static/js/jquery.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
-    <!--<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
-    <script type="text/javascript" src="/static/js/jquery.geocomplete.min.js"></script>
-    <script type="text/javascript" src="/static/address/js/address.js"></script>-->
     {% block js %}
     {% endblock %}
     <style>
@@ -50,10 +46,6 @@
           <a class="navbar-brand" href="/">MedAgenda</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-          <!--<form class="navbar-form navbar-left" role="search">-->
-            
-          </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><div class='navbar-form form-group'>
               <select class="form-control" >
@@ -61,18 +53,21 @@
                 <option>Nederlands</option>
                 <option>English</option>
               </select>
-            </div></li>
+            </div>
+            </li>
             <li><a href="#">{% trans "Help" %} </a></li>
             {% if user.is_authenticated %}
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
-              <ul class="dropdown-menu" style='background:black;color:white;'>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
                 <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
                 <li><a class="glyphicon glyphicon-cog" href="/user/update_user/"> {% trans "Change Settings" %}</a></li>
                 <li><a class="glyphicon glyphicon-picture" href="/user/change_avatar/"> {% trans "Change Avatar" %}</a></li>
                 <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
+                <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{user.userprofile.slug}}/calendar/"> {% trans "Calendar" %}</a></li>
                 <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/{{user.userprofile.slug}}/model/"> {% trans "Model" %}</a></li>
+                <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
               </ul>
             </li>

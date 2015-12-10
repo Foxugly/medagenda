@@ -48,6 +48,10 @@ $(document).ready(function() {
     $('.colorpicker').focusout(function(){
         $(this).css({'background-color' : $(this).val()});
     });
+
+    $('.colorpicker').each(function(){
+        $(this).css({'background-color': $(this).val()});
+    });
 });
 </script>
 {% endblock %}
