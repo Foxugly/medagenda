@@ -90,10 +90,16 @@ $(document).ready(function() {
                 traditional: true,
                 dataType: 'json',
                 success: function(result){
-                    console.log(result['return']);
                     if (result['return']){
                         $('#id_date').val(result['slot']['date']);
                         $('#id_start_time').val(result['slot']['start']);
+                        if (result['slot']['booked'] ){
+                          $('#id_last_name').val(result['slot']['last_name']);
+                          $('#id_first_name').val(result['slot']['first_name']);
+                          $('#id_email').val(result['slot']['email']);
+                          $('#id_telephone').val(result['slot']['telephone']);
+                          $('#id_informations').val(result['slot']['informations']);
+                        }
                         $('#bookingslot').show();
                     }
                     else{
@@ -113,12 +119,11 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                console.log(result);
                 if (result['return']){
-                    $('#id_patient').val(result['id']);
-                    $('#id_first_name').val(result['first_name']);
-                    $('#id_last_name').val(result['last_name']);
-                    $('#id_telephone').val(result['telephone']);
+                    $('#id_patient').val(result['patient']['id']);
+                    $('#id_first_name').val(result['patient']['first_name']);
+                    $('#id_last_name').val(result['patient']['last_name']);
+                    $('#id_telephone').val(result['patient']['telephone']);
                 }
                 else{
                     $('#id_patient').val(0);
@@ -139,7 +144,7 @@ $(document).ready(function() {
         $('#id_first_name').val("");
         $('#id_last_name').val("");
         $('#id_telephone').val("");
-        $('#id_information').val("");
+        $('#id_informations').val("");
     }
   
     $('#bookingslot_cancel').click(function(){
@@ -154,7 +159,8 @@ $(document).ready(function() {
 
     $('#bookingslot_submit').click(function(){
         var form = $('#form_bookingslot');
-        var url = '/slot/ajax/s/book/' + $('#id_slot').val() + '/';
+        var id = $('#id_slot').val();
+        var url = '/slot/ajax/s/book/' + id + '/';
         $.ajax({
             url: url,
             type: 'GET',
@@ -164,12 +170,20 @@ $(document).ready(function() {
             success: function(result){
                 $('#bookingslot').hide();
                 clean_modal();
-                $('#confirm').show();
+                if (result['return']){
+                    $('#calendar').fullCalendar( 'removeEvents', id );
+                    $("#calendar").fullCalendar('addEventSource', [result['slot']]); 
+                    $('#confirm').show();
+                }
+                else{
+                    $('#confirm2').show();
+                }
             }
         });  
     });
     $('#bookingslot_remove').click(function(){
-        var url = '/slot/ajax/s/remove/' + $('#id_slot').val() + '/';
+        var id = $('#id_slot').val();
+        var url = '/slot/ajax/s/remove/' + id + '/';
         $.ajax({
             url: url,
             type: 'GET',
@@ -177,6 +191,26 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
+                $('#calendar').fullCalendar( 'removeEvents', id );
+                $('#bookingslot').hide();
+                clean_modal();
+                $('#confirm').show();
+            }
+        });  
+    });
+
+    $('#bookingslot_clean').click(function(){
+        var id = $('#id_slot').val(); 
+        var url = '/slot/ajax/s/clean/' + id + '/';
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: '',
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                $('#calendar').fullCalendar( 'removeEvents', id );
+                $("#calendar").fullCalendar('addEventSource', [result['slot']]);
                 $('#bookingslot').hide();
                 clean_modal();
                 $('#confirm').show();
@@ -186,12 +220,10 @@ $(document).ready(function() {
 
     $('#confirm_close').click(function(){
         $('#confirm').hide();
-        location.reload();
     });
 
     $('#confirm_ok').click(function(){
         $('#confirm').hide();
-        location.reload();
     });
 
     $('#confirm2_close').click(function(){
@@ -214,7 +246,7 @@ $(document).ready(function() {
 <div id="calendar"></div>
 
 <!-- Modal -->
-<div id="bookingslot" class="modal" role="dialog">
+<div id="bookingslot" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -273,7 +305,10 @@ $(document).ready(function() {
       </div>
         <div class="modal-footer">
           {% if user.is_authenticated %}
-          <p class="pull-left"><button id="bookingslot_remove" type="submit" class="btn btn-danger" data-dismiss="modal">{% trans "Remove" %}</button></p>
+          <span class="pull-left">
+            <button id="bookingslot_remove" type="submit" class="btn btn-danger" data-dismiss="modal">{% trans "Remove" %}</button>
+            <button id="bookingslot_clean" type="submit" class="btn btn-danger" data-dismiss="modal">{% trans "Clean" %}</button>
+          </span>
           {% endif %}
           <button id="bookingslot_submit" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Submit" %}</button>
           <button id="bookingslot_cancel" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
@@ -284,7 +319,7 @@ $(document).ready(function() {
 
 
 <!-- Modal -->
-<div id="confirm" class="modal" role="dialog">
+<div id="confirm" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -302,7 +337,7 @@ $(document).ready(function() {
 </div>
 
 <!-- Modal -->
-<div id="confirm2" class="modal" role="dialog">
+<div id="confirm2" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

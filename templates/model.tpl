@@ -139,6 +139,7 @@ $(document).ready(function() {
     });
 
     $('#btn_addslots').on("click", function(){
+        $('#loading').show();
         var form = $('#form_addslots');
         var url = '/slot/ajax/st/add/';
         $.ajax({
@@ -148,15 +149,15 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                for (var i=0; i < result['slottemplates'].length; i++){
-                    $('#calendar').fullCalendar('renderEvent',result['slottemplates'][0]);
-                }
-                location.reload();
+                $('#calendar').fullCalendar('addEventSource', result['slottemplates']);
+                $('#loading').hide();
+                $('#confirm').show();
             }
         });
     });
 
     $('#btn_removeslots').on("click", function(){
+        $('#loading').show();
         var url = '/slot/ajax/st/clean/';
         $.ajax({
             url: url,
@@ -166,11 +167,14 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(result){
                 $('#calendar').fullCalendar('removeEvents');
+                $('#loading').hide();
+                $('#confirm').show();
             }
         });
     });
 
     $('#btn_applyslots').on("click", function(){
+        $('#loading').show();
         var form = $('#form_apply').serializeArray();
         form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']});
         var url = '/slot/ajax/st/apply/';
@@ -181,9 +185,20 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                console.log('retour');
+                $('#loading').hide();
+                if (result['return']){
+                  $('#confirm').show();
+                }
             }
         });
+    });
+
+    $('#confirm_close').click(function(){
+        $('#confirm').hide();
+    });
+
+    $('#confirm_ok').click(function(){
+        $('#confirm').hide();
     });
 });
 </script>
@@ -215,7 +230,7 @@ $(document).ready(function() {
 </div>
 
 <!-- Modal -->
-<div id="addslots" class="modal fade" role="dialog">
+<div id="addslots" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -304,7 +319,7 @@ $(document).ready(function() {
   </div>
 </div>
 <!-- Modal -->
-<div id="removeslots" class="modal fade" role="dialog">
+<div id="removeslots" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -322,7 +337,7 @@ $(document).ready(function() {
   </div>
 </div>
 
-<div id="removeslot" class="modal" role="dialog">
+<div id="removeslot" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -345,7 +360,7 @@ $(document).ready(function() {
 
 
 <!-- Modal -->
-<div id="applyslots" class="modal fade" role="dialog">
+<div id="applyslots" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -377,4 +392,34 @@ $(document).ready(function() {
     </div>
   </div>
 </div>
+
+ <!-- Modal -->
+<div class="modal" id="loading" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p class="text-center"><img src="/static/loading.gif"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="confirm" class="modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" id="confirm_close" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{% trans "Confirmation" %}</h4>
+      </div>
+      <div class="modal-body">
+        <p class='text-center'>{%trans "Change applied" %}<p>
+      </div>
+        <div class="modal-footer">
+          <button id="confirm_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
+        </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

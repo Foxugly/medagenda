@@ -121,6 +121,12 @@ class Slot(models.Model):
     patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
     refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations+'), blank=True, null=True)
+    booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
+
+    def clean_slot(self):
+        self.patient = None
+        self.booked = False
+        self.save()
 
     def date_t(self):
         return self.date.strftime('%d/%m/%Y')
@@ -154,6 +160,28 @@ class Slot(models.Model):
 
     def as_json2(self):
         return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
+
+    def detail(self):
+        color = 'black'
+        if self.patient:
+            if self.refer_doctor.view_busy_slot:
+                if self.st.national_health_service_price:
+                    color = str(self.refer_doctor.nhs_price_booked_slot_color)
+                else:
+                    color = str(self.refer_doctor.free_price_booked_slot_color)
+                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')), color=color, booked= self.booked, informations=self.informations)
+                d_patient = self.patient.as_json()
+                del d_patient['id']
+                d.update(d_patient)
+                return d
+            else:
+                return None
+        else:
+            if self.st.national_health_service_price:
+                color = str(self.refer_doctor.nhs_price_free_slot_color)
+            else:
+                color = str(self.refer_doctor.free_price_free_slot_color)
+            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')), color=color)
 
     def __str__(self):
         return u"Slot %d" % self.id

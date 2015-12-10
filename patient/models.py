@@ -22,8 +22,8 @@ class Patient(models.Model):
     def __str__(self):
     	return str(self.email)
 
-    def ad_json():
-    	return dict(id=self.id, email=self.email, first_name=first_name, last_name=last_name)
+    def as_json(self):
+    	return dict(id=self.id, email=self.email, first_name=self.first_name, last_name=self.last_name, telephone=self.telephone)
 
 class PatientForm(ModelForm):
     class Meta:

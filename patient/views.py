@@ -10,8 +10,8 @@ def search_patient(request):
         print email
         if len(email)>5:
             p = Patient.objects.filter(email=email)
-            if p:
-                return HttpResponse(json.dumps({'return':True, 'patient':p}))
+            if len(p):
+                return HttpResponse(json.dumps({'return':True, 'patient':p[0].as_json()}))
             else:
                 return HttpResponse(json.dumps({'return':False}))
         else:

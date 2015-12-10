@@ -111,12 +111,12 @@ def get_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=int(slot_id))
         if request.user.is_authenticated():
-            results['slot'] = s.as_json2()
+            results['slot'] = s.detail()
             results['return'] = True
         else:
             if not s.patient :
                 results['return'] = True
-                results['slot'] = s.as_json2()
+                results['slot'] = s.detail()
             else:
                 results['return'] = False
     else:
@@ -130,16 +130,33 @@ def book_slot(request, slot_id):
         if request.GET["patient"] is None or int(request.GET["patient"]) == 0:
             #new Patient
             s.informations = request.GET["informations"]
-            p = Patient(email=str(request.GET["email"]), first_name=str(request.GET["first_name"]), last_name=str(request.GET["last_name"]), telephone=str(request.GET["telephone"]))
+            p = Patient(email=unicode(request.GET["email"]), first_name=unicode(request.GET["first_name"]), last_name=unicode(request.GET["last_name"]), telephone=unicode(request.GET["telephone"]))
             p.save()
             s.patient = p
+            s.informations = unicode(request.GET["informations"])
         else :
-            s.patient = Patient.objects.get(id=int(request.GET["patient"]))
+            p = Patient.objects.get(id=int(request.GET["patient"]))
+            s.patient = p
+        s.booked = True
         s.save()
-        return HttpResponse(json.dumps({'return':True}))
+        print s.id
+        d = {}
+        d['return'] = True
+        d['slot'] = s.as_json()
+        return HttpResponse(json.dumps(d))
 
 @login_required
 def remove_slot(request, slot_id):
     if request.is_ajax():
         Slot.objects.get(id=slot_id).delete()
         return HttpResponse(json.dumps({'return':True}))
+
+@login_required
+def clean_slot(request, slot_id):
+    if request.is_ajax():
+        s = Slot.objects.get(id=slot_id)
+        s.clean_slot()
+        d = {}
+        d['return'] = True
+        d['slot'] = s.as_json()
+        return HttpResponse(json.dumps(d))
