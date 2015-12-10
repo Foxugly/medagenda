@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load tools %}
 {% block content %}
-{% if userprofile.user.is_authenticated %}
-  {% if userprofile.user.is_superuser %}
+{% if user.is_authenticated %}
+  {% if user.is_superuser %}
 <div class="row">
   <div class="col-md-3">
     <a href="/user/add_user/" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-plus"></span> {% blocktrans %}Create a doctor{% endblocktrans %}</a>
