@@ -12,6 +12,9 @@
 <script type="text/javascript" src="/static/clockfield/bootstrap-clockpicker.min.js"></script>
 <script src='/static/bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js'></script>
 <script src='/static/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js'></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
+<script type="text/javascript" src="/static/js/jquery.geocomplete.min.js"></script>
+<script type="text/javascript" src="/static/address/js/address.js"></script>
 <script>
 $(document).ready(function() {
     $(".clockpicker").parent().clockpicker({
@@ -19,8 +22,8 @@ $(document).ready(function() {
     });
 
     $('.datepicker').datepicker({
-        autoclose: true,
-        orientation: "bottom right"
+        autoclose: true
+        //orientation: "bottom left"
     });
 
     $('.colorpicker').colorpicker({
