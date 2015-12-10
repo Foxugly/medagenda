@@ -3,10 +3,50 @@
 {% load i18n %}
 {%block css %}
 <link href='/static/clockfield/bootstrap-clockpicker.min.css' rel='stylesheet' />
+<link href='/static/bootstrap-datepicker-master/dist/css/datepicker3.css' rel='stylesheet' />
+<link href='/static/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css' rel='stylesheet' />
+<link href='/static/css/perso.css' rel='stylesheet' />
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript" src="/static/clockfield/bootstrap-clockpicker.min.js"></script>
+<script src='/static/bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js'></script>
+<script src='/static/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js'></script>
+<script>
+$(document).ready(function() {
+    $(".clockpicker").parent().clockpicker({
+        autoclose: true
+    });
+
+    $('.datepicker').datepicker({
+        autoclose: true,
+        orientation: "bottom right"
+    });
+
+    $('.colorpicker').colorpicker({
+        format: 'hex',
+        customClass: 'colorpicker-2x',
+        sliders: {
+            saturation: {
+                maxLeft: 200,
+                maxTop: 200
+            },
+            hue: {
+                maxTop: 200
+            },
+            alpha: {
+                maxTop: 200
+            }
+        }
+    }).on('changeColor', function(ev) {
+        $(this).css({'background-color' : $(this).val()});
+    });
+
+    $('.colorpicker').focusout(function(){
+        $(this).css({'background-color' : $(this).val()});
+    });
+});
+</script>
 {% endblock %}
 
 {% block content %}
@@ -27,13 +67,6 @@
     </div>  
   </fieldset>
 </form>
-<script type="text/javascript">
-  $(".colorfield_field").addClass('form-control');
-
-  $(".clockpicker").parent().clockpicker({
-    autoclose: true
-  });
-</script>
 {% endblock %}
 
 

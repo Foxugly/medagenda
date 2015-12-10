@@ -67,13 +67,14 @@ def st_apply(request):
             format_date = format_date.replace('mm', '%m')
             format_date = format_date.replace('dd', '%d')
             start_date = datetime.strptime(request.GET['start_date'], format_date)
+
             end_date = datetime.strptime(request.GET['end_date'], format_date)
             ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, settings.FULLCALENDAR_REF_DATEFORMAT)
             for i in range(0, 7):  # datetime.weekday() #0 = Monday - 6= Sunday
                 ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
-                    sts = request.user.userprofile.weektemplate.get_slottemplates_of_day(1+(int(start_date.weekday()) + i) % 7)
+                    sts = request.user.userprofile.get_daytemplate(1+(int(start_date.weekday()) + i) % 7).get_slottemplates()
                     if sts:
                         for st in sts:
                             current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
@@ -96,7 +97,6 @@ def st_apply(request):
 def st_remove(request, st_id):
     results = {}
     if request.is_ajax():
-        print st_id
         st = SlotTemplate.objects.get(id=int(st_id))
         for dt in request.user.userprofile.weektemplate.days.all():
             dt.remove_slottemplate(st)

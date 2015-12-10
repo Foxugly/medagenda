@@ -30,6 +30,3 @@ urlpatterns = (
     url(r'^profil/(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_slot'),
 
 )
-
-handler404 = 'views.custom_404'
-handler404 = 'views.custom_500'

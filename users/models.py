@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from colorfield.fields import ColorField
+#from colorfield.fields import ColorField
 from address.models import AddressField
 from django.forms import ModelForm
 from django.utils.text import slugify
@@ -39,16 +39,16 @@ class UserProfile(models.Model):
     picture = models.ImageField(upload_to='pic', blank=True, null=True)
     speciality = models.IntegerField(verbose_name=_(u'Speciality'), choices=MEDECINE_CHOICES)
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
-    language = models.CharField(verbose_name=_(u'language'), max_length=2, choices=settings.LANGUAGES)
+    language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES)
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
     telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True)
     address = AddressField()
     start_time = models.TimeField(verbose_name=_(u'Start time'), blank=False, default="09:00")
     end_time = models.TimeField(verbose_name=_(u'End time'), blank=False, default="18:00")
-    free_price_free_slot_color = ColorField(default='#73B5EB')
-    free_price_booked_slot_color = ColorField(default='#F64636')
-    nhs_price_free_slot_color = ColorField(default='#73EB79')  # nhs = national health service price
-    nhs_price_booked_slot_color = ColorField(default='#F64636')
+    free_price_free_slot_color = models.CharField(verbose_name=_(u'Color free pricing free'), default='#73B5EB', max_length=8)
+    free_price_booked_slot_color = models.CharField(verbose_name=_(u'Color free pricing booked'), default='#F64636', max_length=8)
+    nhs_price_free_slot_color = models.CharField(verbose_name=_(u'Color nhs pricing free'), default='#73EB79', max_length=8)  # nhs = national health service price
+    nhs_price_booked_slot_color = models.CharField(verbose_name=_(u'Color nhs pricing booked'), default='#F64636', max_length=8)
     view_busy_slot = models.BooleanField(verbose_name=_(u'Can see busy slots'))
     view_in_list = models.BooleanField(verbose_name=_(u'Can see in doctors list'))
     weektemplate = models.ForeignKey(WeekTemplate, verbose_name=_(u'Week template'), blank=True, null=True)
@@ -77,25 +77,15 @@ class UserProfile(models.Model):
         self.get_weektemplate().remove_all_slottemplates()
 
     def get_weektemplate(self):
-        if self.weektemplate:
-            return self.weektemplate
-        else:
+        if not self.weektemplate:
             wk = WeekTemplate()
             wk.save()
             self.weektemplate = wk
-            return wk
+            self.save()
+        return self.weektemplate
 
     def get_daytemplate(self, i):
-        d = None
-        if len(self.get_weektemplate().days.all()) > 0:
-            for day in self.get_weektemplate().days.all():
-                if day.day == i:
-                    d = day
-            if not d:
-                d = DayTemplate(day=i)
-                d.save()
-                self.get_weektemplate().add_daytemplate(d)
-        return d
+        return self.get_weektemplate().get_daytemplate(i)
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
@@ -109,6 +99,10 @@ class BaseProfileForm(ModelForm):
         super(BaseProfileForm, self).__init__(*args, **kw)
         self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
         self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
+        self.fields['free_price_free_slot_color'].widget.attrs['class'] = 'colorpicker'
+        self.fields['free_price_booked_slot_color'].widget.attrs['class'] = 'colorpicker'
+        self.fields['nhs_price_free_slot_color'].widget.attrs['class'] = 'colorpicker'
+        self.fields['nhs_price_booked_slot_color'].widget.attrs['class'] = 'colorpicker'
 
 
 class ProfileForm(BaseProfileForm):

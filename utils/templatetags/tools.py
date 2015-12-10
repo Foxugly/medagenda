@@ -8,9 +8,14 @@
 # your option) any later version.
 
 from django import template
+from datetime import datetime
 
 register = template.Library()
 
 @register.filter()
 def index(d,value):
     return dict(d)[value]
+
+@register.filter()
+def time_format(time):
+	return u"%d:%d" %(time.hour, time.minute)

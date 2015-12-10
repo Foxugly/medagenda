@@ -16,15 +16,16 @@
     <title>MedAgenda</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <!--  CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous"/>
     {% block css %}
     {% endblock %}
-    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="/static/js/jquery.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
+    <!--<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
     <script type="text/javascript" src="/static/js/jquery.geocomplete.min.js"></script>
-    <script type="text/javascript" src="/static/address/js/address.js"></script>
-    <script type="text/javascript" src="/static/colorfield/jscolor/jscolor.js"></script>
+    <script type="text/javascript" src="/static/address/js/address.js"></script>-->
     {% block js %}
     {% endblock %}
     <style>
@@ -49,23 +50,34 @@
           <a class="navbar-brand" href="/">MedAgenda</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+          <!--<form class="navbar-form navbar-left" role="search">-->
+            
+          </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">{% blocktrans %} Help{% endblocktrans %} </a></li>
+            <li><div class='navbar-form form-group'>
+              <select class="form-control" >
+                <option>Français</option>
+                <option>Nederlands</option>
+                <option>English</option>
+              </select>
+            </div></li>
+            <li><a href="#">{% trans "Help" %} </a></li>
             {% if user.is_authenticated %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu" style='background:black;color:white;'>
-                <li><a class="glyphicon glyphicon-home" href="/">{% blocktrans %} Home{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-cog" href="/user/update_user/">{% blocktrans %} Change Settings{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-picture" href="/user/change_avatar/">{% blocktrans %} Change Avatar{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-lock" href="/user/password_change/">{% blocktrans %} Change Password{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{user.userprofile.slug}}/calendar/">{% blocktrans %} Calendar{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/{{user.userprofile.slug}}/model/">{% blocktrans %} Model{% endblocktrans %} </a></li>
-                <li><a class="glyphicon glyphicon-off" href="/user/logout/">{% blocktrans %} Déconnexion{% endblocktrans %} </a></li>
+                <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
+                <li><a class="glyphicon glyphicon-cog" href="/user/update_user/"> {% trans "Change Settings" %}</a></li>
+                <li><a class="glyphicon glyphicon-picture" href="/user/change_avatar/"> {% trans "Change Avatar" %}</a></li>
+                <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{user.userprofile.slug}}/calendar/"> {% trans "Calendar" %}</a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/{{user.userprofile.slug}}/model/"> {% trans "Model" %}</a></li>
+                <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
               </ul>
             </li>
             {% else %}
-            <li><a href="/user/login/">{% blocktrans %} Connexion{% endblocktrans %} </a></li>
+            <li><a href="/user/login/">{% trans "Connexion" %}</a></li>
             {% endif %}
           </ul>
         </div>
@@ -87,21 +99,17 @@
         {% if not user.is_authenticated %}
           	  <div class="col-md-6 col-md-offset-3" style="margin-top:20px"><p><img style="display: block; margin-left: auto; margin-right: auto;" src="/media/img.jpg"/></p></div>
               <div class="col-md-6 col-md-offset-3" style="margin-top:20px">
-                {% blocktrans %}
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tempus vel leo eu ultrices. Nulla vitae sem mattis, blandit lacus scelerisque, pharetra velit. Sed pellentesque sagittis purus eget vehicula. Mauris vulputate felis non tempus dignissim. Nulla ac arcu quis diam laoreet hendrerit. Nam vel felis lectus. Pellentesque sodales nulla id purus facilisis, id egestas mi pulvinar.</p>
-                {% endblocktrans %}   
+                <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tempus vel leo eu ultrices. Nulla vitae sem mattis, blandit lacus scelerisque, pharetra velit. Sed pellentesque sagittis purus eget vehicula. Mauris vulputate felis non tempus dignissim. Nulla ac arcu quis diam laoreet hendrerit. Nam vel felis lectus. Pellentesque sodales nulla id purus facilisis, id egestas mi pulvinar." %}</p>
+                 
           	  </div>
               <div class="col-md-4 col-md-offset-4" style="margin-top:20px">
-                <a href="/user/login" class="btn btn-success btn-lg btn-block">{% blocktrans %}Connexion{% endblocktrans %} </a>
+                <a href="/user/login" class="btn btn-success btn-lg btn-block">{% trans "Connexion" %}</a>
               </div>
   	        </div>
           {% endif %}
         
       </div>
       {% endblock %}
-      <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-      <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
-
     </div>
   </body>
 </html>

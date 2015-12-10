@@ -88,7 +88,7 @@ def model_calendar(request, slug):
         return HttpResponseRedirect('/')
     else:
         c['doctor'] = userp
-        c['templateslots'] = userp.get_all_slottemplates()
+        c['slottemplates'] = userp.get_all_slottemplates()
         c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
         return render(request, 'model.tpl', c)
 
@@ -118,7 +118,7 @@ def update_user(request):
                 up.user.is_active = False
                 up.user.save()
                 up.save()
-            #    # SENT MAIL
+                print "SENT MAIL"
                 print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(up.confirm) + '/'
                 c['mail'] = True
             return render(request, 'valid.tpl', c)

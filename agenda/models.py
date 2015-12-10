@@ -90,10 +90,26 @@ class WeekTemplate(models.Model):
             if dt.day == d:
                 self.days.remove(dt)
 
-    def get_slottemplates_of_day(self, d):
-        for dt in self.days.all():
-            if dt.day == d:
-                return dt.get_slottemplates()
+    def get_daytemplate(self, i):
+        daytmp = None
+        if len(self.days.all()) > 0:
+            for dt in self.days.all():
+                if dt.day == i:
+                    daytmp = dt
+            if not daytmp:
+                daytmp = DayTemplate(day=i)
+                daytmp.save()
+                self.add_daytemplate(daytmp)
+        else:
+            daytmp = DayTemplate(day=i)
+            daytmp.save()
+            self.add_daytemplate(daytmp)
+        return daytmp
+
+    #def get_slottemplates_of_day(self, d):
+    #    for dt in self.days.all():
+    #        if dt.day == d:
+    #            return dt.get_slottemplates()
 
     def __str__(self):
         return u"WeekTemplate %d" % self.id
