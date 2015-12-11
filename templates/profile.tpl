@@ -25,7 +25,7 @@
     <div class="panel panel-primary">
       <div class="panel-heading"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Prendre un rendez-vous</div>
       <div class="panel-body">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eget suscipit leo, sit amet aliquam lectus. Suspendisse id malesuada massa, et scelerisque nisl. Mauris malesuada non sapien eu laoreet. Donec hendrerit sem in dolor dictum mollis. Aenean dignissim arcu nec pharetra interdum.</p>
+        <p>{{doctor.text_rdv}}</p>
         <p><a class="btn btn-success" href="/user/profil/{{doctor.slug}}/calendar/" role="button">Réserver</a></p>
       </div>
     </div>
@@ -35,7 +35,7 @@
       <div class="panel-heading"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Informations</div>
       <div class="panel-body">
         <p><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <b> Horaires :</b></p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eget suscipit leo, sit amet aliquam lectus. Suspendisse id malesuada massa, et scelerisque nisl. Mauris malesuada non sapien eu laoreet. Donec hendrerit sem in dolor dictum mollis. Aenean dignissim arcu nec pharetra interdum.</p>
+        <p>{{doctor.text_horaires}}</p>
         <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <b> Adresse :</b></p>
         <p><a href="http://maps.google.com/?q={{doctor.address.formatted}}">{{doctor.address.formatted}}</a></p>
       </div>

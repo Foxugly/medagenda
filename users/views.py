@@ -10,7 +10,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, UserProfileForm, ProfileForm
+from users.models import UserProfile, UserProfileForm, ProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot
 from utils.perms import string_random
 from django.contrib.auth.decorators import user_passes_test, login_required
 import json
@@ -109,27 +109,38 @@ def find_slot(request, slug, input):
 @login_required
 def update_user(request):
     c = {}
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user.userprofile)
-        if form.is_valid():
-            up = form.save()
-            if 'email' in form.changed_data:
-                up.confirm = string_random(32)
-                up.user.is_active = False
-                up.user.save()
-                up.save()
-                print "SENT MAIL"
-                print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(up.confirm) + '/'
-                c['mail'] = True
-            return render(request, 'valid.tpl', c)
-        else:
-            messages.error(request, "Error")
-    else:
-        c['form'] = ProfileForm(instance=request.user.userprofile)
-        c['url'] = "/user/update_user/"
-        c['title'] = _("Update user")
-    return render(request, 'form.tpl', c)
-
+    #if request.method == 'POST':
+    #    form = ProfileForm(request.POST, instance=request.user.userprofile)
+    #    if form.is_valid():
+    #        up = form.save()
+    #        if 'email' in form.changed_data:
+    #            up.confirm = string_random(32)
+    #            up.user.is_active = False
+    #            up.user.save()
+    #            up.save()
+    #            print "SENT MAIL"
+    #            print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(up.confirm) + '/'
+    #            c['mail'] = True
+    #        return render(request, 'valid.tpl', c)
+    #    else:
+    #        messages.error(request, "Error")
+    #else:
+    #    c['form'] = ProfileForm(instance=request.user.userprofile)
+    #    c['url'] = "/user/update_user/"
+    #    c['title'] = _("Update user")
+    #return render(request, 'form.tpl', c)
+    c['userprofile_id'] = request.user.userprofile.id
+    c['personal_data_form'] = PersonalDataForm(instance=request.user.userprofile)
+    c['settings_form'] = SettingsForm(instance=request.user.userprofile)
+    c['text_form'] = TextForm(instance=request.user.userprofile)
+    c['color_forms'] = []
+    for st in settings.SLOT_TYPE:
+        d = {}
+        d['id'] = request.user.userprofile.get_colorslot(st[0]).id
+        d['name'] = st[1]
+        d['form'] = ColorForm(instance=request.user.userprofile.get_colorslot(st[0]))
+        c['color_forms'].append(d)
+    return render(request, 'config.tpl',c)
 
 def create_user(request):
     c = {}
@@ -162,3 +173,70 @@ def confirm_user(request, user_id, text):
         up.user.save()
         up.save()
         return render(request, 'valid.tpl')
+
+
+@login_required
+def personal_data(request):
+    results = {}
+    if request.is_ajax():
+        form = PersonalDataForm(request.GET, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            results['return'] = True
+        else :
+            results['errors'] = form.errors
+            results['return'] = False
+    else :
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def text(request):
+    results = {}
+    if request.is_ajax():
+        #request.user.userprofile
+        form = TextForm(request.GET, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            results['return'] = True
+        else :
+            results['errors'] = form.errors
+            results['return'] = False
+    else :
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def config(request):
+    results = {}
+    if request.is_ajax():
+        #request.user.userprofile
+        form = SettingsForm(request.GET, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            results['return'] = True
+        else :
+            results['errors'] = form.errors
+            results['return'] = False
+    else :
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+@login_required
+def color(request, color_id):
+    results = {}
+    if request.is_ajax():
+        #request.user.userprofile
+        inst = ColorSlot.objects.get(id=color_id)
+        form = ColorForm(request.GET, instance=inst)
+        if form.is_valid():
+            form.save()
+            results['return'] = True
+        else :
+            results['errors'] = form.errors
+            results['return'] = False
+    else :
+        results['return'] = False
+    return HttpResponse(json.dumps(results))

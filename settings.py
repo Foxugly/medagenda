@@ -115,6 +115,15 @@ TITLE_CHOICES = (
     (4, _(u'Monsieur')),
 )
 
+SLOT_TYPE = (
+    (1, _(u'National Health Pricing Slot')),
+    (2, _(u'Free Pricing Slot')),
+    (3, _(u'Home visit Slot')),
+    (4, _(u'Nursing home Slot')),
+)
+
+SLOT_COLOR = ['#73B5EB', '#94F7CE', '#D798E2', '#FFE68F',]
+
 DEFAULT_LANGUAGE = 1
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

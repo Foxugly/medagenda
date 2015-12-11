@@ -120,7 +120,7 @@ class Slot(models.Model):
     st = models.ForeignKey(SlotTemplate, verbose_name=_(u'Slot template'), blank=True, null=True)
     patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
     refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
-    informations = models.TextField(verbose_name=_(u'Usefull informations+'), blank=True, null=True)
+    informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
 
     def clean_slot(self):

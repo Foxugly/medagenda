@@ -10,7 +10,7 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, find_slot, model_calendar, update_user, create_user
+from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, find_slot, model_calendar, update_user, create_user, personal_data, config, text, color
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}),
@@ -28,5 +28,9 @@ urlpatterns = (
     url(r'^profil/(?P<slug>[\w-]+)/calendar/$', calendar_user, name='calendar_user'),
     url(r'^profil/(?P<slug>[\w-]+)/model/$', login_required(model_calendar), name='model_calendar'),
     url(r'^profil/(?P<slug>[\w-]+)/reminder/$', reminder_slot, name='reminder_slot'),
+    url(r'^ajax/personal_data/$', personal_data, name="personal_data"),
+    url(r'^ajax/config/$', config, name="config"),
+    url(r'^ajax/text/$', text, name="text"),
+    url(r'^ajax/color/(?P<color_id>[\w-]+)/$', color, name="color"),
 
 )

@@ -413,7 +413,7 @@ $(document).ready(function() {
         <h4 class="modal-title">{% trans "Confirmation" %}</h4>
       </div>
       <div class="modal-body">
-        <p class='text-center'>{%trans "Change applied" %}<p>
+        <p class='text-center'>{%trans "Changes applied" %}<p>
       </div>
         <div class="modal-footer">
           <button id="confirm_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
