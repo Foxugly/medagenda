@@ -149,9 +149,10 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
+                $('#calendar').fullCalendar('removeEvents');
                 $('#calendar').fullCalendar('addEventSource', result['slottemplates']);
                 $('#loading').hide();
-                $('#confirm').show();
+                $('#confirm_yes').show();
             }
         });
     });
@@ -168,7 +169,7 @@ $(document).ready(function() {
             success: function(result){
                 $('#calendar').fullCalendar('removeEvents');
                 $('#loading').hide();
-                $('#confirm').show();
+                $('#confirm_yes').show();
             }
         });
     });
@@ -187,19 +188,19 @@ $(document).ready(function() {
             success: function(result){
                 $('#loading').hide();
                 if (result['return']){
-                  $('#confirm').show();
+                  $('#confirm_yes').show();
                 }
             }
         });
     });
-
+/*
     $('#confirm_close').click(function(){
         $('#confirm').hide();
     });
 
     $('#confirm_ok').click(function(){
         $('#confirm').hide();
-    });
+    });*/
 });
 </script>
 {% endblock %}
@@ -207,7 +208,7 @@ $(document).ready(function() {
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <p class="text-center"><h2 class="text-center">{% trans "Calendar Model" %}- {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2></p>
+    <h2 class="text-center">{% trans "Calendar Model" %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2>
   </div>
 </div>
 <div class="row form-group">
@@ -220,13 +221,12 @@ $(document).ready(function() {
   </div>
 </div>
 <div id="calendar"></div>
-<div class="row" style="margin-top:20px;">
-  <div class="col-md-4 col-md-offset-2 text-center">
-    <div class="circle" style="background:{{doctor.nhs_price_free_slot_color}}"><span class="info">{% trans "National Health Service Pricing" %}</span></div>
-  </div>
-  <div class="col-md-4 text-center">
-    <div class="circle" style="background:{{doctor.free_price_free_slot_color}}"><span class="info">{% trans "Free Pricing" %}</span></div>
-  </div>
+<div class="row text-center" style="margin-top:20px;">
+  <ul class="legend">
+  {% for c in user.userprofile.colorslots.all %}
+    <li><span style="background-color: {{c.free_slot_color}};"></span> <span style="background-color: {{c.booked_slot_color}};"></span> {{ c.SLOT_TYPE|index:c.slot}}</li>
+  {% endfor %}
+  </ul>
 </div>
 
 <!-- Modal -->
@@ -241,13 +241,13 @@ $(document).ready(function() {
         <form name="form_addslots" id="form_addslots">
           <div class="row form-group"><label class="col-md-2 col-md-offset-1 control-label" for="check_monday">{% trans "Days" %}:</label>
             <div class="col-md-8 btn-group" data-toggle="buttons">
-              <label class="btn btn-default"><input id="check_monday" name="check_monday" type="checkbox" autocomplete="off"> {% trans "Monday" %}</label>
-              <label class="btn btn-default"><input id="check_tuesday" name="check_tuesday" type="checkbox" autocomplete="off"> {% trans "Tuesday" %}</label>
-              <label class="btn btn-default"><input id="check_wednesday" name="check_wednesday" type="checkbox" autocomplete="off"> {% trans "Wednesday" %}</label>
-              <label class="btn btn-default"><input id="check_thursday" name="check_thursday" type="checkbox" autocomplete="off"> {% trans "Thursday" %}</label>
-              <label class="btn btn-default"><input id="check_friday" name="check_friday" type="checkbox" autocomplete="off"> {% trans "Friday" %}</label>
-              <label class="btn btn-default"><input id="check_saturday" name="check_saturday" type="checkbox" autocomplete="off"> {% trans "Saturday" %}</label>
-              <label class="btn btn-default"><input id="check_sunday" name="check_sunday" type="checkbox" autocomplete="off"> {% trans "Sunday" %}</label>
+              <label class="btn btn-default"><input id="check_monday" name="check_monday" type="checkbox" > {% trans "Monday" %}</label>
+              <label class="btn btn-default"><input id="check_tuesday" name="check_tuesday" type="checkbox" > {% trans "Tuesday" %}</label>
+              <label class="btn btn-default"><input id="check_wednesday" name="check_wednesday" type="checkbox" > {% trans "Wednesday" %}</label>
+              <label class="btn btn-default"><input id="check_thursday" name="check_thursday" type="checkbox" > {% trans "Thursday" %}</label>
+              <label class="btn btn-default"><input id="check_friday" name="check_friday" type="checkbox" > {% trans "Friday" %}</label>
+              <label class="btn btn-default"><input id="check_saturday" name="check_saturday" type="checkbox" > {% trans "Saturday" %}</label>
+              <label class="btn btn-default"><input id="check_sunday" name="check_sunday" type="checkbox" > {% trans "Sunday" %}</label>
             </div>
           </div>
           <div class="row form-group">
@@ -301,20 +301,30 @@ $(document).ready(function() {
             </div>
           </div>
           <div class="row form-group">
-            <label class="col-md-2 col-md-offset-1 control-label" for="pricing">{% trans "Pricing" %}:</label>
+            <label class="col-md-2 col-md-offset-1 control-label" for="slot_type">{% trans "Type" %}:</label>
             <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
-              <select id="pricing" name="pricing" class="form-control">
-                <option value="1">{% trans "Free pricing" %}</option>
-                <option value="2">{% trans "National health service pricing" %}</option>
+              <select id="slot_type" name="slot_type" class="form-control">
+              {% for st in slot_type %}
+                <option value="{{st.0}}">{{st.1}}</option>
+              {% endfor %}
               </select>
             </div>
           </div>
-          </form>
+          <div class="row form-group">
+            <label class="col-md-2 col-md-offset-1 control-label">{% trans "Availability" %}:</label>
+            <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-default active"><input name="booked" value="0" checked="checked" type="radio">{% trans "Free" %}</label>
+                <label class="btn btn-default"><input name="booked" value="1" type="radio">{% trans "Booked" %}</label>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
-        <div class="modal-footer">
-          <button id="btn_addslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% trans "Submit" %}</button>
-          <button type="button" class="btn btn-default" data-submit="false" data-dismiss="modal">{% trans "Close" %}</button>
-        </div>
+      <div class="modal-footer">
+        <button id="btn_addslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% trans "Submit" %}</button>
+        <button type="button" class="btn btn-default" data-submit="false" data-dismiss="modal">{% trans "Close" %}</button>
+      </div>
     </div>
   </div>
 </div>
@@ -388,35 +398,6 @@ $(document).ready(function() {
         <div class="modal-footer">
           <button id="btn_applyslots" type="submit" class="btn btn-primary" data-submit="true" data-dismiss="modal">{% trans "Submit" %}</button>
           <button type="button" class="btn btn-default" data-submit="false" data-dismiss="modal">{% trans "Close" %}</button>
-        </div>
-    </div>
-  </div>
-</div>
-
- <!-- Modal -->
-<div class="modal" id="loading" data-keyboard="false" data-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        <p class="text-center"><img src="/static/loading.gif"></p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div id="confirm" class="modal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" id="confirm_close" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% trans "Confirmation" %}</h4>
-      </div>
-      <div class="modal-body">
-        <p class='text-center'>{%trans "Changes applied" %}<p>
-      </div>
-        <div class="modal-footer">
-          <button id="confirm_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
         </div>
     </div>
   </div>

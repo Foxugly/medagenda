@@ -181,18 +181,6 @@ $(document).ready(function() {
             }
         });
     });
-    $('#confirm_yes_close').click(function(){
-        $('#confirm_yes').hide();
-    });
-    $('#confirm_yes_ok').click(function(){
-        $('#confirm_yes').hide();
-    });
-    $('#confirm_no_close').click(function(){
-        $('#confirm_no').hide();
-    });
-    $('#confirm_no_ok').click(function(){
-        $('#confirm_no').hide();
-    });
 });
 </script>
 {% endblock %}
@@ -318,44 +306,6 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
-
-<!-- Modal -->
-<div id="confirm_yes" class="modal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" id="confirm_yes_close" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% trans "Confirmation" %}</h4>
-      </div>
-      <div class="modal-body">
-        <div class="alert alert-success text-center" role="alert">{%trans "Changes applied" %}</div>
-      </div>
-        <div class="modal-footer">
-          <button id="confirm_yes_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
-        </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div id="confirm_no" class="modal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" id="confirm_no_close" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% trans "Confirmation" %}</h4>
-      </div>
-      <div class="modal-body">
-        <div class="alert alert-danger text-center" role="alert">{%trans "Error" %}</div>
-        <div id="confirm_no_error"></div>
-      </div>
-        <div class="modal-footer">
-          <button id="confirm_no_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
-        </div>
-    </div>
-  </div>
-</div>
-
 {% endblock %}
 
 

@@ -22,3 +22,16 @@
 .colorpicker-2x .colorpicker-color div{
 	height: 30px;
 }
+
+.legend { display: inline-block; list-style: none; justify-content: center; text-align:center;}
+.legend li { float: left; margin-right: 30px; }
+.legend span { float: left; width: 15px; height: 15px; margin: 2px; border-radius: 50%; }
+
+
+.fc-event, .fc-event:hover, .ui-widget .fc-event {
+    color: #583939;
+}
+
+.fc-title{
+	text-align:center;
+}

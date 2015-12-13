@@ -85,11 +85,13 @@ class UserProfile(models.Model):
             self.save()
         return ret
 
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.real_name())
+        super(UserProfile, self).save(*args, **kwargs)
         for st in settings.SLOT_TYPE:
             self.get_colorslot(st[0])
-        super(UserProfile, self).save(*args, **kwargs)
+
 
     def get_all_slottemplates(self):
         out = []
@@ -113,19 +115,12 @@ class UserProfile(models.Model):
     def get_daytemplate(self, i):
         return self.get_weektemplate().get_daytemplate(i)
 
+    def get_color(self, i, booked):
+        slot = self.get_colorslot(i)
+        return str(slot.booked_slot_color) if booked else str(slot.free_slot_color)
+
+
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
-
-
-#class BaseProfileForm(ModelForm):
-#    def __init__(self, *args, **kw):
-#        super(BaseProfileForm, self).__init__(*args, **kw)
-        #self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        #self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
-        #self.fields['free_price_free_slot_color'].widget.attrs['class'] = 'colorpicker'
-        #self.fields['free_price_booked_slot_color'].widget.attrs['class'] = 'colorpicker'
-        #self.fields['nhs_price_free_slot_color'].widget.attrs['class'] = 'colorpicker'
-        #self.fields['nhs_price_booked_slot_color'].widget.attrs['class'] = 'colorpicker'
-
 
 class ProfileForm(ModelForm):
     first_name = forms.CharField(label=_(u'Prénom'), max_length=50)

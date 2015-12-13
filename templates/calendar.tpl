@@ -173,7 +173,7 @@ $(document).ready(function() {
                 if (result['return']){
                     $('#calendar').fullCalendar( 'removeEvents', id );
                     $("#calendar").fullCalendar('addEventSource', [result['slot']]); 
-                    $('#confirm').show();
+                    $('#confirm_yes').show();
                 }
                 else{
                     $('#confirm2').show();
@@ -194,7 +194,7 @@ $(document).ready(function() {
                 $('#calendar').fullCalendar( 'removeEvents', id );
                 $('#bookingslot').hide();
                 clean_modal();
-                $('#confirm').show();
+                $('#confirm_yes').show();
             }
         });  
     });
@@ -213,18 +213,18 @@ $(document).ready(function() {
                 $("#calendar").fullCalendar('addEventSource', [result['slot']]);
                 $('#bookingslot').hide();
                 clean_modal();
-                $('#confirm').show();
+                $('#confirm_yes').show();
             }
         });  
     });
-
+/*
     $('#confirm_close').click(function(){
         $('#confirm').hide();
     });
 
     $('#confirm_ok').click(function(){
         $('#confirm').hide();
-    });
+    });*/
 
     $('#confirm2_close').click(function(){
         $('#confirm2').hide();
@@ -244,7 +244,13 @@ $(document).ready(function() {
   </div>
 </div>
 <div id="calendar"></div>
-
+<div class="row text-center" style="margin-top:20px;">
+    <ul class="legend">
+    {% for c in user.userprofile.colorslots.all %}
+      <li><span style="background-color: {{c.free_slot_color}};"></span> {% if user.userprofile == doctor %} <span style="background-color: {{c.booked_slot_color}};"></span>{% else %}{% if user.userprofile.view_busy_slot %}<span style="background-color: {{c.booked_slot_color}};"></span>{% endif %}{% endif %} {{ c.SLOT_TYPE|index:c.slot}}</li>
+     {% endfor %}
+     </ul>
+</div>
 <!-- Modal -->
 <div id="bookingslot" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
@@ -312,25 +318,6 @@ $(document).ready(function() {
           {% endif %}
           <button id="bookingslot_submit" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Submit" %}</button>
           <button id="bookingslot_cancel" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-        </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Modal -->
-<div id="confirm" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" id="confirm_close" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{% trans "Confirmation" %}</h4>
-      </div>
-      <div class="modal-body">
-      {% trans "Change applied" %}
-      </div>
-        <div class="modal-footer">
-          <button id="confirm_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
         </div>
     </div>
   </div>

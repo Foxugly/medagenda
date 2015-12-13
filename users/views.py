@@ -88,6 +88,7 @@ def model_calendar(request, slug):
         return HttpResponseRedirect('/')
     else:
         c['doctor'] = userp
+        c['slot_type'] = settings.SLOT_TYPE
         c['slottemplates'] = userp.get_all_slottemplates()
         c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
         return render(request, 'model.tpl', c)
@@ -147,12 +148,12 @@ def create_user(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         if form.is_valid():
-            print "SENT MAIL"
             up = form.save()
             up.user.is_active = False
             up.confirm = string_random(32)
             up.user.save()
             up.save()
+            print "SENT MAIL"
             print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(up.confirm) + '/'
             c['mail'] = True
             return render(request, 'valid.tpl', c)

@@ -36,8 +36,8 @@ def st_add(request):
                             dt.slots.remove(old_slot)
                         for old_slot in dt.slots.filter(start__lt=current_end, end__gte=current_end):
                             dt.slots.remove(old_slot)
-                    pricing = False if request.GET['pricing'] == "1" else True
-                    st = SlotTemplate(start=current, end=current_end, national_health_service_price=pricing)
+                    booked = True if request.GET['booked'] == "1" else False
+                    st = SlotTemplate(start=current, end=current_end, slot_type=request.GET['slot_type'],booked=booked)
                     st.save()
                     dt.add_slottemplate(st)
                     current = current_end + timedelta(minutes=int(request.GET['break_time']))
@@ -83,7 +83,7 @@ def st_apply(request):
                             current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
                             for s in request.user.userprofile.slots.filter(date=datetime.date(current_day), st__start__lt=current_day, st__end__gte=current_day):
                                 request.user.userprofile.slots.remove(s)
-                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=request.user.userprofile)
+                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=request.user.userprofile, booked=st.booked)
                             new_slot.save()
                             request.user.userprofile.slots.add(new_slot)
                     current_day += timedelta(days=7)
@@ -139,7 +139,6 @@ def book_slot(request, slot_id):
             s.patient = p
         s.booked = True
         s.save()
-        print s.id
         d = {}
         d['return'] = True
         d['slot'] = s.as_json()
