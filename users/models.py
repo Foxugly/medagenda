@@ -87,10 +87,9 @@ class UserProfile(models.Model):
 
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.real_name())
+        if not self.slug:
+            self.slug = slugify(self.real_name())
         super(UserProfile, self).save(*args, **kwargs)
-        for st in settings.SLOT_TYPE:
-            self.get_colorslot(st[0])
 
 
     def get_all_slottemplates(self):

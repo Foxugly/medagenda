@@ -41,7 +41,10 @@ def add_user(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            u = form.save()
+            for st in settings.SLOT_TYPE:
+                u.get_colorslot(st[0])
+            u.save()
             return HttpResponseRedirect('/')
         else:
             messages.error(request, "Error")
