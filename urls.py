@@ -33,17 +33,16 @@ def custom_500(request):
 
 
 urlpatterns = [
-                  url(r'^confirm/(?P<user_id>[\w-]+)/(?P<text>[\w-]+)/',
-                      confirm_user, name='confirm_user'),
-                  url(r'^admin/', include(admin.site.urls)),
-                  url(r'^user/', include('users.urls'), name='users'),
-                  url(r'^patient/', include('patient.urls'), name='patient'),
-                  url(r'^slot/', include('agenda.urls'), name='agenda'),
-                  url(r'^i18n/', include('django.conf.urls.i18n')),
-                  url(r'^$', home, name='index'), ] + patterns('', (
-    r'^media/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}), ) + static(
-    settings.STATIC_URL,
-    document_root=settings.STATIC_ROOT)
+    url(r'^confirm/(?P<user_id>[\w-]+)/(?P<text>[\w-]+)/', confirm_user, name='confirm_user'),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^user/', include('users.urls'), name='users'),
+    url(r'^patient/', include('patient.urls'), name='patient'),
+    url(r'^slot/', include('agenda.urls'), name='agenda'),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
+    url(r'^$', home, name='index'),
+] \
+    + patterns('', (r'^media/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}), )\
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler404 = 'urls.custom_404'
 handler500 = 'urls.custom_500'
