@@ -10,7 +10,6 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-# Create your models here.
 from patient.models import Patient
 from datetime import datetime, timedelta
 
@@ -26,19 +25,20 @@ class SlotTemplate(models.Model):
 
     def t_start(self, i):
         date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
-        date += timedelta(days=(i-1))
+        date += timedelta(days=(i - 1))
         return str(date.strftime('%Y-%m-%d')) + str('T') + str(self.start)
 
     def t_end(self, i):
         date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, "%Y-%m-%d")
-        date += timedelta(days=(i-1))
+        date += timedelta(days=(i - 1))
         return str(date.strftime('%Y-%m-%d')) + str('T') + str(self.end)
 
     def get_title(self):
         return str(_('Booked') if self.booked else _('Free'))
 
     def as_json(self, i, doctor):
-        return dict(id=self.id, start=self.t_start(i), end=self.t_end(i), title=self.get_title(), color=doctor.get_color(self.slot_type, self.booked))
+        return {'id': self.id, 'start': self.t_start(i), 'end': self.t_end(i), 'title': self.get_title(),
+                'color': doctor.get_color(self.slot_type, self.booked)}
 
 
 class DayTemplate(models.Model):
@@ -113,7 +113,8 @@ class Slot(models.Model):
     date = models.DateField(verbose_name=_(u'Date'))
     st = models.ForeignKey(SlotTemplate, verbose_name=_(u'Slot template'), blank=True, null=True)
     patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
-    refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'), related_name="back_userprofile", null=True)
+    refer_doctor = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'),
+                                     related_name='back_userprofile', null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
 
@@ -122,10 +123,12 @@ class Slot(models.Model):
         self.booked = False
         self.save()
 
+    @staticmethod
     def date_t(self):
         return self.date.strftime('%d/%m/%Y')
 
-    def hour_t(self, t):
+    @staticmethod
+    def hour_t(t):
         return t.strftime('%H:%M:%S')
 
     def start_t(self):
@@ -138,16 +141,20 @@ class Slot(models.Model):
         return str(_('Booked') if self.booked else _('Free'))
 
     def as_json(self):
-        return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=self.get_title(), color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
+        return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=self.get_title(),
+                    color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def as_json2(self):
         return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
 
+    @property
     def detail(self):
         color = 'black'
         if self.booked:
             if self.refer_doctor.view_busy_slot:
-                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')), color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked= self.booked, informations=self.informations)
+                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')),
+                         color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
+                         informations=self.informations)
                 d_patient = self.patient.as_json()
                 del d_patient['id']
                 d.update(d_patient)
@@ -155,7 +162,8 @@ class Slot(models.Model):
             else:
                 return None
         else:
-            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')), color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
+            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')),
+                        color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def __str__(self):
         return u"Slot %d" % self.id

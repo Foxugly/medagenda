@@ -15,6 +15,7 @@ from users.models import UserProfile, ColorSlot
 class UserProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ['slots', ]
 
+
 @admin.register(ColorSlot)
 class ColorSlot(admin.ModelAdmin):
     pass

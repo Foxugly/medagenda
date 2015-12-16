@@ -1,20 +1,21 @@
 {% extends "layout.tpl" %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load staticfiles %}
 {%block css %}
-<link href='/static/clockfield/bootstrap-clockpicker.min.css' rel='stylesheet' />
-<link href='/static/bootstrap-datepicker-master/dist/css/datepicker3.css' rel='stylesheet' />
-<link href='/static/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css' rel='stylesheet' />
-<link href='/static/css/perso.css' rel='stylesheet' />
+<link href='{% static "clockfield/bootstrap-clockpicker.min.css" %}' rel='stylesheet' />
+<link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
+<link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
+<link href='{% static "css/perso.css' rel='stylesheet' />
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="/static/clockfield/bootstrap-clockpicker.min.js"></script>
-<script src='/static/bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js'></script>
-<script src='/static/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js'></script>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false"></script>
-<script type="text/javascript" src="/static/js/jquery.geocomplete.min.js"></script>
-<script type="text/javascript" src="/static/address/js/address.js"></script>
+<script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
+<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
+<script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
+<script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false'></script>
+<script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
+<script type="text/javascript" src='{% static "address/js/address.js" %}'></script>
 <script>
 $(document).ready(function() {
     $(".clockpicker").parent().clockpicker({

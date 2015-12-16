@@ -81,8 +81,14 @@ $(document).ready(function() {
 <div class="row">
 {% endif %}
   <div class="col-sm-3">
-    <div class="thumbnail">
-      <p style="text-align:center;"><img src="/media/pic/profil.jpg"></p>
+    <div class="thumbnail text-center" >
+      <div style="height: 200px;">
+      {% if item.picture %}
+        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}{{item.picture}}' style="vertical-align: middle;max-height:200px;max-width:200px;">
+      {% else %}
+        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}pic/profil.jpg' style="vertical-align: middle;max-height:200px;max-width:200px;">
+      {% endif %}
+      </div>
       <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>
       <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
       <p  style="text-align:center;">{{item.address.locality.name}}</p>

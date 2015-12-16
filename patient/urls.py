@@ -7,7 +7,7 @@
 # the Free Software Foundation, either version 3 of the License, or (at
 # your option) any later version.
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from patient.views import search_patient
 
 urlpatterns = (

@@ -10,7 +10,6 @@
 from django.db import models
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-# Create your models here.
 
 
 class Patient(models.Model):
@@ -20,15 +19,14 @@ class Patient(models.Model):
     telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True, null=True)
 
     def __str__(self):
-    	return str(self.email)
+        return str(self.email)
 
     def as_json(self):
-    	return dict(id=self.id, email=self.email, first_name=self.first_name, last_name=self.last_name, telephone=self.telephone)
+        return dict(id=self.id, email=self.email, first_name=self.first_name, last_name=self.last_name,
+                    telephone=self.telephone)
+
 
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
         fields = ['email', 'first_name', 'last_name', 'telephone']
-
-
-

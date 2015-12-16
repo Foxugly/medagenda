@@ -17,7 +17,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(__file__)
 
@@ -31,9 +30,6 @@ DEBUG = True
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-
-# Application definition
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -60,8 +56,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 )
-
-ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
@@ -122,19 +116,18 @@ SLOT_TYPE = (
     (4, _(u'Nursing home Slot')),
 )
 
-SLOT_COLOR = ['#73B5EB', '#94F7CE', '#D798E2', '#FFE68F',]
+SLOT_COLOR = ['#73B5EB', '#94F7CE', '#D798E2', '#FFE68F', ]
 
 DEFAULT_LANGUAGE = 1
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-#UPLOAD_DIR = 'upload'
-#STOCK_DIR = 'folders'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
 
+IMAGE_UPLOAD_PATH = 'pic/'
+STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 ADMIN_MEDIA_PREFIX = '/static/admin/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -147,26 +140,7 @@ FILE_UPLOAD_HANDLERS = (
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 )
 
-#TEMPLATE_LOADERS = (
-#    'django.template.loaders.filesystem.Loader',
-#    'django.template.loaders.app_directories.Loader',
-#    # 'django.template.loaders.eggs.Loader',
-#)
-
-
 ROOT_URLCONF = 'urls'
-
-#TEMPLATE_DIRS = (
-#    os.path.join(BASE_DIR, 'templates'),
-    # '%s/templates/' % BASE_DIR,
-#)
-
-#TEMPLATE_CONTEXT_PROCESSORS = (
-#    'django.core.context_processors.request',
-#    'django.contrib.auth.context_processors.auth',
-#    'django.core.context_processors.i18n',
-#    'django.core.context_processors.static',
-#)
 
 TEMPLATES = [
     {

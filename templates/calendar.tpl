@@ -2,26 +2,27 @@
 {% load bootstrap3 %}
 {% load i18n %}
 {% load tools %}
-
+{% load staticfiles %}
 {% block css %}
-<link href='/static/fullcalendar-2.5.0/fullcalendar.css' rel='stylesheet' />
-<link href='/static/fullcalendar-2.5.0/fullcalendar.print.css' rel='stylesheet' media='print' />
-<link href='/static/bootstrap-datepicker-master/dist/css/datepicker3.css' rel='stylesheet' />
-<link href='/static/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css' rel='stylesheet' />
-<link href='/static/css/perso.css' rel='stylesheet' />
+<link href='{% static "fullcalendar-2.5.0/fullcalendar.css" %}' rel='stylesheet' />
+<link href='{% static "fullcalendar-2.5.0/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
+<link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
+<link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
+<link href='{% static "css/perso.css" %}' rel='stylesheet' />
 {% endblock %}
 
 <!-- JAVASCRIPT -->
 {% block js %}
-<script src='/static/fullcalendar-2.5.0/lib/moment.min.js'></script>
-<script src='/static/fullcalendar-2.5.0/lib/jquery.min.js'></script>
-<script src='/static/fullcalendar-2.5.0/fullcalendar.min.js'></script>
-<script src='/static/fullcalendar-2.5.0/lang-all.js'></script>
-<script src='/static/bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js'></script>
+<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
+<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/jquery.min.js" %}'></script>
+<script type="text/javascript" src='{% static "fullcalendar-2.5.0/fullcalendar.min.js" %}'></script>
+<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lang-all.js" %}'></script>
+<script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
+<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
 {% if user.userprofile.language != 'en' %}
-<script src='/static/bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.{{user.userprofile.language}}.min.js'></script>
+<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.fr.min.js" %}'></script>
 {% endif %}
-<script src='/static/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js'></script>
+<script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
 <script>
 $(document).ready(function() {
     $('.datepicker').datepicker({

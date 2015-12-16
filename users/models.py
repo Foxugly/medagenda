@@ -7,10 +7,7 @@
 # the Free Software Foundation, either version 3 of the License, or (at
 # your option) any later version.
 
-from string import printable
 from django.db import models
-from django.db.models import signals, Q
-from django.contrib.auth import models as authmod
 from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -45,7 +42,7 @@ class UserProfile(models.Model):
 
     title = models.IntegerField(verbose_name=_(u'Title'), choices=TITLE_CHOICES, default=2)
     user = models.OneToOneField(User, verbose_name=_('User'))
-    picture = models.ImageField(upload_to='pic', blank=True, null=True)
+    picture = models.ImageField(upload_to=settings.IMAGE_UPLOAD_PATH, blank=True, null=True)
     speciality = models.IntegerField(verbose_name=_(u'Speciality'), choices=MEDECINE_CHOICES)
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
     language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES)
@@ -72,29 +69,31 @@ class UserProfile(models.Model):
     def get_n_colorslots(self):
         return len(self.colorslots.all())
 
-    def get_colorslot(self,i):
+    def get_colorslot(self, i):
         ret = None
         if self.get_n_colorslots() > 0:
             for cs in self.colorslots.all():
                 if cs.slot == i:
                     ret = cs
-        if ret == None :
-            ret = ColorSlot(slot=i, free_slot_color=settings.SLOT_COLOR[i-1])
+        if ret is None:
+            ret = ColorSlot(slot=i, free_slot_color=settings.SLOT_COLOR[i - 1])
             ret.save()
             self.colorslots.add(ret)
             self.save()
         return ret
 
-
     def save(self, *args, **kwargs):
+        """
+
+        :rtype: object
+        """
         if not self.slug:
             self.slug = slugify(self.real_name())
         super(UserProfile, self).save(*args, **kwargs)
 
-
     def get_all_slottemplates(self):
         out = []
-        if len(self.get_weektemplate().days.all()) > 0 :
+        if len(self.get_weektemplate().days.all()) > 0:
             for dt in self.get_weektemplate().days.all():
                 for s in dt.slots.all():
                     out.append(s.as_json(dt.day, self))
@@ -121,38 +120,11 @@ class UserProfile(models.Model):
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
-class ProfileForm(ModelForm):
-    first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
-    last_name = forms.CharField(label=_(u'Nom'), max_length=50)
-    email = forms.EmailField()
-
-    def __init__(self, *args, **kw):
-        super(ProfileForm, self).__init__(*args, **kw)
-        self.fields['first_name'].initial = kw['instance'].user.first_name
-        self.fields['last_name'].initial = kw['instance'].user.last_name
-        self.fields['email'].initial = kw['instance'].user.email
-        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
-
-    def save(self, *args, **kw):
-        up = super(ProfileForm, self).save(commit=False)
-        up.user.last_name = self.cleaned_data.get('last_name')
-        up.user.first_name = self.cleaned_data.get('first_name')
-        up.user.email = self.cleaned_data.get('email')
-        up.user.save()
-        up.save()
-        return up
-
-    class Meta:
-        model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
-        fields = ['picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'start_time', 'end_time', 'view_busy_slot', 'view_in_list']
-
 
 class UserProfileForm(ModelForm):
-    username = forms.CharField(label=_(u"Nom d'utilisateur"), max_length=50)
-    first_name = forms.CharField(label=_(u'Prénom'), max_length=50)
-    last_name = forms.CharField(label=_(u'Nom'), max_length=50)
+    username = forms.CharField(label=_(u"Username"), max_length=50)
+    first_name = forms.CharField(label=_(u'First name'), max_length=50)
+    last_name = forms.CharField(label=_(u'Last name'), max_length=50)
     password = forms.CharField(widget=forms.PasswordInput)
     repeat_password = forms.CharField(widget=forms.PasswordInput)
     email = forms.EmailField()
@@ -164,7 +136,8 @@ class UserProfileForm(ModelForm):
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
-        new_user = User.objects.create_user(self.cleaned_data.get('username'), email=self.cleaned_data.get('email'), password=self.cleaned_data.get('password'))
+        new_user = User.objects.create_user(self.cleaned_data.get('username'), email=self.cleaned_data.get('email'),
+                                            password=self.cleaned_data.get('password'))
         new_user.last_name = self.cleaned_data.get('last_name')
         new_user.first_name = self.cleaned_data.get('first_name')
         new_user.email = self.cleaned_data.get('email')
@@ -175,8 +148,11 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
-        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'start_time', 'end_time', 'view_busy_slot', 'view_in_list']
+        exclude = [
+            'user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture', 'start_time', 'end_time', 'view_busy_slot',
+            'view_in_list']
+        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name',
+                  'address', 'email', 'telephone', 'vat_number', 'language']
 
 
 class PersonalDataForm(ModelForm):
@@ -190,14 +166,21 @@ class PersonalDataForm(ModelForm):
         self.fields['last_name'].initial = kw['instance'].user.last_name
         self.fields['email'].initial = kw['instance'].user.email
 
+    def save(self, *args, **kw):
+        up = super(PersonalDataForm, self).save(commit=False)
+        up.user.last_name = self.cleaned_data.get('last_name')
+        up.user.first_name = self.cleaned_data.get('first_name')
+        up.user.email = self.cleaned_data.get('email')
+        up.user.save()
+        up.save()
+        return up
+
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
         fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language']
 
 
 class SettingsForm(ModelForm):
-
     def __init__(self, *args, **kw):
         super(SettingsForm, self).__init__(*args, **kw)
         self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
@@ -205,12 +188,10 @@ class SettingsForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture')
         fields = ['start_time', 'end_time', 'view_busy_slot', 'view_in_list']
 
 
 class TextForm(ModelForm):
-
     def __init__(self, *args, **kw):
         super(TextForm, self).__init__(*args, **kw)
 
@@ -220,7 +201,6 @@ class TextForm(ModelForm):
 
 
 class ColorForm(ModelForm):
-
     def __init__(self, *args, **kw):
         super(ColorForm, self).__init__(*args, **kw)
         self.fields['free_slot_color'].widget.attrs['class'] = 'colorpicker'

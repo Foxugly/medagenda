@@ -8,14 +8,21 @@
 # your option) any later version.
 
 from django import template
-from datetime import datetime
+import os
 
 register = template.Library()
 
+
 @register.filter()
-def index(d,value):
+def index(d, value):
     return dict(d)[value]
+
 
 @register.filter()
 def time_format(time):
-	return u"%d:%d" %(time.hour, time.minute)
+    return u"%d:%d" % (time.hour, time.minute)
+
+
+@register.filter()
+def filename(path):
+    return os.path.basename(path.name)
