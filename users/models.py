@@ -127,8 +127,6 @@ class UserProfileForm(ModelForm):
 
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
-        # self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        # self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
@@ -144,7 +142,7 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name',
+        fields = ['username', 'password', 'repeat_password', 'speciality', 'title', 'first_name', 'last_name',
                   'address', 'email', 'telephone', 'vat_number', 'language', 'timezone']
 
 
