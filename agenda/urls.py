@@ -7,7 +7,7 @@
 # the Free Software Foundation, either version 3 of the License, or (at
 # your option) any later version.
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from agenda.views import st_add, st_remove, st_apply, st_clean, get_slot, book_slot, remove_slot, clean_slot
 from django.contrib.auth.decorators import login_required
 

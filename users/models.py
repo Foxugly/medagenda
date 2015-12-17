@@ -16,14 +16,7 @@ from address.models import AddressField
 from django.forms import ModelForm
 from django.utils.text import slugify
 from agenda.models import WeekTemplate, DayTemplate, Slot
-
-
-class CreateUserForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField()
-    email = forms.EmailField()
-    last_name = forms.CharField()
-    first_name = forms.CharField()
+from timezone_field import TimeZoneField
 
 
 class ColorSlot(models.Model):
@@ -59,12 +52,19 @@ class UserProfile(models.Model):
     confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)
     text_rdv = models.TextField(verbose_name=_(u'Text RDV'), blank=True, null=True)
     text_horaires = models.TextField(verbose_name=_(u'Text horaires'), blank=True, null=True)
+    timezone = TimeZoneField(default=settings.TIME_ZONE)
 
     def __str__(self):
-        return "userprofile : " + str(self.user.username)
+        return u"userprofile : %s" % self.user.username
+
+    def get_title(self):
+        return u"%s" % self.TITLE_CHOICES[self.title-1][1]
+
+    def full_name(self):
+        return u"%s %s" % (self.get_title(), self.real_name())
 
     def real_name(self):
-        return str(self.user.first_name + " " + self.user.last_name)
+        return u"%s %s" % (self.user.first_name, self.user.last_name)
 
     def get_n_colorslots(self):
         return len(self.colorslots.all())
@@ -83,10 +83,6 @@ class UserProfile(models.Model):
         return ret
 
     def save(self, *args, **kwargs):
-        """
-
-        :rtype: object
-        """
         if not self.slug:
             self.slug = slugify(self.real_name())
         super(UserProfile, self).save(*args, **kwargs)
@@ -131,8 +127,8 @@ class UserProfileForm(ModelForm):
 
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
-        self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
-        self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
+        # self.fields['start_time'].widget.attrs['class'] = 'clockpicker'
+        # self.fields['end_time'].widget.attrs['class'] = 'clockpicker'
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
@@ -148,11 +144,8 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = [
-            'user', 'slug', 'weektemplate', 'slots', 'confirm', 'picture', 'start_time', 'end_time', 'view_busy_slot',
-            'view_in_list']
         fields = ['username', 'password', 'repeat_password', 'picture', 'speciality', 'first_name', 'last_name',
-                  'address', 'email', 'telephone', 'vat_number', 'language']
+                  'address', 'email', 'telephone', 'vat_number', 'language', 'timezone']
 
 
 class PersonalDataForm(ModelForm):
@@ -177,7 +170,7 @@ class PersonalDataForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language']
+        fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'timezone']
 
 
 class SettingsForm(ModelForm):

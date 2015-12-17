@@ -11,7 +11,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot
-from utils.perms import string_random
+from utils.toolbox import string_random
 from django.contrib.auth.decorators import user_passes_test, login_required
 import json
 from django.utils.translation import ugettext_lazy as _
@@ -97,15 +97,21 @@ def model_calendar(request, slug):
 
 
 def reminder_slot(request, slug):
+    print slug
+    # TODO ajouter la fonction de rappel de slots
     return HttpResponseRedirect('/')
 
 
 def remove_slot(request, slug, slot_id):
+    print slug
+    print slot_id
+    # TODO déterminer la façon d'annuler un rendez-vous (manuel/automatique)
     return HttpResponseRedirect('/')
 
 
 def find_slot(request, slug, input):
-    # AJAX TOUSSA
+    print
+    # TODO fonction de recherche (jouer avec Q)
     return HttpResponseRedirect('/')
 
 

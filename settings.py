@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap3',
+    'timezone_field',
     'users',
     'utils',
     'address',
@@ -69,7 +70,7 @@ DATABASES = {
 
 WEBSITE_URL = 'http://127.0.0.1:8000/'
 LANGUAGE_CODE = 'en'
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'Europe/Brussels'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

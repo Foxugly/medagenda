@@ -78,7 +78,6 @@
               <ul class="dropdown-menu">
                 <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
                 <li><a class="glyphicon glyphicon-cog" href="/user/update_user/"> {% trans "Change Settings" %}</a></li>
-                <li><a class="glyphicon glyphicon-picture" href="/user/change_avatar/"> {% trans "Change Avatar" %}</a></li>
                 <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
                 <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{user.userprofile.slug}}/calendar/"> {% trans "Calendar" %}</a></li>

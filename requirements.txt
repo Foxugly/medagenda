@@ -2,3 +2,5 @@ django
 pypdf
 django-colorfield
 django-address
+django-timezone-field
+icalendar

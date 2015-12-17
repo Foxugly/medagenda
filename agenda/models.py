@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient
 from datetime import datetime, timedelta
+import pytz
 
 
 class SlotTemplate(models.Model):
@@ -123,7 +124,6 @@ class Slot(models.Model):
         self.booked = False
         self.save()
 
-    @staticmethod
     def date_t(self):
         return self.date.strftime('%d/%m/%Y')
 
@@ -131,8 +131,17 @@ class Slot(models.Model):
     def hour_t(t):
         return t.strftime('%H:%M:%S')
 
+    def start_dt(self):
+        tz = pytz.timezone(str(self.refer_doctor.timezone))
+        print tz
+        return tz.localize(datetime(self.date.year, self.date.month, self.date.day, self.st.start.hour, self.st.start.minute, 0))
+
     def start_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.start)
+
+    def end_dt(self):
+        tz = pytz.timezone(str(self.refer_doctor.timezone))
+        return tz.localize(datetime(self.date.year, self.date.month, self.date.day, self.st.end.hour, self.st.end.minute, 0))
 
     def end_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.end)
@@ -145,14 +154,13 @@ class Slot(models.Model):
                     color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def as_json2(self):
-        return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
+        return dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start))
 
     @property
     def detail(self):
-        color = 'black'
         if self.booked:
             if self.refer_doctor.view_busy_slot:
-                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')),
+                d = dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start), title=str(_('Booked')),
                          color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
                          informations=self.informations)
                 d_patient = self.patient.as_json()
@@ -162,7 +170,7 @@ class Slot(models.Model):
             else:
                 return None
         else:
-            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')),
+            return dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start), title=str(_('Free')),
                         color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def __str__(self):

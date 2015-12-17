@@ -8,7 +8,6 @@
 # your option) any later version.
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -37,7 +36,7 @@ def st_add(request):
                         for old_slot in dt.slots.filter(start__lt=current_end, end__gte=current_end):
                             dt.slots.remove(old_slot)
                     booked = True if request.GET['booked'] == "1" else False
-                    st = SlotTemplate(start=current, end=current_end, slot_type=request.GET['slot_type'],booked=booked)
+                    st = SlotTemplate(start=current, end=current_end, slot_type=request.GET['slot_type'], booked=booked)
                     st.save()
                     dt.add_slottemplate(st)
                     current = current_end + timedelta(minutes=int(request.GET['break_time']))
@@ -50,9 +49,7 @@ def st_add(request):
 def st_clean(request):
     if request.is_ajax():
         request.user.userprofile.remove_all_slottemplates()
-        results = {}
-        results['slottemplates'] = request.user.userprofile.get_all_slottemplates()
-        results['return'] = True
+        results = {'slottemplates': request.user.userprofile.get_all_slottemplates(), 'return': True}
         return HttpResponse(json.dumps(results))
 
 
@@ -71,7 +68,7 @@ def st_apply(request):
             end_date = datetime.strptime(request.GET['end_date'], format_date)
             ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, settings.FULLCALENDAR_REF_DATEFORMAT)
             for i in range(0, 7):  # datetime.weekday() #0 = Monday - 6= Sunday
-                ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
+                # ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
                     sts = request.user.userprofile.get_daytemplate(1+(int(start_date.weekday()) + i) % 7).get_slottemplates()
@@ -114,7 +111,7 @@ def get_slot(request, slot_id):
             results['slot'] = s.detail
             results['return'] = True
         else:
-            if not s.patient :
+            if not s.patient:
                 results['return'] = True
                 results['slot'] = s.detail
             else:
@@ -128,34 +125,34 @@ def book_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=slot_id)
         if request.GET["patient"] is None or int(request.GET["patient"]) == 0:
-            #new Patient
+            # new Patient
             s.informations = request.GET["informations"]
             p = Patient(email=unicode(request.GET["email"]), first_name=unicode(request.GET["first_name"]), last_name=unicode(request.GET["last_name"]), telephone=unicode(request.GET["telephone"]))
             p.save()
             s.patient = p
             s.informations = unicode(request.GET["informations"])
-        else :
+        else:
             p = Patient.objects.get(id=int(request.GET["patient"]))
             s.patient = p
         s.booked = True
         s.save()
-        d = {}
-        d['return'] = True
-        d['slot'] = s.as_json()
+        # TODO SEND MAIL TO PATIENT / DOCTOR
+        # pytz.timezone("Europe/Paris").localize(datetime.datetime(2012, 3, 3, 1, 30))
+        d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))
+
 
 @login_required
 def remove_slot(request, slot_id):
     if request.is_ajax():
         Slot.objects.get(id=slot_id).delete()
-        return HttpResponse(json.dumps({'return':True}))
+        return HttpResponse(json.dumps({'return': True}))
+
 
 @login_required
 def clean_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=slot_id)
         s.clean_slot()
-        d = {}
-        d['return'] = True
-        d['slot'] = s.as_json()
+        d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))
