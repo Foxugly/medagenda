@@ -97,7 +97,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/st/remove/' + $('#slot').val() + '/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: '',
             traditional: true,
             dataType: 'json',
@@ -144,7 +144,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/st/add/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: form.serialize(),
             traditional: true,
             dataType: 'json',
@@ -162,7 +162,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/st/clean/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: '',
             traditional: true,
             dataType: 'json',
@@ -181,7 +181,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/st/apply/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: form,
             traditional: true,
             dataType: 'json',

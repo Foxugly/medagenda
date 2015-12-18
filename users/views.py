@@ -18,6 +18,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from datetime import datetime
 from django.conf import settings
+from django.utils import translation
+from django import http
 
 
 def home(request):
@@ -32,6 +34,22 @@ def home(request):
     else:
         c['list'] = UserProfile.objects.filter(view_in_list=True)
     return render(request, 'list.tpl', c)
+
+
+def language(request):
+    # TODO a vérifier
+    results = {}
+    if request.is_ajax():
+        user_language = request.POST('language')
+        translation.activate(user_language)
+        request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+        results['return'] = True
+        response = http.HttpResponse(json.dumps(results))
+        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
+        return response
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -62,10 +80,9 @@ def profile(request, slug):
     return render(request, 'profile.tpl', c)
 
 
-def calendar_user(request, slug):
-    c = {}
-    userp = get_object_or_404(UserProfile, slug=slug)
-    c['doctor'] = userp
+def calendar_user(request, slug=None):
+    userp = get_object_or_404(UserProfile, slug=slug) if slug else request.user.userprofile
+    c = {'doctor': userp}
     today = datetime.now().date()
     c['slots'] = []
     # slots = []
@@ -139,7 +156,8 @@ def create_user(request):
             up.user.save()
             up.save()
             print "SENT MAIL"
-            print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(up.confirm) + '/'
+            print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(
+                up.confirm) + '/'
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:

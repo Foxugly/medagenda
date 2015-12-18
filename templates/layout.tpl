@@ -38,6 +38,22 @@
         $('#confirm_no_ok').click(function(){
             $('#confirm_no').hide();
         });
+
+        $('#language').change(function() {
+            var select = $(this);
+            var url = '/user/language/'
+            alert($(this).val());
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: select.serialize(),
+                traditional: true,
+                dataType: 'json',
+                success: function(result){
+                    location.reload();
+                }
+            });
+        });
       });
     </script>
     <style>
@@ -64,11 +80,18 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li><div class='navbar-form form-group'>
-              <select class="form-control" >
-                <option>Français</option>
-                <option>Nederlands</option>
-                <option>English</option>
-              </select>
+             <select id="language" name="language" class="form-control">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected="selected"{% endif %}>
+                {{ language.name_local|capfirst }} ({{ language.code }})
+            </option>
+        {% endfor %}
+    </select>
+
+
             </div>
             </li>
             <li><a href="#">{% trans "Help" %} </a></li>
@@ -80,8 +103,8 @@
                 <li><a class="glyphicon glyphicon-cog" href="/user/update_user/"> {% trans "Change Settings" %}</a></li>
                 <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
                 <li class="divider"></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/{{user.userprofile.slug}}/calendar/"> {% trans "Calendar" %}</a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/{{user.userprofile.slug}}/model/"> {% trans "Model" %}</a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/calendar/"> {% trans "Calendar" %}</a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/model/"> {% trans "Model" %}</a></li>
                 <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
               </ul>
@@ -93,7 +116,7 @@
         </div>
       </div>
     </nav>
-    <div class="container"><!--<div class="container-fluid">-->
+    <div class="container">{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE|language_name }} <!--<div class="container-fluid">-->
         <!--[if lt IE 9]>
            	<div id="topwarning">
     		{% blocktrans %}

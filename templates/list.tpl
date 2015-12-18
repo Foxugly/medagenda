@@ -37,7 +37,6 @@ $(document).ready(function() {
     $('#div_map').hide();
 
     $("#btn_view input[name='view']").on("change", function () {
-        console.log('ici');
         if($('#btn_view input:radio[name=view]:checked').val() == "map"){
             $('#div_list').hide();
             $('#div_map').show();
@@ -48,8 +47,6 @@ $(document).ready(function() {
             $('#div_list').show();
         }
     });
-
-    
 });
 </script>
 {% endblock %}

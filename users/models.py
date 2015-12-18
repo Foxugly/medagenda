@@ -58,7 +58,7 @@ class UserProfile(models.Model):
         return u"userprofile : %s" % self.user.username
 
     def get_title(self):
-        return u"%s" % self.TITLE_CHOICES[self.title-1][1]
+        return u"%s" % self.TITLE_CHOICES[self.title - 1][1]
 
     def full_name(self):
         return u"%s %s" % (self.get_title(), self.real_name())
@@ -168,7 +168,8 @@ class PersonalDataForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language', 'timezone']
+        fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language',
+                  'timezone']
 
 
 class SettingsForm(ModelForm):

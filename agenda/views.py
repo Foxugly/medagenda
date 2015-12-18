@@ -19,27 +19,31 @@ import json
 @login_required
 def st_add(request):
     if request.is_ajax():
-        days = ['check_monday', 'check_tuesday', 'check_wednesday', 'check_thursday', 'check_friday', 'check_saturday', 'check_sunday']
+        days = ['check_monday', 'check_tuesday', 'check_wednesday', 'check_thursday', 'check_friday', 'check_saturday',
+                'check_sunday']
         results = {}
         for day in days:
-            if day in request.GET:
-                dt = request.user.userprofile.get_daytemplate(days.index(day)+1)
-                current = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.GET['start_time'], '%Y-%m-%d %H:%M')
+            if day in request.POST:
+                dt = request.user.userprofile.get_daytemplate(days.index(day) + 1)
+                current = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.POST['start_time'],
+                                            "%Y-%m-%d %H:%M")
                 current += timedelta(days=days.index(day))
-                end = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.GET['end_time'], '%Y-%m-%d %H:%M')
+                end = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.POST['end_time'],
+                                        '%Y-%m-%d %H:%M')
                 end += timedelta(days=days.index(day))
                 while current < end:
-                    current_end = current + timedelta(minutes=int(request.GET['duration']))
+                    current_end = current + timedelta(minutes=int(request.POST['duration']))
                     if dt.n_slottemplates() > 0:
                         for old_slot in dt.slots.filter(start__lte=current, end__gt=current):
                             dt.slots.remove(old_slot)
                         for old_slot in dt.slots.filter(start__lt=current_end, end__gte=current_end):
                             dt.slots.remove(old_slot)
-                    booked = True if request.GET['booked'] == "1" else False
-                    st = SlotTemplate(start=current, end=current_end, slot_type=request.GET['slot_type'], booked=booked)
+                    booked = True if request.POST['booked'] == "1" else False
+                    st = SlotTemplate(start=current, end=current_end, slot_type=request.POST['slot_type'],
+                                      booked=booked)
                     st.save()
                     dt.add_slottemplate(st)
-                    current = current_end + timedelta(minutes=int(request.GET['break_time']))
+                    current = current_end + timedelta(minutes=int(request.POST['break_time']))
         results['return'] = True
         results['slottemplates'] = request.user.userprofile.get_all_slottemplates()
         return HttpResponse(json.dumps(results))
@@ -57,30 +61,36 @@ def st_clean(request):
 def st_apply(request):
     results = {}
     if request.is_ajax():
-        if 'start_date' in request.GET and 'end_date' in request.GET:
+        if 'start_date' in request.POST and 'end_date' in request.POST:
             results = {}
-            format_date = request.GET['format']
+            format_date = request.POST['format']
             format_date = format_date.replace('yyyy', '%Y')
             format_date = format_date.replace('mm', '%m')
             format_date = format_date.replace('dd', '%d')
-            start_date = datetime.strptime(request.GET['start_date'], format_date)
+            start_date = datetime.strptime(request.POST['start_date'], format_date)
 
-            end_date = datetime.strptime(request.GET['end_date'], format_date)
+            end_date = datetime.strptime(request.POST['end_date'], format_date)
             ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, settings.FULLCALENDAR_REF_DATEFORMAT)
             for i in range(0, 7):  # datetime.weekday() #0 = Monday - 6= Sunday
                 # ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
-                    sts = request.user.userprofile.get_daytemplate(1+(int(start_date.weekday()) + i) % 7).get_slottemplates()
+                    sts = request.user.userprofile.get_daytemplate(
+                            1 + (int(start_date.weekday()) + i) % 7).get_slottemplates()
                     if sts:
                         for st in sts:
                             current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
-                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day), st__start__lte=current_day, st__end__gt=current_day):
+                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day),
+                                                                           st__start__lte=current_day,
+                                                                           st__end__gt=current_day):
                                 request.user.userprofile.slots.remove(s)
                             current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
-                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day), st__start__lt=current_day, st__end__gte=current_day):
+                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day),
+                                                                           st__start__lt=current_day,
+                                                                           st__end__gte=current_day):
                                 request.user.userprofile.slots.remove(s)
-                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=request.user.userprofile, booked=st.booked)
+                            new_slot = Slot(date=datetime.date(current_day), st=st,
+                                            refer_doctor=request.user.userprofile, booked=st.booked)
                             new_slot.save()
                             request.user.userprofile.slots.add(new_slot)
                     current_day += timedelta(days=7)
@@ -124,15 +134,16 @@ def get_slot(request, slot_id):
 def book_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=slot_id)
-        if request.GET["patient"] is None or int(request.GET["patient"]) == 0:
+        if request.POST["patient"] is None or int(request.POST["patient"]) == 0:
             # new Patient
-            s.informations = request.GET["informations"]
-            p = Patient(email=unicode(request.GET["email"]), first_name=unicode(request.GET["first_name"]), last_name=unicode(request.GET["last_name"]), telephone=unicode(request.GET["telephone"]))
+            s.informations = request.POST["informations"]
+            p = Patient(email=unicode(request.POST["email"]), first_name=unicode(request.POST["first_name"]),
+                        last_name=unicode(request.POST["last_name"]), telephone=unicode(request.POST["telephone"]))
             p.save()
             s.patient = p
-            s.informations = unicode(request.GET["informations"])
+            s.informations = unicode(request.POST["informations"])
         else:
-            p = Patient.objects.get(id=int(request.GET["patient"]))
+            p = Patient.objects.get(id=int(request.POST["patient"]))
             s.patient = p
         s.booked = True
         s.save()

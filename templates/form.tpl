@@ -6,6 +6,7 @@
 <link href='{% static "clockfield/bootstrap-clockpicker.min.css" %}' rel='stylesheet' />
 <link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
 <link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
+<link href='{% static "select2-4.0.1/dist/css/select2.min.css" %}' rel='stylesheet' />
 <link href='{% static "css/perso.css' rel='stylesheet' />
 {% endblock %}
 
@@ -13,6 +14,7 @@
 <script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
 <script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
 <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
+<script type="text/javascript" src='{% static "select2-4.0.1/dist/js/select2.min.js" %}'></script>
 <script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false'></script>
 <script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
 <script type="text/javascript" src='{% static "address/js/address.js" %}'></script>
@@ -26,6 +28,8 @@ $(document).ready(function() {
         autoclose: true
         //orientation: "bottom left"
     });
+
+    $('.select2').select2();
 
     $('.colorpicker').colorpicker({
         format: 'hex',
