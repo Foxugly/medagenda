@@ -10,7 +10,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, find_slot, model_calendar, \
+from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, search_doctor, model_calendar, \
     update_user, create_user, personal_data, config, avatar, text, color, remove_picture
 
 urlpatterns = (
@@ -40,4 +40,5 @@ urlpatterns = (
     url(r'^ajax/text/$', text, name="text"),
     url(r'^ajax/color/(?P<color_id>[\w-]+)/$', color, name="color"),
     url(r'^ajax/remove_picture/$', remove_picture, name="remove_picture"),
+    url(r'^ajax/search/$', search_doctor, name='search_doctor'),
 )

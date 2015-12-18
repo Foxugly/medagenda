@@ -126,8 +126,7 @@ def remove_slot(request, slug, slot_id):
     return HttpResponseRedirect('/')
 
 
-def find_slot(request, slug, input):
-    print
+def search_doctor(request):
     # TODO fonction de recherche (jouer avec Q)
     return HttpResponseRedirect('/')
 

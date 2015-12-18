@@ -133,15 +133,16 @@ class Slot(models.Model):
 
     def start_dt(self):
         tz = pytz.timezone(str(self.refer_doctor.timezone))
-        print tz
-        return tz.localize(datetime(self.date.year, self.date.month, self.date.day, self.st.start.hour, self.st.start.minute, 0))
+        return tz.localize(
+            datetime(self.date.year, self.date.month, self.date.day, self.st.start.hour, self.st.start.minute, 0))
 
     def start_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.start)
 
     def end_dt(self):
         tz = pytz.timezone(str(self.refer_doctor.timezone))
-        return tz.localize(datetime(self.date.year, self.date.month, self.date.day, self.st.end.hour, self.st.end.minute, 0))
+        return tz.localize(
+            datetime(self.date.year, self.date.month, self.date.day, self.st.end.hour, self.st.end.minute, 0))
 
     def end_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.end)

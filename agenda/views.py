@@ -68,11 +68,8 @@ def st_apply(request):
             format_date = format_date.replace('mm', '%m')
             format_date = format_date.replace('dd', '%d')
             start_date = datetime.strptime(request.POST['start_date'], format_date)
-
             end_date = datetime.strptime(request.POST['end_date'], format_date)
-            ref_date = datetime.strptime(settings.FULLCALENDAR_REF_DATE, settings.FULLCALENDAR_REF_DATEFORMAT)
-            for i in range(0, 7):  # datetime.weekday() #0 = Monday - 6= Sunday
-                # ref_day = ref_date + timedelta(days=(int(start_date.weekday()) + i))
+            for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
                     sts = request.user.userprofile.get_daytemplate(
