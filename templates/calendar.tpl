@@ -3,57 +3,11 @@
 {% load i18n %}
 {% load tools %}
 {% load staticfiles %}
-{% block css %}
-<link href='{% static "fullcalendar-2.5.0/fullcalendar.css" %}' rel='stylesheet' />
-<link href='{% static "fullcalendar-2.5.0/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
-<link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
-<link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
-<link href='{% static "css/perso.css" %}' rel='stylesheet' />
-{% endblock %}
 
-<!-- JAVASCRIPT -->
+{% get_current_language as LANGUAGE_CODE %}
 {% block js %}
-<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
-<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/jquery.min.js" %}'></script>
-<script type="text/javascript" src='{% static "fullcalendar-2.5.0/fullcalendar.min.js" %}'></script>
-<script type="text/javascript" src='{% static "fullcalendar-2.5.0/lang-all.js" %}'></script>
-<script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
-<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
-{% if user.userprofile.language != 'en' %}
-<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.fr.min.js" %}'></script>
-{% endif %}
-<script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
 <script>
 $(document).ready(function() {
-    $('.datepicker').datepicker({
-        autoclose: true,
-        orientation: "bottom right"
-    });
-
-    $('.colorpicker').colorpicker({
-        format: 'hex',
-        customClass: 'colorpicker-2x',
-        sliders: {
-            saturation: {
-                maxLeft: 200,
-                maxTop: 200
-            },
-            hue: {
-                maxTop: 200
-            },
-            alpha: {
-                maxTop: 200
-            }
-        }
-    }).on('changeColor', function(ev) {
-        $(this).css({'background-color' : $(this).val()});
-    });
-
-    $('.colorpicker').focusout(function(){
-        $(this).css({'background-color' : $(this).val()});
-    });
-
-
     $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
@@ -65,7 +19,7 @@ $(document).ready(function() {
                 timeFormat: 'H:mm'
             }
         },
-        lang: '{{user.userprofile.language}}',
+        lang: '{{ LANGUAGE_CODE }}',
         firstDay: 1,
         //defaultDate: '2015-12-12',
         editable: false,
@@ -80,8 +34,7 @@ $(document).ready(function() {
         {% if slots %}
         events: {{slots|safe}},
         {% endif %}
-        eventClick: function(calEvent, jsEvent, view) {
-            event = Event.id;
+        eventClick: function (calEvent) {
             $('#id_slot').val(calEvent.id);
             var url = '/slot/ajax/s/get/' + calEvent.id + '/';
             $.ajax({
@@ -172,8 +125,7 @@ $(document).ready(function() {
                 $('#bookingslot').hide();
                 clean_modal();
                 if (result['return']){
-                    $('#calendar').fullCalendar( 'removeEvents', id );
-                    $("#calendar").fullCalendar('addEventSource', [result['slot']]); 
+                    $('#calendar').fullCalendar( 'removeEvents', id ).fullCalendar('addEventSource', [result['slot']]);
                     $('#confirm_yes').show();
                 }
                 else{
@@ -192,10 +144,16 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar( 'removeEvents', id );
-                $('#bookingslot').hide();
-                clean_modal();
-                $('#confirm_yes').show();
+                if (result['return']){
+                    $('#calendar').fullCalendar( 'removeEvents', id );
+                    $('#bookingslot').hide();
+                    clean_modal();
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
             }
         });  
     });
@@ -210,23 +168,19 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar( 'removeEvents', id );
-                $("#calendar").fullCalendar('addEventSource', [result['slot']]);
-                $('#bookingslot').hide();
-                clean_modal();
-                $('#confirm_yes').show();
+                if (result['return']){
+                    $('#calendar').fullCalendar( 'removeEvents', id ).fullCalendar('addEventSource', [result['slot']]);
+                    $('#bookingslot').hide();
+                    clean_modal();
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
             }
         });  
     });
-/*
-    $('#confirm_close').click(function(){
-        $('#confirm').hide();
-    });
-
-    $('#confirm_ok').click(function(){
-        $('#confirm').hide();
-    });*/
-
     $('#confirm2_close').click(function(){
         $('#confirm2').hide();
     });

@@ -99,9 +99,14 @@ DAY_CHOICES = (
 )
 
 MEDECINE_CHOICES = (
-    (1, _(u'Aucune')),
-    (2, _(u'Médecine Générale')),
-    (3, _(u'Médecine Interne')),
+    (1, _(u'Médecine Générale')),
+    (2, _(u'Pédiatrie')),
+    (3, _(u'ORL')),
+    (4, _(u'Cardiologue')),
+    (5, _(u'Dentiste')),
+    (13, _(u'Infirmier(ère) indépendant(e)')),
+    (14, _(u'Kinésithérapeute')),
+    (15, _(u'Ostéopathe')),
 )
 TITLE_CHOICES = (
     (1, _(u'Professeur')),
@@ -152,8 +157,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
                 'django.core.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',

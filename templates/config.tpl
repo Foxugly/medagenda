@@ -3,99 +3,9 @@
 {% load i18n %}
 {% load tools %}
 {% load staticfiles %}
-{%block css %}
-<link href='{% static "clockfield/bootstrap-clockpicker.min.css" %}' rel='stylesheet' />
-<link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
-<link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
-<link href='{% static "bootstrap-fileinput-master/css/fileinput.min.css" %}' rel='stylesheet' />
-<link href='{% static "css/perso.css" %}' rel='stylesheet' />
-{% endblock %}
-
 {% block js %}
-<script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
-<script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
-<script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
-<script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
-<script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false'></script>
-<script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
-<script type="text/javascript" src='{% static "address/js/address.js" %}'></script>
 <script>
-
-$(document).ajaxSend(function(event, xhr, settings) {
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    function sameOrigin(url) {
-        // url could be relative or scheme relative or absolute
-        var host = document.location.host; // host + port
-        var protocol = document.location.protocol;
-        var sr_origin = '//' + host;
-        var origin = protocol + sr_origin;
-        // Allow absolute or scheme relative URLs to same origin
-        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-            // or any other URL that isn't scheme relative or absolute i.e relative.
-            !(/^(\/\/|http:|https:).*/.test(url));
-    }
-    function safeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
-        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-    }
-});
-
-
 $(document).ready(function() {
-    $(".clockpicker").parent().clockpicker({
-        autoclose: true
-    });
-
-    $('.datepicker').datepicker({
-        autoclose: true
-        //orientation: "bottom left"
-    });
-
-    $('.colorpicker').colorpicker({
-        format: 'hex',
-        customClass: 'colorpicker-2x',
-        sliders: {
-            saturation: {
-                maxLeft: 200,
-                maxTop: 200
-            },
-            hue: {
-                maxTop: 200
-            },
-            alpha: {
-                maxTop: 200
-            }
-        }
-    }).on('changeColor', function(ev) {
-        $(this).css({'background-color' : $(this).val()});
-    });
-
-    $('.colorpicker').focusout(function(){
-        $(this).css({'background-color' : $(this).val()});
-    });
-
-    $('.colorpicker').each(function(){
-        $(this).css({'background-color': $(this).val()});
-    });
-
     $("#id_picture").fileinput({
         overwriteInitial: true,
         showCaption: false,
@@ -109,7 +19,7 @@ $(document).ready(function() {
         initialPreviewConfig: [
         {
             caption: '{{avatar|filename}}',
-            width: '120px',
+            width: '120px'
         }],
         {% endif %}
         allowedFileExtensions: ["jpg", "png", "gif"]
@@ -157,7 +67,7 @@ $(document).ready(function() {
     });
 
     $('#btn_avatar').click(function(){
-        var input = $('#form_avatar input#id_picture');
+        var input = $('#form_avatar').find('input#id_picture');
         var formdata = new FormData();
         var file = input[0].files[0];
         /*console.log(input[0].id);*/
@@ -233,7 +143,6 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-
 <div class="container">
     <h2>{% trans "Configuration and Settings" %}</h2>
     <ul class="nav nav-tabs">
@@ -247,7 +156,7 @@ $(document).ready(function() {
 
     <div class="tab-content">
         <div id="div_personal_data" class="tab-pane in active">
-             <div class="row" style="padding: 20px 0px 20px 0px;">
+             <div class="row row_space">
                 <form class="form-horizontal" id="form_personal_data" >
                     {% csrf_token %}
                     <fieldset>
@@ -257,7 +166,7 @@ $(document).ready(function() {
                         <div class="row">
                             <div class="form_group">
                                 <div class="col-md-9 col-md-offset-3">
-                                    <a href="#" id="btn_personal_data" class="btn btn-primary" layout="horizontal"> Submit</a>
+                                    <a href="#" id="btn_personal_data" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
                         </div>  
@@ -267,7 +176,7 @@ $(document).ready(function() {
         </div>
 
         <div id="div_config" class="tab-pane">
-            <div class="row" style="padding: 20px 0px 20px 0px;">
+            <div class="row row_space">
                 <form class="form-horizontal" id="form_config">
                     {% csrf_token %}
                     <fieldset>
@@ -277,7 +186,7 @@ $(document).ready(function() {
                         <div class="row">
                             <div class="form_group">
                                 <div class="col-md-9 col-md-offset-3">
-                                    <a href="#" id="btn_config" class="btn btn-primary" layout="horizontal"> Submit</a>
+                                    <a href="#" id="btn_config" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
                         </div>  
@@ -287,7 +196,7 @@ $(document).ready(function() {
         </div>
 
         <div id="div_avatar" class="tab-pane">
-            <div class="row" style="padding: 20px 0px 20px 0px;">
+            <div class="row row_space">
                 <form class="form-horizontal" id="form_avatar" enctype="multipart/form-data">
                     {% csrf_token %}
                     <fieldset>
@@ -302,7 +211,7 @@ $(document).ready(function() {
                         <div class="row">
                             <div class="form_group">
                                 <div class="col-md-9 col-md-offset-3">
-                                    <a href="#" id="btn_avatar" class="btn btn-primary" layout="horizontal"> Submit</a>
+                                    <a href="#" id="btn_avatar" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
                         </div>
@@ -312,7 +221,7 @@ $(document).ready(function() {
         </div>
 
         <div id="div_color" class="tab-pane">
-            <div class="row" style="padding: 20px 0px 20px 0px;">
+            <div class="row row_space">
                 <ul class="nav nav-tabs">
                 {% for cform in color_forms %}
                     {% if forloop.first %}
@@ -329,7 +238,7 @@ $(document).ready(function() {
                     {% else %}
                     <div id="color_{{cform|index:'id'}}" class="tab-pane ">
                     {% endif %}
-                        <div class="row" style="padding: 20px 0px 20px 0px;">
+                        <div class="row row_space">
                             <form class="form-horizontal" id="form_color_{{cform|index:'id'}}">
                                 {% csrf_token %}
                                 <fieldset>
@@ -340,7 +249,7 @@ $(document).ready(function() {
                                         <div class="form_group">
                                             <div class="col-md-9 col-md-offset-3">
 
-                                                <a href="#" id="btn_color_{{cform|index:'id'}}" class="btn btn-primary" layout="horizontal"> Submit</a>
+                                                <a href="#" id="btn_color_{{cform|index:'id'}}" class="btn btn-primary"> Submit</a>
 
                                             </div>
                                         </div>
@@ -355,7 +264,7 @@ $(document).ready(function() {
         </div>
 
         <div id="div_text" class="tab-pane">
-            <div class="row" style="padding: 20px 0px 20px 0px;">
+            <div class="row row_space">
                 <form class="form-horizontal" id="form_text">
                     {% csrf_token %}
                     <fieldset>
@@ -365,7 +274,7 @@ $(document).ready(function() {
                         <div class="row">
                             <div class="form_group">
                                 <div class="col-md-9 col-md-offset-3">
-                                    <a href="#" id="btn_text" class="btn btn-primary" layout="horizontal"> Submit</a>
+                                    <a href="#" id="btn_text" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
                         </div>  
@@ -374,11 +283,9 @@ $(document).ready(function() {
             </div> 
         </div>
         <div id="div_operations" class="tab-pane">
-            <div class="row" style="padding: 20px 0px 20px 0px;">
+            <div class="row row_space">
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
-

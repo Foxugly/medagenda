@@ -33,12 +33,12 @@ class UserProfile(models.Model):
     MEDECINE_CHOICES = settings.MEDECINE_CHOICES
     TITLE_CHOICES = settings.TITLE_CHOICES
 
-    title = models.IntegerField(verbose_name=_(u'Title'), choices=TITLE_CHOICES, default=2)
+    title = models.IntegerField(verbose_name=_(u'Title'), choices=TITLE_CHOICES)
     user = models.OneToOneField(User, verbose_name=_('User'))
     picture = models.ImageField(upload_to=settings.IMAGE_UPLOAD_PATH, blank=True, null=True)
     speciality = models.IntegerField(verbose_name=_(u'Speciality'), choices=MEDECINE_CHOICES)
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
-    language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES)
+    language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES,default=1)
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
     telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True)
     address = AddressField()
@@ -127,6 +127,10 @@ class UserProfileForm(ModelForm):
 
     def __init__(self, *args, **kw):
         super(UserProfileForm, self).__init__(*args, **kw)
+        self.fields['speciality'].widget.attrs['class'] = 'select2'
+        self.fields['title'].widget.attrs['class'] = 'select2-nosearch'
+        self.fields['language'].widget.attrs['class'] = 'select2-nosearch'
+        self.fields['timezone'].widget.attrs['class'] = 'select2'
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
@@ -156,6 +160,10 @@ class PersonalDataForm(ModelForm):
         self.fields['first_name'].initial = kw['instance'].user.first_name
         self.fields['last_name'].initial = kw['instance'].user.last_name
         self.fields['email'].initial = kw['instance'].user.email
+        self.fields['speciality'].widget.attrs['class'] = 'select2'
+        self.fields['title'].widget.attrs['class'] = 'select2-nosearch'
+        self.fields['language'].widget.attrs['class'] = 'select2-nosearch'
+        self.fields['timezone'].widget.attrs['class'] = 'select2'
 
     def save(self, *args, **kw):
         up = super(PersonalDataForm, self).save(commit=False)
@@ -168,7 +176,7 @@ class PersonalDataForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['speciality', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language',
+        fields = ['speciality', 'title', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language',
                   'timezone']
 
 

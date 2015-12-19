@@ -4,66 +4,19 @@
 {% load tools %}
 {% load staticfiles %}
 {% block css %}
-<link href='{% static "fullcalendar-2.5.0/fullcalendar.css" %}' rel='stylesheet' />
-<link href='{% static "fullcalendar-2.5.0/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
-<link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
-<link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
-<link href='{% static "clockfield/bootstrap-clockpicker.min.css" %}' rel='stylesheet' />
-<link href='{% static "css/perso.css" %}' rel='stylesheet' />
 <style>
 .fc-unthemed .fc-today {
   background: transparent;
 }
-
-.circle{width:15px;height:15px;border-radius:50px;font-size:20px;color:#ffffff;line-height:10px;text-align:center;}.info{position:absolute;color:#000000;margin-left:20px}
 </style>
 {% endblock %}
-
+{% get_current_language as LANGUAGE_CODE %}
 {% block js %}
-<script src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
-<script src='{% static "fullcalendar-2.5.0/lib/jquery.min.js" %}'></script>
-<script src='{% static "fullcalendar-2.5.0/fullcalendar.min.js" %}'></script>
-<script src='{% static "fullcalendar-2.5.0/lang-all.js" %}'></script>
-<script src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
-{% if user.userprofile.language != 'en' %}
-<script src='{% static "bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.fr.min.js" %}'></script>
-{% endif %}
-<script src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
-<script src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
 <script>
 $(document).ready(function() {
-    /*$('.datepicker').datepicker({
-        autoclose: true,
-        orientation: "bottom right",
-        language: "{{user.userprofile.language}}",
-    });*/
-
-    $('.colorpicker').colorpicker({
-        format: 'hex',
-        customClass: 'colorpicker-2x',
-        sliders: {
-            saturation: {
-                maxLeft: 200,
-                maxTop: 200
-            },
-            hue: {
-                maxTop: 200
-            },
-            alpha: {
-                maxTop: 200
-            }
-        }
-    }).on('changeColor', function(ev) {
-        $(this).css({'background-color' : $(this).val()});
-    });
-
-    $('.colorpicker').focusout(function(){
-        $(this).css({'background-color' : $(this).val()});
-    });
-
     $('#calendar').fullCalendar({
       header: false,
-        lang: '{{user.userprofile.language}}',
+        lang: '{{ LANGUAGE_CODE }}',
         firstDay: 1,
         columnFormat: 'dddd',
         aspectRatio : 2,
@@ -78,8 +31,7 @@ $(document).ready(function() {
         {% if slottemplates %}
         events: {{slottemplates|safe}},
         {% endif %}
-        eventClick: function(calEvent, jsEvent, view) {
-            event = calEvent;
+        eventClick: function(calEvent) {
             $('#slot').val(calEvent.id);
             $('#removeslot').show();
         },
@@ -102,13 +54,17 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar( 'removeEvents' ,$('#slot').val());
-                $('#removeslot').hide();
+                if (result['return']){
+                    $('#calendar').fullCalendar( 'removeEvents' ,$('#slot').val());
+                    $('#removeslot').hide();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
             }
         });  
     });
-
-    $('.clockpicker').clockpicker();
 
     var startDate = new Date();
     var FromEndDate = new Date();
@@ -149,8 +105,7 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', result['slottemplates']);
+                $('#calendar').fullCalendar('removeEvents').fullCalendar('addEventSource', result['slottemplates']);
                 $('#loading').hide();
                 $('#confirm_yes').show();
             }
@@ -167,9 +122,16 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar('removeEvents');
-                $('#loading').hide();
-                $('#confirm_yes').show();
+                if (result['return']){
+                    $('#calendar').fullCalendar('removeEvents');
+                    $('#loading').hide();
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#loading').hide();
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
             }
         });
     });
@@ -186,21 +148,18 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#loading').hide();
                 if (result['return']){
-                  $('#confirm_yes').show();
+                    $('#loading').hide();
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#loading').hide();
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
                 }
             }
         });
     });
-/*
-    $('#confirm_close').click(function(){
-        $('#confirm').hide();
-    });
-
-    $('#confirm_ok').click(function(){
-        $('#confirm').hide();
-    });*/
 });
 </script>
 {% endblock %}
@@ -272,8 +231,8 @@ $(document).ready(function() {
           </div>
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% trans "Duration" %}:</label>
-            <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
-              <select id="duration" name="duration" class="form-control">
+            <div class="col-md-2" style="padding-right: 0; padding-left: 0;">
+              <select id="duration" name="duration" class="select2-nosearch">
                 <option value="0">0</option>
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -288,8 +247,8 @@ $(document).ready(function() {
           </div>
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="break_time">{% trans "Break" %}:</label>
-            <div class="col-md-2" style="padding-right: 0px; padding-left: 0px;">
-              <select  id="break_time" name="break_time" class="form-control">
+            <div class="col-md-2" style="padding-right: 0; padding-left: 0;">
+              <select  id="break_time" name="break_time" class="select2-nosearch">
                 <option value="0" selected="selected">0</option>
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -302,8 +261,8 @@ $(document).ready(function() {
           </div>
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="slot_type">{% trans "Type" %}:</label>
-            <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
-              <select id="slot_type" name="slot_type" class="form-control">
+            <div class="col-md-8" style="padding-right: 0; padding-left: 0;">
+              <select id="slot_type" name="slot_type" class="select2-nosearch">
               {% for st in slot_type %}
                 <option value="{{st.0}}">{{st.1}}</option>
               {% endfor %}
@@ -312,7 +271,7 @@ $(document).ready(function() {
           </div>
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label">{% trans "Availability" %}:</label>
-            <div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
+            <div class="col-md-4" style="padding-right: 0; padding-left: 0;">
               <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default active"><input name="booked" value="0" checked="checked" type="radio">{% trans "Free" %}</label>
                 <label class="btn btn-default"><input name="booked" value="1" type="radio">{% trans "Booked" %}</label>

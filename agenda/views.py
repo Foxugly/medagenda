@@ -115,16 +115,17 @@ def get_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=int(slot_id))
         if request.user.is_authenticated():
-            results['slot'] = s.detail
+            results['slot'] = s.detail()
             results['return'] = True
         else:
             if not s.patient:
                 results['return'] = True
-                results['slot'] = s.detail
+                results['slot'] = s.detail()
             else:
                 results['return'] = False
     else:
         results['return'] = False
+    print results
     return HttpResponse(json.dumps(results))
 
 

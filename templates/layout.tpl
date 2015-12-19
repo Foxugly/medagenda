@@ -8,8 +8,9 @@
 # your option) any later version.
 
 {% endcomment %}
+{% load bootstrap3 %}
 {% load i18n %}
-
+{% load staticfiles %}
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
@@ -18,50 +19,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <!--  CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous"/>
+    <link href='{% static "fullcalendar-2.5.0/fullcalendar.css" %}' rel='stylesheet' />
+    <link href='{% static "fullcalendar-2.5.0/fullcalendar.print.css" %}' rel='stylesheet' media='print' />
+    <link href='{% static "clockfield/bootstrap-clockpicker.min.css" %}' rel='stylesheet' />
+    <link href='{% static "bootstrap-datepicker-master/dist/css/datepicker3.css" %}' rel='stylesheet' />
+    <link href='{% static "bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.min.css" %}' rel='stylesheet' />
+    <link href='{% static "bootstrap-fileinput-master/css/fileinput.min.css" %}' rel='stylesheet' />
+    <link href='{% static "select2-4.0.1/dist/css/select2.min.css" %}' rel='stylesheet' />
     {% block css %}
     {% endblock %}
+    <link href='{% static "css/perso.css" %}' rel='stylesheet' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/jquery.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "fullcalendar-2.5.0/fullcalendar.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lang-all.js" %}'></script>
+    <script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
+    {% get_current_language as LANGUAGE_CODE %}
+    {% with 'bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.'|add:LANGUAGE_CODE|add:'.min.js' as datepicker_lang %}
+    <script type="text/javascript" src='{% static datepicker_lang %}'></script>
+    {% endwith %}
+  
+    <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
+    {% with 'bootstrap-fileinput-master/js/fileinput_locale_'|add:LANGUAGE_CODE|add:'.js' as fileinput_lang %}
+    <script type="text/javascript" src='{% static fileinput_lang %}'></script>
+    {% endwith %}
+    <script type="text/javascript" src='{% static "select2-4.0.1/dist/js/select2.min.js" %}'></script>
+    {% with 'select2-4.0.1/dist/js/i18n/'|add:LANGUAGE_CODE|add:'.js' as select2_lang %}
+    <script type="text/javascript" src='{% static select2_lang %}'></script>
+    {% endwith %}
+    <script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=false'></script>
+    <script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "address/js/address.js" %}'></script>
     {% block js %}
     {% endblock %}
-    <script>
-      $(document).ready(function() {
-        $('#confirm_yes_close').click(function(){
-          $('#confirm_yes').hide();
-        });
-        $('#confirm_yes_ok').click(function(){
-            $('#confirm_yes').hide();
-        });
-        $('#confirm_no_close').click(function(){
-            $('#confirm_no').hide();
-        });
-        $('#confirm_no_ok').click(function(){
-            $('#confirm_no').hide();
-        });
-
-        $('#language').change(function() {
-            var select = $(this);
-            var url = '/user/language/'
-            alert($(this).val());
-            $.ajax({
-                url: url,
-                type: 'GET',
-                data: select.serialize(),
-                traditional: true,
-                dataType: 'json',
-                success: function(result){
-                    location.reload();
-                }
-            });
-        });
-      });
-    </script>
-    <style>
-      body {
-        padding-top: 60px;
-      }
-    </style>
-
+    <script src='{% static "js/perso.js" %}'></script>
     {% block header %}
     {% endblock %}
   </head>
@@ -79,20 +74,19 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
-            <li><div class='navbar-form form-group'>
-             <select id="language" name="language" class="form-control">
-        {% get_current_language as LANGUAGE_CODE %}
-        {% get_available_languages as LANGUAGES %}
-        {% get_language_info_list for LANGUAGES as languages %}
-        {% for language in languages %}
-            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected="selected"{% endif %}>
-                {{ language.name_local|capfirst }} ({{ language.code }})
-            </option>
-        {% endfor %}
-    </select>
-
-
-            </div>
+            <li>
+                <div class='navbar-form form-group'>
+                    <select id="language" name="language" class="form-control">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected="selected"{% endif %}>
+                                {{ language.name_local|capfirst }} ({{ language.code }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </li>
             <li><a href="#">{% trans "Help" %} </a></li>
             {% if user.is_authenticated %}
@@ -100,11 +94,11 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
-                <li><a class="glyphicon glyphicon-cog" href="/user/update_user/"> {% trans "Change Settings" %}</a></li>
+                <li><a class="glyphicon glyphicon-cog" href="/user/settings/"> {% trans "Change Settings" %}</a></li>
                 <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
                 <li class="divider"></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/profil/calendar/"> {% trans "Calendar" %}</a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/profil/model/"> {% trans "Model" %}</a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="/user/p/calendar/"> {% trans "Calendar" %}</a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/p/model/"> {% trans "Model" %}</a></li>
                 <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
               </ul>

@@ -125,7 +125,7 @@ class Slot(models.Model):
         self.save()
 
     def date_t(self):
-        return self.date.strftime('%d/%m/%Y')
+        return str(self.date.strftime('%d/%m/%Y'))
 
     @staticmethod
     def hour_t(t):
@@ -154,14 +154,13 @@ class Slot(models.Model):
         return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=self.get_title(),
                     color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
-    def as_json2(self):
-        return dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start))
+    #def as_json2(self):
+    #    return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
 
-    @property
     def detail(self):
         if self.booked:
             if self.refer_doctor.view_busy_slot:
-                d = dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start), title=str(_('Booked')),
+                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')),
                          color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
                          informations=self.informations)
                 d_patient = self.patient.as_json()
@@ -171,7 +170,8 @@ class Slot(models.Model):
             else:
                 return None
         else:
-            return dict(id=self.id, date=self.date_t, start=self.hour_t(self.st.start), title=str(_('Free')),
+            print 'ici'
+            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')),
                         color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def __str__(self):

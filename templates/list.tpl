@@ -10,7 +10,7 @@ $(document).ready(function() {
     var map;
     var markers = [
     {% for item in list %}{% if not forloop.first %},{% endif %}
-      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/user/profil/{{item.slug}}/"}
+      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/user/p/{{item.slug}}/"}
     {% endfor %}];
 
     function initialize(){
@@ -36,8 +36,8 @@ $(document).ready(function() {
     }
     $('#div_map').hide();
 
-    $("#btn_view input[name='view']").on("change", function () {
-        if($('#btn_view input:radio[name=view]:checked').val() == "map"){
+    $("#btn_view").find("input[name='view']").on("change", function () {
+        if($('#btn_view').find('input:radio[name=view]:checked').val() == "map"){
             $('#div_list').hide();
             $('#div_map').show();
             initialize();
@@ -52,7 +52,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-<div class="row" style="padding: 20px 0px 20px 0px;">
+<div class="row row_space">
   <div class="col-md-2">
     {% if user.is_authenticated %}
       {% if user.is_superuser %}
@@ -62,7 +62,7 @@ $(document).ready(function() {
   </div>
   <div class="col-md-8">
     <div class="input-group">
-      <input type="text" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></button></span>
+      <input type="text" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></span>
     </div>
   </div>
   <div class="col-md-2 text-right">
@@ -89,7 +89,7 @@ $(document).ready(function() {
       <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>
       <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
       <p  style="text-align:center;">{{item.address.locality.name}}</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="/user/profil/{{item.slug}}/" role="button">Plus d'infos</a></p>
+      <p style="text-align:center;"><a class="btn btn-info" href="/user/p/{{item.slug}}/" role="button">Plus d'infos</a></p>
     </div>
   </div>
 {% if forloop.last or forloop.counter|divisibleby:4 %}</div>{% endif %}

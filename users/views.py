@@ -36,11 +36,10 @@ def home(request):
     return render(request, 'list.tpl', c)
 
 
-def language(request):
-    # TODO a vérifier
+def lang(request):
     results = {}
     if request.is_ajax():
-        user_language = request.POST('language')
+        user_language = request.POST['lang']
         translation.activate(user_language)
         request.session[translation.LANGUAGE_SESSION_KEY] = user_language
         results['return'] = True
@@ -73,10 +72,9 @@ def add_user(request):
     return render(request, 'form.tpl', c)
 
 
-def profile(request, slug):
-    c = {}
-    doc = UserProfile.objects.get(slug=slug)
-    c['doctor'] = doc
+def profile(request, slug=None):
+    doc = get_object_or_404(UserProfile, slug=slug) if slug else request.user.userprofile
+    c = {'doctor': doc}
     return render(request, 'profile.tpl', c)
 
 
@@ -85,7 +83,6 @@ def calendar_user(request, slug=None):
     c = {'doctor': userp}
     today = datetime.now().date()
     c['slots'] = []
-    # slots = []
     if request.user.is_authenticated():
         slots = userp.slots.all()
     elif userp.view_busy_slot is True:
@@ -100,17 +97,13 @@ def calendar_user(request, slug=None):
 
 
 @login_required
-def model_calendar(request, slug):
+def model_calendar(request):
     c = {}
-    userp = get_object_or_404(UserProfile, slug=slug)
-    if userp.user != request.user:
-        return HttpResponseRedirect('/')
-    else:
-        c['doctor'] = userp
-        c['slot_type'] = settings.SLOT_TYPE
-        c['slottemplates'] = userp.get_all_slottemplates()
-        c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
-        return render(request, 'model.tpl', c)
+    c['doctor'] = request.user.userprofile
+    c['slot_type'] = settings.SLOT_TYPE
+    c['slottemplates'] = request.user.userprofile.get_all_slottemplates()
+    c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
+    return render(request, 'model.tpl', c)
 
 
 def reminder_slot(request, slug):
