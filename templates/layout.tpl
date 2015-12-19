@@ -109,7 +109,7 @@
         </div>
       </div>
     </nav>
-    <div class="container">{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE|language_name }} <!--<div class="container-fluid">-->
+    <div class="container"><!--<div class="container-fluid">-->
         <!--[if lt IE 9]>
            	<div id="topwarning">
     		{% blocktrans %}
