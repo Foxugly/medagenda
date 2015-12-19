@@ -41,7 +41,6 @@
     {% with 'bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.'|add:LANGUAGE_CODE|add:'.min.js' as datepicker_lang %}
     <script type="text/javascript" src='{% static datepicker_lang %}'></script>
     {% endwith %}
-  
     <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
     {% with 'bootstrap-fileinput-master/js/fileinput_locale_'|add:LANGUAGE_CODE|add:'.js' as fileinput_lang %}
