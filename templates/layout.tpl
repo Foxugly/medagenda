@@ -38,18 +38,24 @@
     <script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
     {% get_current_language as LANGUAGE_CODE %}
-    {% with 'bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.'|add:LANGUAGE_CODE|add:'.min.js' as datepicker_lang %}
-    <script type="text/javascript" src='{% static datepicker_lang %}'></script>
-    {% endwith %}
+    {% if LANGUAGE_CODE != 'en' %}
+        {% with 'bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.'|add:LANGUAGE_CODE|add:'.min.js' as datepicker_lang %}
+        <script type="text/javascript" src='{% static datepicker_lang %}'></script>
+        {% endwith %}
+    {%  endif %}
     <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
-    {% with 'bootstrap-fileinput-master/js/fileinput_locale_'|add:LANGUAGE_CODE|add:'.js' as fileinput_lang %}
-    <script type="text/javascript" src='{% static fileinput_lang %}'></script>
-    {% endwith %}
+    {% if LANGUAGE_CODE != 'en' %}
+        {% with 'bootstrap-fileinput-master/js/fileinput_locale_'|add:LANGUAGE_CODE|add:'.js' as fileinput_lang %}
+        <script type="text/javascript" src='{% static fileinput_lang %}'></script>
+        {% endwith %}
+    {%  endif  %}
     <script type="text/javascript" src='{% static "select2-4.0.1/dist/js/select2.min.js" %}'></script>
-    {% with 'select2-4.0.1/dist/js/i18n/'|add:LANGUAGE_CODE|add:'.js' as select2_lang %}
-    <script type="text/javascript" src='{% static select2_lang %}'></script>
-    {% endwith %}
+    {% if LANGUAGE_CODE != 'en' %}
+        {% with 'select2-4.0.1/dist/js/i18n/'|add:LANGUAGE_CODE|add:'.js' as select2_lang %}
+        <script type="text/javascript" src='{% static select2_lang %}'></script>
+        {% endwith %}
+     {%  endif %}
     <script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places'></script>
     <script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
     <script type="text/javascript" src='{% static "address/js/address.js" %}'></script>

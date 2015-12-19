@@ -27,7 +27,7 @@ $(document).ready(function() {
         allDaySlot : false,
         defaultView : 'agendaWeek',
         editable: false,
-        slotLabelFormat : 'H:mm',
+        //slotLabelFormat : 'H:mm',
         {% if slottemplates %}
         events: {{slottemplates|safe}},
         {% endif %}
@@ -139,7 +139,8 @@ $(document).ready(function() {
     $('#btn_applyslots').on("click", function(){
         $('#loading').show();
         var form = $('#form_apply').serializeArray();
-        form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']}); <!-- TODO replace -->
+        {% get_current_language as LANGUAGE_CODE %}
+        form.push({name: 'date_format',value:$.fn.datepicker.dates['{{LANGUAGE_CODE}}']['format']});
         var url = '/slot/ajax/st/apply/';
         $.ajax({
             url: url,

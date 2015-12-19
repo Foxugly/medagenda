@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient
 from datetime import datetime, timedelta
+from utils.toolbox import reformat_date
 import pytz
 
 
@@ -124,8 +125,9 @@ class Slot(models.Model):
         self.booked = False
         self.save()
 
-    def date_t(self):
-        return str(self.date.strftime('%d/%m/%Y'))
+    def date_t(self, date_format):
+        # return str(self.date.strftime('%d/%m/%Y'))
+        return str(self.date.strftime(reformat_date(date_format)))
 
     @staticmethod
     def hour_t(t):
@@ -157,10 +159,10 @@ class Slot(models.Model):
     #def as_json2(self):
     #    return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
 
-    def detail(self):
+    def detail(self, date_format=None):
         if self.booked:
             if self.refer_doctor.view_busy_slot:
-                d = dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Booked')),
+                d = dict(id=self.id, date=self.date_t(date_format), start=self.hour_t(self.st.start), title=str(_('Booked')),
                          color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
                          informations=self.informations)
                 d_patient = self.patient.as_json()
@@ -170,8 +172,7 @@ class Slot(models.Model):
             else:
                 return None
         else:
-            print 'ici'
-            return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start), title=str(_('Free')),
+            return dict(id=self.id, date=self.date_t(date_format), start=self.hour_t(self.st.start), title=str(_('Free')),
                         color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
     def __str__(self):

@@ -29,18 +29,20 @@ $(document).ready(function() {
         contentHeight: 'auto',
         minTime : '{{doctor.start_time|time_format}}',
         maxTime : '{{doctor.end_time|time_format}}',
-        slotLabelFormat : 'H:mm',
+        //slotLabelFormat : 'H:mm',
         eventLimit: false, // allow "more" link when too many events
         {% if slots %}
         events: {{slots|safe}},
         {% endif %}
         eventClick: function (calEvent) {
             $('#id_slot').val(calEvent.id);
-            var url = '/slot/ajax/s/get/' + calEvent.id + '/'; <!-- TODO changer GET en POST, ajouter le format form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']}); -->
+            var url = '/slot/ajax/s/get/' + calEvent.id + '/';
+            {% get_current_language as LANGUAGE_CODE %}
+            var mydata = {date_format:$.fn.datepicker.dates['{{LANGUAGE_CODE}}']['format']};
             $.ajax({
                 url: url,
-                type: 'GET',
-                data: '',
+                type: 'POST',
+                data: mydata,
                 traditional: true,
                 dataType: 'json',
                 success: function(result){
@@ -117,7 +119,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/s/book/' + id + '/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: form.serialize(),
             traditional: true,
             dataType: 'json',
@@ -139,7 +141,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/s/remove/' + id + '/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: '',
             traditional: true,
             dataType: 'json',
@@ -163,7 +165,7 @@ $(document).ready(function() {
         var url = '/slot/ajax/s/clean/' + id + '/';
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: '',
             traditional: true,
             dataType: 'json',

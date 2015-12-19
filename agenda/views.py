@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from agenda.models import SlotTemplate, Slot
 from patient.models import Patient
+from utils.toolbox import reformat_date
 import json
 
 
@@ -62,13 +63,11 @@ def st_apply(request):
     results = {}
     if request.is_ajax():
         if 'start_date' in request.POST and 'end_date' in request.POST:
-            results = {}
-            format_date = request.POST['format']
-            format_date = format_date.replace('yyyy', '%Y')
-            format_date = format_date.replace('mm', '%m')
-            format_date = format_date.replace('dd', '%d')
-            start_date = datetime.strptime(request.POST['start_date'], format_date)
-            end_date = datetime.strptime(request.POST['end_date'], format_date)
+            print(request.POST['date_format'])
+            f_date = request.POST['date_format']
+            f_date = reformat_date(f_date)
+            start_date = datetime.strptime(request.POST['start_date'], f_date)
+            end_date = datetime.strptime(request.POST['end_date'], f_date)
             for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
@@ -110,22 +109,25 @@ def st_remove(request, st_id):
     return HttpResponse(json.dumps(results))
 
 
-def get_slot(request, slot_id):  # TODO faut gérer le format de la date et mettre une méthode dans toolbox
+def get_slot(request, slot_id):
     results = {}
     if request.is_ajax():
+        if 'date_format' in request.POST:
+            format_date = request.POST['date_format']
+        else:
+            format_date = 'mm/dd/yyyy'
         s = Slot.objects.get(id=int(slot_id))
         if request.user.is_authenticated():
-            results['slot'] = s.detail()
+            results['slot'] = s.detail(format_date)
             results['return'] = True
         else:
             if not s.patient:
                 results['return'] = True
-                results['slot'] = s.detail()
+                results['slot'] = s.detail(format_date)
             else:
                 results['return'] = False
     else:
         results['return'] = False
-    print results
     return HttpResponse(json.dumps(results))
 
 
