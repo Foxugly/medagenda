@@ -36,7 +36,7 @@ $(document).ready(function() {
         {% endif %}
         eventClick: function (calEvent) {
             $('#id_slot').val(calEvent.id);
-            var url = '/slot/ajax/s/get/' + calEvent.id + '/';
+            var url = '/slot/ajax/s/get/' + calEvent.id + '/'; <!-- TODO changer GET en POST, ajouter le format form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']}); -->
             $.ajax({
                 url: url,
                 type: 'GET',

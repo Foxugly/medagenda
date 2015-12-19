@@ -110,7 +110,7 @@ def st_remove(request, st_id):
     return HttpResponse(json.dumps(results))
 
 
-def get_slot(request, slot_id):
+def get_slot(request, slot_id):  # TODO faut gérer le format de la date et mettre une méthode dans toolbox
     results = {}
     if request.is_ajax():
         s = Slot.objects.get(id=int(slot_id))

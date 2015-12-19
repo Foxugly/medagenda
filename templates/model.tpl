@@ -139,7 +139,7 @@ $(document).ready(function() {
     $('#btn_applyslots').on("click", function(){
         $('#loading').show();
         var form = $('#form_apply').serializeArray();
-        form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']});
+        form.push({name: 'format',value:$.fn.datepicker.dates['{{user.userprofile.language}}']['format']}); <!-- TODO replace -->
         var url = '/slot/ajax/st/apply/';
         $.ajax({
             url: url,

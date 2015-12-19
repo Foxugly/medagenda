@@ -37,7 +37,7 @@
         <p><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <b> Horaires :</b></p>
         <p>{{doctor.text_horaires}}</p>
         <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <b> Adresse :</b></p>
-        <p><a href="http://maps.google.com/?q={{doctor.address.formatted}}">{{doctor.address.formatted}}</a></p>
+        <p><a href="http://maps.google.com/?q={{doctor.address.formatted|cast}}">{{doctor.address.formatted}}</a></p>
       </div>
     </div>
   </div>

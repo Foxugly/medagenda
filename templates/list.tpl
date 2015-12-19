@@ -1,9 +1,9 @@
 {% extends "layout.tpl" %}
+{% load bootstrap3 %}
 {% load i18n %}
 {% load tools %}
-
+{% load staticfiles %}
 {% block js %}
-<script src="http://maps.googleapis.com/maps/api/js"></script>
 <script>
 $(document).ready(function() {
     var myCenter=new google.maps.LatLng(50.5001,4.70055);
@@ -35,17 +35,14 @@ $(document).ready(function() {
         }
     }
     $('#div_map').hide();
-
-    $("#btn_view").find("input[name='view']").on("change", function () {
-        if($('#btn_view').find('input:radio[name=view]:checked').val() == "map"){
-            $('#div_list').hide();
-            $('#div_map').show();
-            initialize();
-        }
-        else{
-            $('#div_map').hide();
-            $('#div_list').show();
-        }
+    $('#label_list').click(function(){
+        $('#div_map').hide();
+        $('#div_list').show();
+    });
+    $('#label_map').click(function(){
+        $('#div_list').hide();
+        $('#div_map').show();
+        initialize();
     });
 });
 </script>
@@ -67,8 +64,8 @@ $(document).ready(function() {
   </div>
   <div class="col-md-2 text-right">
     <div id="btn_view" class="btn-group" data-toggle="buttons">
-       <label class="btn btn-default btn-lg active"><input type="radio" id="view_list" name="view" value="list"/><span class="glyphicon glyphicon-th"></span></label>
-       <label class="btn btn-default btn-lg"><input type="radio" id="view_map" name="view" value="map"/><span class="glyphicon glyphicon-map-marker"></span></label>
+       <label id="label_list" class="btn btn-default btn-lg active"><input type="radio" id="view_list" name="view" value="list"/><span class="glyphicon glyphicon-th"></span></label>
+       <label id="label_map" class="btn btn-default btn-lg"><input type="radio" id="view_map" name="view" value="map"/><span class="glyphicon glyphicon-map-marker"></span></label>
     </div>
   </div>
 </div>
@@ -81,9 +78,9 @@ $(document).ready(function() {
     <div class="thumbnail text-center" >
       <div style="height: 200px;">
       {% if item.picture %}
-        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}{{item.picture}}' style="vertical-align: middle;max-height:200px;max-width:200px;">
+        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}{{item.picture}}' alt='img' style="vertical-align: middle;max-height:200px;max-width:200px;">
       {% else %}
-        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}pic/profil.jpg' style="vertical-align: middle;max-height:200px;max-width:200px;">
+        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}pic/profil.jpg' alt='img' style="vertical-align: middle;max-height:200px;max-width:200px;">
       {% endif %}
       </div>
       <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>

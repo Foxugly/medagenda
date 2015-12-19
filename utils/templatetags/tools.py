@@ -26,3 +26,8 @@ def time_format(time):
 @register.filter()
 def filename(path):
     return os.path.basename(path.name)
+
+
+@register.filter()
+def cast(s):
+    return s.replace(' ', '+')
