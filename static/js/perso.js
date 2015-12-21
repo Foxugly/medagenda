@@ -61,7 +61,7 @@ $(document).ready(function() {
         var select = $(this);
         var mydata = {lang:select.val()};
         console.log(mydata);
-        var url = '/user/lang/';
+        var url = '/lang/';
         $.ajax({
             url: url,
             type: 'POST',

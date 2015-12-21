@@ -156,6 +156,7 @@ def book_slot(request, slot_id):
 @login_required
 def remove_slot(request, slot_id):
     if request.is_ajax():
+        # TODO SEND MAIL TO PATIENT / DOCTOR
         Slot.objects.get(id=slot_id).delete()
         return HttpResponse(json.dumps({'return': True}))
 
@@ -164,6 +165,7 @@ def remove_slot(request, slot_id):
 def clean_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=slot_id)
+        # TODO SEND MAIL TO PATIENT / DOCTOR
         s.clean_slot()
         d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))

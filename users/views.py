@@ -18,8 +18,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from datetime import datetime
 from django.conf import settings
-from django.utils import translation
-from django import http
 
 
 def home(request):
@@ -34,21 +32,6 @@ def home(request):
     else:
         c['list'] = UserProfile.objects.filter(view_in_list=True)
     return render(request, 'list.tpl', c)
-
-
-def lang(request):
-    results = {}
-    if request.is_ajax():
-        user_language = request.POST['lang']
-        translation.activate(user_language)
-        request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-        results['return'] = True
-        response = http.HttpResponse(json.dumps(results))
-        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
-        return response
-    else:
-        results['return'] = False
-    return HttpResponse(json.dumps(results))
 
 
 @user_passes_test(lambda u: u.is_superuser)

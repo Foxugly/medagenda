@@ -11,7 +11,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
 from users.views import add_user, profile, calendar_user, reminder_slot, remove_slot, search_doctor, model_calendar, \
-    update_user, create_user, personal_data, config, avatar, text, color, remove_picture, lang
+    update_user, create_user, personal_data, config, avatar, text, color, remove_picture
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}),
@@ -19,7 +19,6 @@ urlpatterns = (
     url(r'^add_user/$', add_user, name='add_user'),
     url(r'^create_user/$', create_user, name='create_user'),
     url(r'^settings/$', update_user, name='update_user'),
-    url(r'^lang/$', lang, name="lang"),
     url(r'^password_change/$', login_required(views.password_change),
         {'template_name': 'form.tpl', 'post_change_redirect': '/user/password_change/done/'},
         name='password_change_done'),

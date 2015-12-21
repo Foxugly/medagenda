@@ -93,7 +93,15 @@
                     </select>
                 </div>
             </li>
-            <li><a href="#">{% trans "Help" %} </a></li>
+            <li><a href="/offer/">{% trans "Offer" %} </a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-help"></span> {% trans "Help" %} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a class="glyphicon glyphicon-question-sign" href="/faq/"> {% trans "Frequently Asked Question" %} </a></li>
+                <li><a class="glyphicon glyphicon-envelope" href="/contact/"> {% trans "Contact" %}</a></li>
+                <li><a class="glyphicon glyphicon-info-sign" href="/about/"> {% trans "About us" %}</a></li>
+              </ul>
+            </li>
             {% if user.is_authenticated %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>

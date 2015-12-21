@@ -65,7 +65,7 @@ $(document).ready(function() {
   <div class="col-md-2 text-right">
     <div id="btn_view" class="btn-group" data-toggle="buttons">
        <label id="label_list" class="btn btn-default btn-lg active"><input type="radio" id="view_list" name="view" value="list"/><span class="glyphicon glyphicon-th"></span></label>
-       <label id="label_map" class="btn btn-default btn-lg"><input type="radio" id="view_map" name="view" value="map"/><span class="glyphicon glyphicon-map-marker"></span></label>
+       <label id="label_map" class="btn btn-default btn-lg"><input type="radio" id="view_map" name="view" value="map"/><span class="glyphicon glyphicon-globe"></span></label>
     </div>
   </div>
 </div>

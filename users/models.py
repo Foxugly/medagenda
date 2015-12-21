@@ -38,7 +38,7 @@ class UserProfile(models.Model):
     picture = models.ImageField(upload_to=settings.IMAGE_UPLOAD_PATH, blank=True, null=True)
     speciality = models.IntegerField(verbose_name=_(u'Speciality'), choices=MEDECINE_CHOICES)
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
-    language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES,default=1)
+    language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES, default=1)
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
     telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True)
     address = AddressField()

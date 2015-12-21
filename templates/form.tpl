@@ -15,7 +15,7 @@
     <div class="row">
       <div class="form_group">
         <div class="col-md-9 col-md-offset-3">
-          <button type="submit" class="btn btn-primary"> Submit</button>
+          <button type="submit" class="btn btn-primary"> {%  trans "Submit" %}</button>
         </div>
       </div>
     </div>  
