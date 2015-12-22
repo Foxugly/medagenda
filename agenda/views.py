@@ -15,6 +15,7 @@ from agenda.models import SlotTemplate, Slot
 from patient.models import Patient
 from utils.toolbox import reformat_date
 import json
+from utils.toolbox import string_random
 
 
 @login_required
@@ -121,7 +122,7 @@ def get_slot(request, slot_id):
             results['slot'] = s.detail(format_date)
             results['return'] = True
         else:
-            if not s.patient:
+            if not s.booked:
                 results['return'] = True
                 results['slot'] = s.detail(format_date)
             else:
@@ -139,7 +140,10 @@ def book_slot(request, slot_id):
             s.informations = request.POST["informations"]
             p = Patient(email=unicode(request.POST["email"]), first_name=unicode(request.POST["first_name"]),
                         last_name=unicode(request.POST["last_name"]), telephone=unicode(request.POST["telephone"]))
+            p.confirm = string_random(32)
             p.save()
+            # TODO SEND MAIL TO PATIENT
+            print str(p.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/' + str(p.id) + '/' + str(p.confirm) + '/'
             s.patient = p
             s.informations = unicode(request.POST["informations"])
         else:

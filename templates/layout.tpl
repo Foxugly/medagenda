@@ -29,6 +29,7 @@
     {% block css %}
     {% endblock %}
     <link href='{% static "css/perso.css" %}' rel='stylesheet' />
+    <link href='{% static "css/offer.css" %}' rel='stylesheet' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
@@ -172,6 +173,7 @@
           </div>
           <div class="modal-body">
             <div class="alert alert-success text-center" role="alert">{%trans "Changes applied" %}</div>
+            <div id="confirm_yes_text">{{ confirm_yes_text }}</div>
           </div>
             <div class="modal-footer">
               <button id="confirm_yes_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>

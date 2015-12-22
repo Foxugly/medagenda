@@ -130,7 +130,7 @@ def create_user(request):
             up.confirm = string_random(32)
             up.user.save()
             up.save()
-            print "SENT MAIL"
+            # TODO SENT MAIL
             print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(
                 up.confirm) + '/'
             c['mail'] = True

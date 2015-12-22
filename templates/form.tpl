@@ -8,7 +8,7 @@
   {% csrf_token %}
   <fieldset>
     <!-- Form Name -->
-    <legend><h1>{{title}}</h1></legend>
+    <legend class="h1 row_space">{{title}}</legend>
     <div class="row">
     {% bootstrap_form form layout="horizontal"%}
     </div>

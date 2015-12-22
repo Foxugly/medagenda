@@ -165,9 +165,10 @@ class Slot(models.Model):
                 d = dict(id=self.id, date=self.date_t(date_format), start=self.hour_t(self.st.start), title=str(_('Booked')),
                          color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
                          informations=self.informations)
-                d_patient = self.patient.as_json()
-                del d_patient['id']
-                d.update(d_patient)
+                if self.patient:
+                    d_patient = self.patient.as_json()
+                    del d_patient['id']
+                    d.update(d_patient)
                 return d
             else:
                 return None
