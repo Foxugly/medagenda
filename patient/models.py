@@ -20,7 +20,6 @@ class Patient(models.Model):
     active = models.BooleanField(verbose_name=_(u'Confirmed'), default=False)
     confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)
 
-
     def __str__(self):
         return u'%d : %s' % (self.id, self.email)
 

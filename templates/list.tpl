@@ -76,11 +76,10 @@ $(document).ready(function() {
 {% endif %}
   <div class="col-sm-3">
     <div class="thumbnail text-center" >
-      <div style="height: 200px;">
       {% if item.picture %}
-        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}{{item.picture}}' alt='img' style="vertical-align: middle;max-height:200px;max-width:200px;">
+      <div style="height: 200px;background:url({{ MEDIA_URL }}{{item.picture}}) no-repeat center center;">
       {% else %}
-        <span style="display: inline-block; height: 100%;vertical-align: middle;"></span><img src='{{ MEDIA_URL }}pic/profil.jpg' alt='img' style="vertical-align: middle;max-height:200px;max-width:200px;">
+        <div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;">
       {% endif %}
       </div>
       <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>

@@ -3,10 +3,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{%  block js %}
-
-{%  endblock %}
-
 {% block content %}
     <div class="row row_space" >
         <div class="col-md-12 text-center"><h1>{%  trans "Frequently Asked Questions" %}</h1></div>

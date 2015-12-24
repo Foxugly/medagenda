@@ -10,7 +10,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot
+from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot, MiniInvoiceForm, NoFreeMiniInvoiceForm
 from utils.toolbox import string_random
 from django.contrib.auth.decorators import user_passes_test, login_required
 import json
@@ -18,12 +18,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from datetime import datetime
 from django.conf import settings
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 
 def home(request):
     c = {}
     if request.user.is_authenticated():
-        # doctors
+        # TODO mettre à jour les invoices
+        # TODO foutre un dashboard avec
         if request.user.is_superuser:
             # admin
             c['list'] = UserProfile.objects.all()
@@ -81,11 +84,9 @@ def calendar_user(request, slug=None):
 
 @login_required
 def model_calendar(request):
-    c = {}
-    c['doctor'] = request.user.userprofile
-    c['slot_type'] = settings.SLOT_TYPE
-    c['slottemplates'] = request.user.userprofile.get_all_slottemplates()
-    c['fullcalendar_ref_date'] = settings.FULLCALENDAR_REF_DATE
+    c = {'doctor': request.user.userprofile, 'slot_type': settings.SLOT_TYPE,
+         'slottemplates': request.user.userprofile.get_all_slottemplates(),
+         'fullcalendar_ref_date': settings.FULLCALENDAR_REF_DATE}
     return render(request, 'model.tpl', c)
 
 
@@ -107,15 +108,20 @@ def search_doctor(request):
     return HttpResponseRedirect('/')
 
 
+    #TODO gérer les abonnements, le renouvellement,....
 @login_required
 def update_user(request):
+    up = request.user.userprofile
     c = {'userprofile_id': request.user.userprofile.id,
-         'personal_data_form': PersonalDataForm(instance=request.user.userprofile),
-         'settings_form': SettingsForm(instance=request.user.userprofile), 'avatar': request.user.userprofile.picture,
-         'text_form': TextForm(instance=request.user.userprofile), 'color_forms': []}
+         'personal_data_form': PersonalDataForm(instance=up),
+         'settings_form': SettingsForm(instance=up), 'avatar': up.picture,
+         'text_form': TextForm(instance=up), 'color_forms': [],
+         'password_change_form': PasswordChangeForm(user=request.user),
+         'invoice': up.get_active_invoice(),
+         'new_invoice': MiniInvoiceForm() if not up.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
     for st in settings.SLOT_TYPE:
-        d = {'id': request.user.userprofile.get_colorslot(st[0]).id, 'name': st[1],
-             'form': ColorForm(instance=request.user.userprofile.get_colorslot(st[0]))}
+        d = {'id': up.get_colorslot(st[0]).id, 'name': st[1],
+             'form': ColorForm(instance=up.get_colorslot(st[0]))}
         c['color_forms'].append(d)
     return render(request, 'config.tpl', c)
 
@@ -225,6 +231,23 @@ def color(request, color_id):
         form = ColorForm(request.POST, instance=inst)
         if form.is_valid():
             form.save()
+            results['return'] = True
+        else:
+            results['errors'] = form.errors
+            results['return'] = False
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def password(request):
+    results = {}
+    if request.is_ajax():
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
             results['return'] = True
         else:
             results['errors'] = form.errors

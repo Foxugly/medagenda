@@ -122,6 +122,12 @@ SLOT_TYPE = (
     (4, _(u'Nursing home Slot')),
 )
 
+TYPE_OFFER = (
+    (1, _(u'Free')),
+    (2, _(u'Standard')),
+    (3, _(u'Premium')),
+)
+
 SLOT_COLOR = ['#73B5EB', '#94F7CE', '#D798E2', '#FFE68F', ]
 
 DEFAULT_LANGUAGE = 1

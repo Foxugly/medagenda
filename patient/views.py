@@ -36,7 +36,7 @@ def reminder(request, slug):
         s = Slot.objects.filter(refer_doctor__slug=slug, patient__mail=email)
         if s:
             #TODO SEND MAIL TO PATIENT
-            print str(p.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/remove/' + str(s.patient.id) + '/' + str(s.id) + '/'
+            print str(s.patient.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/remove/' + str(s.patient.id) + '/' + str(s.id) + '/'
             return HttpResponse(json.dumps({'return': False}))
         else:
             return HttpResponse(json.dumps({'return': False}))

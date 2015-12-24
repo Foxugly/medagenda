@@ -32,7 +32,7 @@ $(document).ready(function() {
         //slotLabelFormat : 'H:mm',
         eventLimit: false, // allow "more" link when too many events
         {% if slots %}
-        events: {{slots|safe}},
+            events: {{slots|safe}},
         {% endif %}
         eventClick: function (calEvent) {
             $('#id_slot').val(calEvent.id);
@@ -63,7 +63,7 @@ $(document).ready(function() {
                     }
                 }
             });
-        } 
+        }
     });
 
     $('#id_email').focusout(function(){
@@ -102,7 +102,7 @@ $(document).ready(function() {
         $('#id_telephone').val("");
         $('#id_informations').val("");
     }
-  
+
     $('#bookingslot_cancel').click(function(){
         $('#bookingslot').hide();
         clean_modal();
@@ -127,14 +127,15 @@ $(document).ready(function() {
                 $('#bookingslot').hide();
                 clean_modal();
                 if (result['return']){
-                    $('#calendar').fullCalendar( 'removeEvents', id ).fullCalendar('addEventSource', [result['slot']]);
+                    $('#calendar').fullCalendar( 'removeEvents', id );
+                    $('#calendar').fullCalendar('addEventSource', [result['slot']]);
                     $('#confirm_yes').show();
                 }
                 else{
                     $('#confirm2').show();
                 }
             }
-        });  
+        });
     });
     $('#bookingslot_remove').click(function(){
         var id = $('#id_slot').val();
@@ -157,11 +158,11 @@ $(document).ready(function() {
                     $('#confirm_no').show();
                 }
             }
-        });  
+        });
     });
 
     $('#bookingslot_clean').click(function(){
-        var id = $('#id_slot').val(); 
+        var id = $('#id_slot').val();
         var url = '/slot/ajax/s/clean/' + id + '/';
         $.ajax({
             url: url,
@@ -171,7 +172,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(result){
                 if (result['return']){
-                    $('#calendar').fullCalendar( 'removeEvents', id ).fullCalendar('addEventSource', [result['slot']]);
+                    $('#calendar').fullCalendar( 'removeEvents', id );
+                    $('#calendar').fullCalendar('addEventSource', [result['slot']]);
                     $('#bookingslot').hide();
                     clean_modal();
                     $('#confirm_yes').show();
@@ -181,7 +183,7 @@ $(document).ready(function() {
                     $('#confirm_no').show();
                 }
             }
-        });  
+        });
     });
     $('#confirm2_close').click(function(){
         $('#confirm2').hide();
@@ -203,8 +205,16 @@ $(document).ready(function() {
 <div id="calendar"></div>
 <div class="row text-center" style="margin-top:20px;">
     <ul class="legend">
-    {% for c in user.userprofile.colorslots.all %}
-      <li><span style="background-color: {{c.free_slot_color}};"></span> {% if user.userprofile == doctor %} <span style="background-color: {{c.booked_slot_color}};"></span>{% else %}{% if user.userprofile.view_busy_slot %}<span style="background-color: {{c.booked_slot_color}};"></span>{% endif %}{% endif %} {{ c.SLOT_TYPE|index:c.slot}}</li>
+    {% for c in doctor.colorslots.all %}
+        <li><span style="background-color: {{c.free_slot_color}};"></span>
+            {% if user.userprofile == doctor %}
+                <span style="background-color: {{c.booked_slot_color}};"></span>
+            {% else %}
+                {% if doctor.view_busy_slot %}
+                    <span style="background-color: {{c.booked_slot_color}};"></span>
+                {% endif %}
+            {% endif %}
+            {{ c.SLOT_TYPE|index:c.slot}}</li>
      {% endfor %}
      </ul>
 </div>

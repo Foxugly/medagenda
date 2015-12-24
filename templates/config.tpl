@@ -138,6 +138,30 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#btn_password').click(function(){
+        var form = $('#form_password');
+        var url = '/user/ajax/password/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    $('#id_old_password').val('');
+                    $('#id_new_password1').val('');
+                    $('#id_new_password2').val('');
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
+            }
+        });
+    });
 });
 </script>
 {% endblock %}
@@ -151,7 +175,8 @@ $(document).ready(function() {
         <li><a data-toggle="tab" href="#div_avatar">{% trans "Avatar" %}</a></li>
         <li><a data-toggle="tab" href="#div_color">{% trans "Colors" %}</a></li>
         <li><a data-toggle="tab" href="#div_text">{% trans "Text" %}</a></li>
-        <li><a data-toggle="tab" href="#div_operations">{% trans "Operations" %}</a></li>
+        <li><a data-toggle="tab" href="#div_account">{% trans "Account" %}</a></li>
+        <li><a data-toggle="tab" href="#div_password">{% trans "Password" %}</a></li>
     </ul>
 
     <div class="tab-content">
@@ -169,7 +194,7 @@ $(document).ready(function() {
                                     <a href="#" id="btn_personal_data" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </fieldset>
                 </form>
             </div>
@@ -189,7 +214,7 @@ $(document).ready(function() {
                                     <a href="#" id="btn_config" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </fieldset>
                 </form>
             </div>
@@ -253,14 +278,14 @@ $(document).ready(function() {
 
                                             </div>
                                         </div>
-                                    </div>  
+                                    </div>
                                 </fieldset>
                             </form>
                         </div>
                     </div>
                 {% endfor %}
-                </div> 
-            </div>   
+                </div>
+            </div>
         </div>
 
         <div id="div_text" class="tab-pane">
@@ -277,13 +302,93 @@ $(document).ready(function() {
                                     <a href="#" id="btn_text" class="btn btn-primary"> Submit</a>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </fieldset>
                 </form>
-            </div> 
+            </div>
         </div>
-        <div id="div_operations" class="tab-pane">
+        <div id="div_account" class="tab-pane">
             <div class="row row_space">
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "Current account" %}</div>
+                        <div class="panel-body">
+                            <p>{% trans "Type" %} : {{ invoice.type_price }}</p>
+                            <p>{% trans "Start date" %} : {{ invoice.date_start }}</p>
+                            <p>{% trans "End date" %} : {{ invoice.date_end }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "Next account" %}</div>
+                        <div class="panel-body">
+                            <p>{% trans "Type" %} : Not defined </p>
+                            <p>{% trans "Start date" %} : Not defined </p>
+                            <p>{% trans "End date" %} : Not defined </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "Change account" %}</div>
+                        <div class="panel-body">
+                            {% bootstrap_form new_invoice layout="horizontal"%}
+                            <div class="form_group">
+                                <div class="col-xs-9 col-xs-offset-3" style="margin-top: 10px;">
+                                    <a href="#" id="btn_new_invoice" class="btn btn-primary"> Submit</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "History" %}</div>
+                        <div class="panel-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Type</th><th>Start Date</th><th>End Date</th><th>Remove</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                            {% for i in user.userprofile.invoices.all %}
+                                {% if i.active %}<tr class="success">{% else %}<tr>{%  endif  %}
+                                <td>{{ i.type_price }}</td>
+                                <td>{{ i.date_start }}</td>
+                                <td>{{ i.date_end }}</td>
+                                <td></td> <!-- BUTTON REMOVE -->
+                                </tr>
+                            {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div_password" class="tab-pane">
+            <div class="row row_space">
+                <form class="form-horizontal" id="form_password">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="row">
+                            {% bootstrap_form password_change_form layout="horizontal"%}
+                        </div>
+                        <div class="row">
+                            <div class="form_group">
+                                <div class="col-md-9 col-md-offset-3">
+                                    <a href="#" id="btn_password" class="btn btn-primary"> Submit</a>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
         </div>
     </div>

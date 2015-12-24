@@ -29,6 +29,73 @@ class ColorSlot(models.Model):
         return ' %d - %d' % (self.id, self.slot)
 
 
+class TypePrice(models.Model):
+    type = models.IntegerField(verbose_name=_(u'note paid'), choices=settings.TYPE_OFFER)
+    price_exVAT = models.IntegerField(verbose_name=_(u'exVAT price'))
+    num_months = models.IntegerField(verbose_name=_(u'Number of months'))
+    auto_extension = models.BooleanField(verbose_name=_('Auto Extension'), default=True)
+    active = models.BooleanField(verbose_name=_('Active'), default=True)
+
+    def get_typename(self):
+        for t in settings.TYPE_OFFER:
+            if t[0] == self.type:
+                return t[1]
+
+    def __str__(self):
+        return u"%s %s" % (self.get_typename(), self.info())
+
+    def unicode(self):
+        return u"%s %s" % (self.get_typename(), self.info())
+
+    def info(self):
+        ret = u'(%d %s) : %d euros ' % (self.num_months, _(u'month') if self.num_months < 2 else _(u'months'), self.price_exVAT)
+        ret += u'%s' % _(u'excl. VAT')
+        return ret
+
+
+class Invoice(models.Model):
+    type_price = models.ForeignKey(TypePrice, verbose_name=_(u'Type of account'), blank=False)
+    date_creation = models.DateField(verbose_name=_(u'Creation_date'), auto_now_add=True)
+    date_start = models.DateField(verbose_name=_(u'Start date'), blank=False)
+    date_end = models.DateField(verbose_name=_(u'End date'), blank=False)
+    active = models.BooleanField(verbose_name=_('Active'), default=True)
+    price_exVAT = models.FloatField(verbose_name=_('Price excl. VAT'), blank=False, default="0.0")
+    VAT = models.FloatField(verbose_name=_('VAT (%)'), blank=False, default="21")
+    price_VAT = models.FloatField(verbose_name=_('Price VAT'), blank=True, default="0.0")
+    price_incVAT = models.FloatField(verbose_name=_('Price inc. VAT'), blank=True, default="0.0")
+    paid = models.BooleanField(verbose_name=_('Paid'), default=False)
+    date_paid = models.DateField(verbose_name=_('date Paid'), blank=True, null=True)
+    note_paid = models.CharField(verbose_name=_(u'note paid'), max_length=100, blank=True)
+    show = models.BooleanField(verbose_name=_('Show'), default=True)
+
+    def save(self, *args, **kwargs):
+        self.price_VAT = (self.VAT/100) * self.price_exVAT
+        self.price_incVAT = self.price_VAT + self.price_exVAT
+        super(Invoice, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '%d: %s' % (self.id, self.type_price)
+
+
+class MiniInvoiceForm(ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['type_price']
+
+    def __init__(self, *args, **kwargs):
+        super(MiniInvoiceForm, self).__init__(*args, **kwargs)
+        self.fields['type_price'].queryset = TypePrice.objects.filter(active=True)
+        self.fields['type_price'].widget.attrs['class'] = 'select2'
+
+
+class NoFreeMiniInvoiceForm(MiniInvoiceForm):
+
+    def __init__(self, *args, **kwargs):
+        super(MiniInvoiceForm, self).__init__(*args, **kwargs)
+        self.fields['type_price'].queryset = TypePrice.objects.filter(active=True).exclude(price_exVAT=0)
+        self.fields['type_price'].widget.attrs['class'] = 'select2'
+
+
 class UserProfile(models.Model):
     MEDECINE_CHOICES = settings.MEDECINE_CHOICES
     TITLE_CHOICES = settings.TITLE_CHOICES
@@ -53,6 +120,7 @@ class UserProfile(models.Model):
     text_rdv = models.TextField(verbose_name=_(u'Text RDV'), blank=True, null=True)
     text_horaires = models.TextField(verbose_name=_(u'Text horaires'), blank=True, null=True)
     timezone = TimeZoneField(default=settings.TIME_ZONE)
+    invoices = models.ManyToManyField(Invoice, verbose_name=_(u'Invoices'), blank=True)
 
     def __str__(self):
         return u"userprofile : %s" % self.user.username
@@ -113,6 +181,21 @@ class UserProfile(models.Model):
         slot = self.get_colorslot(i)
         return str(slot.booked_slot_color) if booked else str(slot.free_slot_color)
 
+    def get_active_invoice(self):
+        if len(self.invoices.all()):
+            for i in self.invoices.filter(active=True):
+                if i.active:
+                    return i
+        else:
+            return None
+
+    def already_use_free_invoice(self):
+        out = False
+        if len(self.invoices.all()):
+            for i in self.invoices.all():
+                if i.price_exVAT == 0:
+                    out = True
+        return out
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
@@ -176,8 +259,8 @@ class PersonalDataForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['speciality', 'title', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number', 'language',
-                  'timezone']
+        fields = ['speciality', 'title', 'first_name', 'last_name', 'address', 'email', 'telephone', 'vat_number',
+                  'language', 'timezone']
 
 
 class SettingsForm(ModelForm):
