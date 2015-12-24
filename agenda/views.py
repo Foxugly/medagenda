@@ -172,4 +172,5 @@ def clean_slot(request, slot_id):
         # TODO SEND MAIL TO PATIENT / DOCTOR
         s.clean_slot()
         d = {'return': True, 'slot': s.as_json()}
+        print d
         return HttpResponse(json.dumps(d))
