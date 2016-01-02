@@ -10,17 +10,20 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot, MiniInvoiceForm, NoFreeMiniInvoiceForm
+from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot, \
+    MiniInvoiceForm, NoFreeMiniInvoiceForm, TypePrice, Invoice
 from utils.toolbox import string_random
 from django.contrib.auth.decorators import user_passes_test, login_required
 import json
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from django.utils import formats
+from django.utils.dateformat import format
 
 def home(request):
     c = {}
@@ -108,7 +111,9 @@ def search_doctor(request):
     return HttpResponseRedirect('/')
 
 
-    #TODO gérer les abonnements, le renouvellement,....
+    # TODO gérer les abonnements, le renouvellement,....
+
+
 @login_required
 def update_user(request):
     up = request.user.userprofile
@@ -262,4 +267,57 @@ def remove_picture(request):
     request.user.userprofile.picture = None
     request.user.profile.save()
     results = {'return': True}
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def invoice_add(request):
+    results = {}
+    if request.is_ajax():
+        up = request.user.userprofile
+        tp = TypePrice.objects.get(id=request.POST['type_price'][0])
+        if tp:
+            if len(up.invoices.all()):
+                i = up.invoices.order_by('-date_end')[0]
+                if i.date_end > datetime.date(datetime.today()):
+                    f_day = i.date_end + relativedelta(days=+1)
+                    active = False
+                else:
+                    f_day = datetime.today()
+                    active = True
+            else:
+                f_day = datetime.today()
+                active = True
+            new_invoice = Invoice(type_price=tp, date_start=f_day,
+                                  date_end=f_day + relativedelta(months=+tp.num_months), price_exVAT=int(tp.price_exVAT),
+                                  active=active)
+            new_invoice.save()
+            up.invoices.add(new_invoice)
+            results['return'] = True
+            results['id'] = new_invoice.id
+            results['type_price'] = str(new_invoice.type_price)
+            date_format = formats.get_format('DATE_FORMAT')
+            results['date_start'] = format(new_invoice.date_start, date_format)
+            results['date_end'] = format(new_invoice.date_end, date_format)
+        else:
+            results['return'] = False
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def invoice_remove(request, invoice_id):
+    results = {}
+    if request.is_ajax():
+        up = request.user.userprofile
+        i = Invoice.objects.get(id=invoice_id)
+        if i in up.invoices.all():
+            up.invoices.remove(i)
+            i.delete()
+            results['return'] = True
+        else:
+            results['return'] = False
+    else:
+        results['return'] = False
     return HttpResponse(json.dumps(results))

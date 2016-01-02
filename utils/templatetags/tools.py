@@ -9,6 +9,8 @@
 
 from django import template
 import os
+from datetime import datetime
+from utils.toolbox import reformat_date
 
 register = template.Library()
 
@@ -31,3 +33,8 @@ def filename(path):
 @register.filter()
 def cast(s):
     return s.replace(' ', '+')
+
+
+@register.filter()
+def after_today(date):
+    return date > datetime.today()

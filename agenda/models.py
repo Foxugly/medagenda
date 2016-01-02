@@ -126,7 +126,6 @@ class Slot(models.Model):
         self.save()
 
     def date_t(self, date_format):
-        # return str(self.date.strftime('%d/%m/%Y'))
         return str(self.date.strftime(reformat_date(date_format)))
 
     @staticmethod
@@ -155,9 +154,6 @@ class Slot(models.Model):
     def as_json(self):
         return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=self.get_title(),
                     color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
-
-    #def as_json2(self):
-    #    return dict(id=self.id, date=self.date_t(), start=self.hour_t(self.st.start))
 
     def detail(self, date_format=None):
         if self.booked:

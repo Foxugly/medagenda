@@ -59,19 +59,22 @@ class Invoice(models.Model):
     date_start = models.DateField(verbose_name=_(u'Start date'), blank=False)
     date_end = models.DateField(verbose_name=_(u'End date'), blank=False)
     active = models.BooleanField(verbose_name=_('Active'), default=True)
-    price_exVAT = models.FloatField(verbose_name=_('Price excl. VAT'), blank=False, default="0.0")
-    VAT = models.FloatField(verbose_name=_('VAT (%)'), blank=False, default="21")
-    price_VAT = models.FloatField(verbose_name=_('Price VAT'), blank=True, default="0.0")
-    price_incVAT = models.FloatField(verbose_name=_('Price inc. VAT'), blank=True, default="0.0")
+    price_exVAT = models.FloatField(verbose_name=_('Price excl. VAT'), blank=False, default=0.0)
+    VAT = models.FloatField(verbose_name=_('VAT (%)'), blank=False, default=21)
+    price_VAT = models.FloatField(verbose_name=_('Price VAT'), blank=True, default=0.0)
+    price_incVAT = models.FloatField(verbose_name=_('Price inc. VAT'), blank=True, default=0.0)
     paid = models.BooleanField(verbose_name=_('Paid'), default=False)
     date_paid = models.DateField(verbose_name=_('date Paid'), blank=True, null=True)
     note_paid = models.CharField(verbose_name=_(u'note paid'), max_length=100, blank=True)
     show = models.BooleanField(verbose_name=_('Show'), default=True)
 
     def save(self, *args, **kwargs):
-        self.price_VAT = (self.VAT/100) * self.price_exVAT
-        self.price_incVAT = self.price_VAT + self.price_exVAT
         super(Invoice, self).save(*args, **kwargs)
+        if self.price_incVAT != ((self.VAT/100) * self.price_exVAT) + self.price_exVAT:
+            self.price_VAT = (self.VAT/100) * self.price_exVAT
+            self.price_incVAT = self.price_VAT + self.price_exVAT
+            super(Invoice, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return '%d: %s' % (self.id, self.type_price)
@@ -86,6 +89,7 @@ class MiniInvoiceForm(ModelForm):
         super(MiniInvoiceForm, self).__init__(*args, **kwargs)
         self.fields['type_price'].queryset = TypePrice.objects.filter(active=True)
         self.fields['type_price'].widget.attrs['class'] = 'select2'
+        self.fields['type_price'].widget.attrs['style'] = 'width:100%'
 
 
 class NoFreeMiniInvoiceForm(MiniInvoiceForm):
@@ -94,6 +98,7 @@ class NoFreeMiniInvoiceForm(MiniInvoiceForm):
         super(MiniInvoiceForm, self).__init__(*args, **kwargs)
         self.fields['type_price'].queryset = TypePrice.objects.filter(active=True).exclude(price_exVAT=0)
         self.fields['type_price'].widget.attrs['class'] = 'select2'
+        self.fields['type_price'].widget.attrs['style'] = 'width:100%'
 
 
 class UserProfile(models.Model):

@@ -10,8 +10,8 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user, profile, calendar_user, reminder_slot, search_doctor, model_calendar, \
-    update_user, create_user, personal_data, config, avatar, text, color, remove_picture, password
+from users.views import add_user, calendar_user, search_doctor, model_calendar, update_user, create_user, personal_data, \
+    config, avatar, text, color, remove_picture, password, invoice_add, invoice_remove
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}),
@@ -26,17 +26,19 @@ urlpatterns = (
     # login_required(views.password_reset_confirm), name='password_reset_confirm'),
     # url(r'^reset/done/$', login_required(views.password_reset_complete), name='password_reset_complete'),
 
-    #TODO finaliser le nouveau mot de passe
-    url(r'^password/reset/$', views.password_reset, {'post_reset_redirect': '/user/password/reset/done/', 'template_name':'form.tpl'}, name="password_reset"),
-    url(r'^password/reset/done/$', views.password_reset_done, {'template_name': 'form.tpl'}, name="password_reset_done"),
-    url(r'^password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', views.password_reset_confirm, {'post_reset_redirect': '/user/password/done/', 'template_name': 'form.tpl'}),
+    # TODO finaliser le nouveau mot de passe
+    url(r'^password/reset/$', views.password_reset,
+        {'post_reset_redirect': '/user/password/reset/done/', 'template_name': 'form.tpl'}, name="password_reset"),
+    url(r'^password/reset/done/$', views.password_reset_done, {'template_name': 'form.tpl'},
+        name="password_reset_done"),
+    url(r'^password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', views.password_reset_confirm,
+        {'post_reset_redirect': '/user/password/done/', 'template_name': 'form.tpl'}),
     url(r'^password/done/$', views.password_reset_complete, {'template_name': 'form.tpl'}),
 
-    url(r'^p/calendar/(?P<slug>[\w-]+)/$', calendar_user, name='calendar_user'),
-    url(r'^p/calendar/$', login_required(calendar_user), name='calendar_user2'),
-    url(r'^p/model/$', login_required(model_calendar), name='model_calendar'),
-    url(r'^p/reminder/(?P<slug>[\w-]+)/$', reminder_slot, name='reminder_slot'),
-    url(r'^p/(?P<slug>[\w-]+)/$', profile, name='profile'),
+    # url(r'^calendar/(?P<slug>[\w-]+)/$', calendar_user, name='calendar_user'),
+    url(r'^calendar/$', login_required(calendar_user), name='calendar_user2'),
+    url(r'^model/$', login_required(model_calendar), name='model_calendar'),
+    # url(r'^reminder/(?P<slug>[\w-]+)/$', reminder_slot, name='reminder_slot'),
     url(r'^ajax/personal_data/$', login_required(personal_data), name="personal_data"),
     url(r'^ajax/config/$', login_required(config), name="config"),
     url(r'^ajax/avatar/$', login_required(avatar), name="avatar"),
@@ -44,5 +46,9 @@ urlpatterns = (
     url(r'^ajax/color/(?P<color_id>[\w-]+)/$', login_required(color), name="color"),
     url(r'^ajax/remove_picture/$', login_required(remove_picture), name="remove_picture"),
     url(r'^ajax/search/$', search_doctor, name='search_doctor'),
+    url(r'^ajax/invoice/add/$', invoice_add, name='invoice_add'),
+    url(r'^ajax/invoice/remove/(?P<invoice_id>[\w-]+)/$', invoice_remove, name='invoice_remove'),
     url(r'^ajax/password/$', login_required(password), name='password'),
+    # url(r'^(?P<slug>[\w-]+)/$', profile, name='profile'),
+
 )

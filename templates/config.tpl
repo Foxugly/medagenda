@@ -1,6 +1,7 @@
 {% extends "layout.tpl" %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load l10n %}
 {% load tools %}
 {% load staticfiles %}
 {% block js %}
@@ -139,6 +140,33 @@ $(document).ready(function() {
         });
     });
 
+    $('#btn_new_invoice').click(function(){
+        var form = $('#form_invoice').serializeArray();
+        var url = '/user/ajax/invoice/add/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form,
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    $('#confirm_yes').show();
+                    var tr = "<tr><td>" + result['id'] + "</td><td>" + result['type_price'] + "</td>";
+                    tr += "<td>" + result['date_start'] + "</td><td>" +  result['date_end'] + "</td>";
+                    tr += "<td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>";
+                    $('#table_invoice').append(tr);
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
+            }
+        });
+    });
+
+
     $('#btn_password').click(function(){
         var form = $('#form_password');
         var url = '/user/ajax/password/';
@@ -161,6 +189,47 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+
+    /*$(".btn_del").click(function () {
+        var killrow = $(this).parent('tr');
+        var myid = killrow.find("td:first").html();
+        var url = '/user/ajax/invoice/remove/' + myid + '/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: '',
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    killrow.fadeOut(100, function(){
+                        $(this).remove();
+                    });
+                }
+            }
+        });
+    });*/
+
+     $("table").on("click", ".ibtnDel", function (event) {
+         var killrow = $(this).closest("tr");
+         console.log(killrow);
+         var myid = killrow.find("td:first").html();
+         console.log(myid);
+         var url = '/user/ajax/invoice/remove/' + myid + '/';
+         console.log(url);
+         $.ajax({
+            url: url,
+            type: 'POST',
+            data: '',
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    killrow.remove();
+                }
+            }
+         });
     });
 });
 </script>
@@ -308,8 +377,8 @@ $(document).ready(function() {
             </div>
         </div>
         <div id="div_account" class="tab-pane">
-            <div class="row row_space">
-                <div class="col-xs-6">
+            <div class="row row_space_top">
+                <div class="col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">{%  trans "Current account" %}</div>
                         <div class="panel-body">
@@ -319,28 +388,21 @@ $(document).ready(function() {
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">{%  trans "Next account" %}</div>
-                        <div class="panel-body">
-                            <p>{% trans "Type" %} : Not defined </p>
-                            <p>{% trans "Start date" %} : Not defined </p>
-                            <p>{% trans "End date" %} : Not defined </p>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">{%  trans "Change account" %}</div>
                         <div class="panel-body">
-                            {% bootstrap_form new_invoice layout="horizontal"%}
-                            <div class="form_group">
-                                <div class="col-xs-9 col-xs-offset-3" style="margin-top: 10px;">
-                                    <a href="#" id="btn_new_invoice" class="btn btn-primary"> Submit</a>
-                                </div>
-                            </div>
+                            <form class="form-horizontal" id="form_invoice">
+                                {% csrf_token %}
+                                {% bootstrap_form new_invoice layout="horizontal" %}
+                                <div class="form_group">
+                                    <div class="col-xs-9 col-xs-offset-3" style="margin-top: 10px;">
+                                        <a href="#" id="btn_new_invoice" class="btn btn-primary"> Submit</a>
+                                    </div>
+                                 </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -350,19 +412,24 @@ $(document).ready(function() {
                     <div class="panel panel-default">
                         <div class="panel-heading">{%  trans "History" %}</div>
                         <div class="panel-body">
-                            <table class="table table-bordered">
+                            <table id="table_invoice" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>Type</th><th>Start Date</th><th>End Date</th><th>Remove</th>
+                                    <th>ID</th><th>Type</th><th>Start Date</th><th>End Date</th><th>Remove</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                             {% for i in user.userprofile.invoices.all %}
                                 {% if i.active %}<tr class="success">{% else %}<tr>{%  endif  %}
+                                <td>{{ i.id }}</td>
                                 <td>{{ i.type_price }}</td>
-                                <td>{{ i.date_start }}</td>
-                                <td>{{ i.date_end }}</td>
-                                <td></td> <!-- BUTTON REMOVE -->
+                                <td>{{ i.date_start}}</td>
+                                <td>{{ i.date_end}}</td>
+                                {% if not i.active or i.date_begin|after_today %}
+                                    <td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>
+                                {%  else %}
+                                    <td></td>
+                                {% endif %}
                                 </tr>
                             {% endfor %}
                                 </tbody>

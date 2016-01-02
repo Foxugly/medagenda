@@ -8,14 +8,24 @@
 # your option) any later version.
 
 from django.contrib import admin
-from users.models import UserProfile, ColorSlot
+from users.models import UserProfile, ColorSlot, Invoice, TypePrice
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    filter_horizontal = ['slots', ]
+    filter_horizontal = ['slots', 'invoices']
 
 
 @admin.register(ColorSlot)
-class ColorSlot(admin.ModelAdmin):
+class ColorSlotAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(TypePrice)
+class TypePriceAdmin(admin.ModelAdmin):
     pass

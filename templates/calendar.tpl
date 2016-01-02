@@ -21,7 +21,6 @@ $(document).ready(function() {
         },
         lang: '{{ LANGUAGE_CODE }}',
         firstDay: 1,
-        //defaultDate: '2015-12-12',
         editable: false,
         defaultView : 'agendaWeek',
         allDaySlot : false,
@@ -29,7 +28,6 @@ $(document).ready(function() {
         contentHeight: 'auto',
         minTime : '{{doctor.start_time|time_format}}',
         maxTime : '{{doctor.end_time|time_format}}',
-        //slotLabelFormat : 'H:mm',
         eventLimit: false, // allow "more" link when too many events
         {% if slots %}
             events: {{slots|safe}},

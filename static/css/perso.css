@@ -6,6 +6,14 @@ body {
     padding: 20px 0;
 }
 
+.row_space_top {
+    padding-top: 20px;
+}
+
+.row_space {
+    padding: 20px 0;
+}
+
 .circle{
     width:15px;
     height:15px;

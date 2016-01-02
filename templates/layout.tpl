@@ -109,10 +109,10 @@
               <ul class="dropdown-menu">
                 <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
                 <li><a class="glyphicon glyphicon-cog" href="/user/settings/"> {% trans "Change Settings" %}</a></li>
-                <li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>
+                <!--<li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>-->
                 <li class="divider"></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/p/calendar/"> {% trans "Calendar" %}</a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/p/model/"> {% trans "Model" %}</a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="/user/calendar/"> {% trans "Calendar" %}</a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="/user/model/"> {% trans "Model" %}</a></li>
                 <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
               </ul>

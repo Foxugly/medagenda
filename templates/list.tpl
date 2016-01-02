@@ -10,7 +10,7 @@ $(document).ready(function() {
     var map;
     var markers = [
     {% for item in list %}{% if not forloop.first %},{% endif %}
-      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/user/p/{{item.slug}}/"}
+      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/doc/{{item.slug}}/"}
     {% endfor %}];
 
     function initialize(){
@@ -85,7 +85,7 @@ $(document).ready(function() {
       <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>
       <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
       <p  style="text-align:center;">{{item.address.locality.name}}</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="/user/p/{{item.slug}}/" role="button">Plus d'infos</a></p>
+      <p style="text-align:center;"><a class="btn btn-info" href="/doc/{{item.slug}}/" role="button">Plus d'infos</a></p>
     </div>
   </div>
 {% if forloop.last or forloop.counter|divisibleby:4 %}</div>{% endif %}
