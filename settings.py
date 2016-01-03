@@ -76,6 +76,14 @@ USE_L10N = True
 USE_TZ = True
 AUTH_PROFILE_MODULE = 'users.UserProfile'
 
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'foxugly@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/user/login/'
 

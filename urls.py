@@ -20,7 +20,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
 from users.views import home, confirm_user
-from utils.views import faq, contact, about, lang, offer
+from utils.views import faq, contact, about, lang, offer, conditions
 admin.autodiscover()
 
 
@@ -40,12 +40,13 @@ urlpatterns = [
     url(r'^patient/', include('patient.urls'), name='patient'),
     url(r'^slot/', include('agenda.urls'), name='agenda'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^$', home, name='index'),
+    url(r'^$', home, name='home'),
     url(r'^lang/$', lang, name="lang"),
     url(r'^faq/$', faq, name='faq'),
     url(r'^contact/$', contact, name='contact'),
     url(r'^about/$', about, name='about'),
     url(r'^offer/$', offer, name='offer'),
+    url(r'^conditions/$', conditions, name='conditions'),
 ] \
     + patterns('', (r'^media/(.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}), )\
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

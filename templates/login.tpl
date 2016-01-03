@@ -38,7 +38,7 @@
     </form>
     <div class="form-group">  
       <a href="/user/create_user/" class="pull-left new-account">Create an account </a>
-      <a href="#" class="pull-right need-help">Forgot Password</a><span class="clearfix"></span>
+      <a href="/user/password/reset/" class="pull-right need-help">Forgot Password</a><span class="clearfix"></span>
     </div>    
   </div>
 </div>

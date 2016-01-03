@@ -94,31 +94,32 @@
                     </select>
                 </div>
             </li>
-            <li><a href="/offer/">{% trans "Offer" %} </a></li>
+            <li><a href="{%  url 'offer' %}">{% trans "Offer" %} </a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-help"></span> {% trans "Help" %} <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a class="glyphicon glyphicon-question-sign" href="/faq/"> {% trans "Frequently Asked Question" %} </a></li>
-                <li><a class="glyphicon glyphicon-envelope" href="/contact/"> {% trans "Contact" %}</a></li>
-                <li><a class="glyphicon glyphicon-info-sign" href="/about/"> {% trans "About us" %}</a></li>
+                <li><a class="glyphicon glyphicon-question-sign" href="{%  url 'faq' %}"> {% trans "Frequently Asked Question" %} </a></li>
+                <li><a class="glyphicon glyphicon-envelope" href="{%  url 'contact' %}"> {% trans "Contact" %}</a></li>
+                <li><a class="glyphicon glyphicon-info-sign" href="{%  url 'about' %}"> {% trans "About us" %}</a></li>
+                <li><a class="glyphicon glyphicon-list" href="{%  url 'conditions' %}"> {% trans "Terms & Conditions" %}</a></li>
               </ul>
             </li>
             {% if user.is_authenticated %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a class="glyphicon glyphicon-home" href="/"> {% trans "Home" %} </a></li>
-                <li><a class="glyphicon glyphicon-cog" href="/user/settings/"> {% trans "Change Settings" %}</a></li>
+                <li><a class="glyphicon glyphicon-home" href="{%  url 'home' %}"> {% trans "Home" %} </a></li>
+                <li><a class="glyphicon glyphicon-cog" href="{%  url 'settings' %}"> {% trans "Change Settings" %}</a></li>
                 <!--<li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>-->
                 <li class="divider"></li>
-                <li><a class="glyphicon glyphicon-calendar" href="/user/calendar/"> {% trans "Calendar" %}</a></li>
-                <li><a class="glyphicon glyphicon-equalizer" href="/user/model/"> {% trans "Model" %}</a></li>
+                <li><a class="glyphicon glyphicon-calendar" href="{%  url 'calendar' %}"> {% trans "Calendar" %}</a></li>
+                <li><a class="glyphicon glyphicon-equalizer" href="{%  url 'model' %}"> {% trans "Model" %}</a></li>
                 <li class="divider"></li>
-                <li><a class="glyphicon glyphicon-off" href="/user/logout/"> {% trans "Déconnexion" %}</a></li>
+                <li><a class="glyphicon glyphicon-off" href="{%  url 'logout' %}"> {% trans "Déconnexion" %}</a></li>
               </ul>
             </li>
             {% else %}
-            <li><a href="/user/login/">{% trans "Connexion" %}</a></li>
+            <li><a href="{%  url 'login' %}">{% trans "Connexion" %}</a></li>
             {% endif %}
           </ul>
         </div>

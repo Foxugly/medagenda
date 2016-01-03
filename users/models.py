@@ -48,7 +48,8 @@ class TypePrice(models.Model):
         return u"%s %s" % (self.get_typename(), self.info())
 
     def info(self):
-        ret = u'(%d %s) : %d euros ' % (self.num_months, _(u'month') if self.num_months < 2 else _(u'months'), self.price_exVAT)
+        ret = u'(%d %s) : %d euros ' % (
+        self.num_months, _(u'month') if self.num_months < 2 else _(u'months'), self.price_exVAT)
         ret += u'%s' % _(u'excl. VAT')
         return ret
 
@@ -70,11 +71,10 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         super(Invoice, self).save(*args, **kwargs)
-        if self.price_incVAT != ((self.VAT/100) * self.price_exVAT) + self.price_exVAT:
-            self.price_VAT = (self.VAT/100) * self.price_exVAT
+        if self.price_incVAT != ((self.VAT / 100) * self.price_exVAT) + self.price_exVAT:
+            self.price_VAT = (self.VAT / 100) * self.price_exVAT
             self.price_incVAT = self.price_VAT + self.price_exVAT
             super(Invoice, self).save(*args, **kwargs)
-
 
     def __str__(self):
         return '%d: %s' % (self.id, self.type_price)
@@ -93,13 +93,14 @@ class MiniInvoiceForm(ModelForm):
 
 
 class NoFreeMiniInvoiceForm(MiniInvoiceForm):
-
     def __init__(self, *args, **kwargs):
         super(MiniInvoiceForm, self).__init__(*args, **kwargs)
         self.fields['type_price'].queryset = TypePrice.objects.filter(active=True).exclude(price_exVAT=0)
         self.fields['type_price'].widget.attrs['class'] = 'select2'
         self.fields['type_price'].widget.attrs['style'] = 'width:100%'
 
+
+# raise ValidationError(_("You must accept the terms and conditions of use of Medagenda"))
 
 class UserProfile(models.Model):
     MEDECINE_CHOICES = settings.MEDECINE_CHOICES
@@ -126,6 +127,9 @@ class UserProfile(models.Model):
     text_horaires = models.TextField(verbose_name=_(u'Text horaires'), blank=True, null=True)
     timezone = TimeZoneField(default=settings.TIME_ZONE)
     invoices = models.ManyToManyField(Invoice, verbose_name=_(u'Invoices'), blank=True)
+    accept = models.BooleanField(verbose_name=_(
+        u'I accept the terms and conditions of use of Medagenda (see <a href="/conditions/"> here </a>)'), blank=False,
+                                 null=False, default=False)
 
     def __str__(self):
         return u"userprofile : %s" % self.user.username
@@ -202,10 +206,18 @@ class UserProfile(models.Model):
                     out = True
         return out
 
+
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
 
 class UserProfileForm(ModelForm):
+    error_messages = {
+
+        'password_mismatch': _("The two password fields didn't match."),
+        'not_accepted': _("You must accept the terms and conditions of use of Medagenda"),
+        'username_already_exists' : _("This username already exists"),
+    }
+
     username = forms.CharField(label=_(u"Username"), max_length=50)
     first_name = forms.CharField(label=_(u'First name'), max_length=50)
     last_name = forms.CharField(label=_(u'Last name'), max_length=50)
@@ -219,6 +231,33 @@ class UserProfileForm(ModelForm):
         self.fields['title'].widget.attrs['class'] = 'select2-nosearch'
         self.fields['language'].widget.attrs['class'] = 'select2-nosearch'
         self.fields['timezone'].widget.attrs['class'] = 'select2'
+
+    def clean_username(self):
+        print 'clean_username'
+        username = self.cleaned_data.get('username')
+        u = User.objects.filter(username=username)
+        print u
+        if u:
+            self.add_error('username', forms.ValidationError(self.error_messages['username_already_exists'], code='username_already_exists'))
+        return username
+
+    def clean_repeat_password(self):
+        #super(UserProfileForm, self).clean()
+        password1 = self.cleaned_data.get('password')
+        password2 = self.cleaned_data.get('repeat_password')
+        if password1 and password2:
+            if password1 != password2:
+                #raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch')
+                self.add_error('password', forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch'))
+                self.add_error('repeat_password', forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch'))
+        return password2
+
+    def clean_accept(self):
+        accept = self.cleaned_data.get('accept')
+        if not accept:
+            #raise forms.ValidationError(self.error_messages['not_accepted'], code='not_accepted')
+            self.add_error('accept', forms.ValidationError(self.error_messages['not_accepted'], code='not_accepted'))
+        return accept
 
     def save(self, *args, **kw):
         up = super(UserProfileForm, self).save(commit=False)
@@ -235,7 +274,7 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ['username', 'password', 'repeat_password', 'speciality', 'title', 'first_name', 'last_name',
-                  'address', 'email', 'telephone', 'vat_number', 'language', 'timezone']
+                  'address', 'email', 'telephone', 'vat_number', 'language', 'timezone', 'accept']
 
 
 class PersonalDataForm(ModelForm):

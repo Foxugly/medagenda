@@ -25,6 +25,7 @@ from datetime import datetime
 from django.utils import formats
 from django.utils.dateformat import format
 
+
 def home(request):
     c = {}
     if request.user.is_authenticated():
@@ -50,14 +51,16 @@ def add_user(request):
             for st in settings.SLOT_TYPE:
                 u.get_colorslot(st[0])
             u.save()
+            # TODO SENT MAIL
+            print str(u.user.email)
             return HttpResponseRedirect('/')
         else:
+            c['form'] = form
             messages.error(request, "Error")
     else:
-        messages.error(request, "Error")
         c['form'] = UserProfileForm()
-        c['url'] = "/user/add_user/"
-        c['title'] = _("New doctor")
+    c['url'] = "/user/add_user/"
+    c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
 
 
@@ -115,7 +118,7 @@ def search_doctor(request):
 
 
 @login_required
-def update_user(request):
+def user_settings(request):
     up = request.user.userprofile
     c = {'userprofile_id': request.user.userprofile.id,
          'personal_data_form': PersonalDataForm(instance=up),
@@ -148,6 +151,7 @@ def create_user(request):
             return render(request, 'valid.tpl', c)
         else:
             messages.error(request, "Error")
+            c['form'] = form
     else:
         c['form'] = UserProfileForm()
         c['url'] = "/user/create_user/"
@@ -155,9 +159,9 @@ def create_user(request):
     return render(request, 'form.tpl', c)
 
 
-def confirm_user(request, user_id, txt):
+def confirm_user(request, user_id, text):
     up = UserProfile.objects.get(id=user_id)
-    if up.confirm == txt:
+    if up.confirm == text:
         up.confirm = None
         up.user.is_active = True
         up.user.save()

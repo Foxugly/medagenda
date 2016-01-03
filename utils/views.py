@@ -65,3 +65,6 @@ def about(request):
 
 def offer(request):
     return render(request, 'offer.tpl')
+
+def conditions(request):
+    return render(request, 'conditions.tpl')
