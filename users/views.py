@@ -26,6 +26,7 @@ from django.utils import formats
 from django.utils.dateformat import format
 from django.db.models import Q
 
+
 def home(request):
     c = {}
     if request.user.is_authenticated():
@@ -51,7 +52,7 @@ def add_user(request):
             for st in settings.SLOT_TYPE:
                 u.get_colorslot(st[0])
             u.save()
-            # TODO SENT MAIL
+            # TODO SENT MAIL USER_WELCOME
             print str(u.user.email)
             return HttpResponseRedirect('/')
         else:
@@ -97,12 +98,14 @@ def model_calendar(request):
 
 
 def reminder_slot(request, slug):
+    print "reminder_slot"
     print slug
     # TODO ajouter la fonction de rappel de slots
     return HttpResponseRedirect('/')
 
 
 def remove_slot(request, slug, slot_id):
+    print "remove_slot"
     print slug
     print slot_id
     # TODO déterminer la façon d'annuler un rendez-vous (manuel/automatique)
@@ -110,8 +113,12 @@ def remove_slot(request, slug, slot_id):
 
 
 def search_doctor(request):
-    # TODO fonction de recherche (jouer avec Q)
-    # Poll.objects.get(Q(question__startswith='Who'), Q(pub_date=date(2005, 5, 2)) | Q(pub_date=date(2005, 5, 6)))
+    # TODO finaliser
+    results = {}
+    if request.is_ajax():
+        s = 'txt'
+        UserProfile.objects.filter(Q(address__contains=s),
+                                   Q(user__firstname__contains=s) | Q(user__lastname__contains=s))
     # Recherche sur nom, prenom, adresse
     return HttpResponseRedirect('/')
 
@@ -146,9 +153,9 @@ def create_user(request):
             up.confirm = string_random(32)
             up.user.save()
             up.save()
-            # TODO SENT MAIL
+            # TODO SENT MAIL USER_WELCOME
             print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(
-                up.confirm) + '/'
+                    up.confirm) + '/'
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:
@@ -162,7 +169,8 @@ def create_user(request):
 
 
 def confirm_user(request, user_id, text):
-    up = UserProfile.objects.get(id=user_id)
+    # up = UserProfile.objects.get(id=user_id)
+    up = get_object_or_404(UserProfile, id=user_id)
     if up.confirm == text:
         up.confirm = None
         up.user.is_active = True
@@ -238,7 +246,8 @@ def avatar(request):
 def color(request, color_id):
     results = {}
     if request.is_ajax():
-        inst = ColorSlot.objects.get(id=color_id)
+        # inst = ColorSlot.objects.get(id=color_id)
+        inst = get_object_or_404(ColorSlot, id=color_id)
         form = ColorForm(request.POST, instance=inst)
         if form.is_valid():
             form.save()
@@ -281,7 +290,8 @@ def invoice_add(request):
     results = {}
     if request.is_ajax():
         up = request.user.userprofile
-        tp = TypePrice.objects.get(id=request.POST['type_price'][0])
+        # tp = TypePrice.objects.get(id=request.POST['type_price'][0])
+        tp = get_object_or_404(TypePrice, id=request.POST['type_price'][0])
         if tp:
             if len(up.invoices.all()):
                 i = up.invoices.order_by('-date_end')[0]
@@ -295,8 +305,8 @@ def invoice_add(request):
                 f_day = datetime.today()
                 active = True
             new_invoice = Invoice(type_price=tp, date_start=f_day,
-                                  date_end=f_day + relativedelta(months=+tp.num_months), price_exVAT=int(tp.price_exVAT),
-                                  active=active)
+                                  date_end=f_day + relativedelta(months=+tp.num_months),
+                                  price_exVAT=int(tp.price_exVAT), active=active)
             new_invoice.save()
             up.invoices.add(new_invoice)
             results['return'] = True

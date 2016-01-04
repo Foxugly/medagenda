@@ -16,6 +16,7 @@ from patient.models import Patient
 from utils.toolbox import reformat_date
 import json
 from utils.toolbox import string_random
+from django.shortcuts import get_object_or_404
 
 
 @login_required
@@ -142,8 +143,8 @@ def book_slot(request, slot_id):
                         last_name=unicode(request.POST["last_name"]), telephone=unicode(request.POST["telephone"]))
             p.confirm = string_random(32)
             p.save()
-            # TODO SEND MAIL TO PATIENT
-            print str(p.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/' + str(p.id) + '/' + str(p.confirm) + '/'
+            # TODO SEND MAIL PATIENT_WELCOME TO PATIENT
+            print str(p.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/create/' + str(p.id) + '/' + str(p.confirm) + '/'
             s.patient = p
             s.informations = unicode(request.POST["informations"])
         else:
@@ -151,7 +152,7 @@ def book_slot(request, slot_id):
             s.patient = p
         s.booked = True
         s.save()
-        # TODO SEND MAIL TO PATIENT / DOCTOR
+        # TODO SEND MAIL PATIENT_NEW_BOOKING TO PATIENT / DOCTOR
         # pytz.timezone("Europe/Paris").localize(datetime.datetime(2012, 3, 3, 1, 30))
         d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))
@@ -160,7 +161,7 @@ def book_slot(request, slot_id):
 @login_required
 def remove_slot(request, slot_id):
     if request.is_ajax():
-        # TODO SEND MAIL TO PATIENT / DOCTOR
+        # TODO SEND MAIL PATIENT_REMOVE_BOOKING TO PATIENT / DOCTOR
         Slot.objects.get(id=slot_id).delete()
         return HttpResponse(json.dumps({'return': True}))
 
@@ -169,7 +170,7 @@ def remove_slot(request, slot_id):
 def clean_slot(request, slot_id):
     if request.is_ajax():
         s = Slot.objects.get(id=slot_id)
-        # TODO SEND MAIL TO PATIENT / DOCTOR
+        # TODO SEND MAIL PATIENT_REMOVE_BOOKING TO PATIENT / DOCTOR
         s.clean_slot()
         d = {'return': True, 'slot': s.as_json()}
         print d
