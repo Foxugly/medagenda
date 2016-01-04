@@ -24,7 +24,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.utils import formats
 from django.utils.dateformat import format
-
+from django.db.models import Q
 
 def home(request):
     c = {}
@@ -111,6 +111,8 @@ def remove_slot(request, slug, slot_id):
 
 def search_doctor(request):
     # TODO fonction de recherche (jouer avec Q)
+    # Poll.objects.get(Q(question__startswith='Who'), Q(pub_date=date(2005, 5, 2)) | Q(pub_date=date(2005, 5, 6)))
+    # Recherche sur nom, prenom, adresse
     return HttpResponseRedirect('/')
 
 
