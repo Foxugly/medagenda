@@ -116,12 +116,19 @@ def search_doctor(request):
     # TODO finaliser
     results = {}
     if request.is_ajax():
-        s = 'txt'
-        UserProfile.objects.filter(Q(address__contains=s),
-                                   Q(user__firstname__contains=s) | Q(user__lastname__contains=s))
-    # Recherche sur nom, prenom, adresse
-    return HttpResponseRedirect('/')
+        s = 'text'
+        if request.user.is_superuser:
+            results['list'] = UserProfile.objects.filter(Q(address__contains=s) |
+                                                         Q(user__firstname__contains=s) | Q(user__lastname__contains=s))
+        else:
+            results['list'] = UserProfile.objects.filter(
+                    Q(address__contains=s) | Q(user__firstname__contains=s) | Q(user__lastname__contains=s),
+                    Q(view_in_list=True))
+        results['return'] = True
+    else:
+        results['return'] = False
 
+    return HttpResponse(json.dumps(results))
 
     # TODO gérer les abonnements, le renouvellement,....
 
