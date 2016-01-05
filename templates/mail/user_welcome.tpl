@@ -1,12 +1,14 @@
 {% load i18n %}{% autoescape off %}
-<p>{% blocktrans %}Hello{% endblocktrans %} {{ userprofile.user.first_name }}</p><p></p>
-<p>{% trans "You just create an account to Medagenda." %} {% trans "We thank you for your trust." %}</p>
+{% blocktrans %}Hello {{ userprofile.user.first_name }},{% endblocktrans %}
+<br><br>
+{% trans "You just create an account to Medagenda." %} {% trans "We thank you for your trust." %}
+<br><br>
 {% if b_link %}
-<p>{% trans "Could you click on the link below to confirm your email address :" %}</p>
+{% trans "Could you click on the link below to confirm your email address :" %}
 {{ protocol }}://{{ domain }}{% url 'confirm_user' user_id=userprofile.user.id text=userprofile.confirm  %}
+<br><br>
 {%  endif %}
-<p></p>
-<p>{% trans "Thanks for using our site!" %}</p>
-<p></p>
-<p>{% blocktrans %}The {{ site_name }} team{% endblocktrans %}</p>
+{% trans "Thanks for using our site!" %}
+<br><br>
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
 {% endautoescape %}

@@ -1,5 +1,6 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Hello {{ slot.patient.first_name }}{% endblocktrans %}
+{% blocktrans %}Hello {{ slot.patient.first_name }},{% endblocktrans %}
+
 {% trans "You booked a appointment on Medagenda." %} {% trans "We thank you for your trust." %}
 
 {% trans "We inform you that an appointment is cancelled :" %}
