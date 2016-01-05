@@ -1,0 +1,16 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Hello{% endblocktrans %} {{ slot.patient.first_name }}
+{% trans "You just book a appointment on Medagenda." %} {% trans "We thank you for your trust." %}
+
+{% trans "We confirm your appointment :" %}
+{%  trans "Date" %} : {{ slot.date }}
+{%  trans "Hours" %} : {{ slot.st.start }}
+{%  trans "To" %} : {{ slot.refer_doctor.full_name }}
+{%  trans "Address" %} : {{ slot.refer_doctor.address }}
+
+{% trans "You will find in attachment an ical file to add the appointment to your calendar." %}
+
+{% trans "Thanks for using our site!" %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% endautoescape %}

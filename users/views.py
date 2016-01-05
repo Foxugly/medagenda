@@ -25,7 +25,7 @@ from datetime import datetime
 from django.utils import formats
 from django.utils.dateformat import format
 from django.db.models import Q
-
+from utils.mail import mail_user_welcome
 
 def home(request):
     c = {}
@@ -52,8 +52,7 @@ def add_user(request):
             for st in settings.SLOT_TYPE:
                 u.get_colorslot(st[0])
             u.save()
-            # TODO SENT MAIL USER_WELCOME
-            print str(u.user.email)
+            mail_user_welcome(request, u, False)
             return HttpResponseRedirect('/')
         else:
             c['form'] = form
@@ -160,9 +159,7 @@ def create_user(request):
             up.confirm = string_random(32)
             up.user.save()
             up.save()
-            # TODO SENT MAIL USER_WELCOME
-            print str(up.user.email) + ' : ' + settings.WEBSITE_URL + 'confirm/' + str(up.id) + '/' + str(
-                    up.confirm) + '/'
+            mail_user_welcome(request, up, True)
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:
@@ -176,8 +173,7 @@ def create_user(request):
 
 
 def confirm_user(request, user_id, text):
-    # up = UserProfile.objects.get(id=user_id)
-    up = get_object_or_404(UserProfile, id=user_id)
+    up = get_object_or_404(UserProfile, user__id=user_id)
     if up.confirm == text:
         up.confirm = None
         up.user.is_active = True

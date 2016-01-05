@@ -16,7 +16,7 @@ from patient.models import Patient
 from utils.toolbox import reformat_date
 import json
 from utils.toolbox import string_random
-from django.shortcuts import get_object_or_404
+from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
 
 
 @login_required
@@ -65,7 +65,7 @@ def st_apply(request):
     results = {}
     if request.is_ajax():
         if 'start_date' in request.POST and 'end_date' in request.POST:
-            print(request.POST['date_format'])
+            # TODO remplacer
             f_date = request.POST['date_format']
             f_date = reformat_date(f_date)
             start_date = datetime.strptime(request.POST['start_date'], f_date)
@@ -143,8 +143,7 @@ def book_slot(request, slot_id):
                         last_name=unicode(request.POST["last_name"]), telephone=unicode(request.POST["telephone"]))
             p.confirm = string_random(32)
             p.save()
-            # TODO SEND MAIL PATIENT_WELCOME TO PATIENT
-            print str(p.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/create/' + str(p.id) + '/' + str(p.confirm) + '/'
+            mail_patient_welcome(request, p)
             s.patient = p
             s.informations = unicode(request.POST["informations"])
         else:
@@ -152,8 +151,7 @@ def book_slot(request, slot_id):
             s.patient = p
         s.booked = True
         s.save()
-        # TODO SEND MAIL PATIENT_NEW_BOOKING TO PATIENT / DOCTOR
-        # pytz.timezone("Europe/Paris").localize(datetime.datetime(2012, 3, 3, 1, 30))
+        mail_patient_new_appointment(request, s)
         d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))
 
@@ -161,17 +159,17 @@ def book_slot(request, slot_id):
 @login_required
 def remove_slot(request, slot_id):
     if request.is_ajax():
-        # TODO SEND MAIL PATIENT_REMOVE_BOOKING TO PATIENT / DOCTOR
-        Slot.objects.get(id=slot_id).delete()
+        slot = Slot.objects.get(id=slot_id)
+        mail_patient_cancel_appointment_from_doctor(request, slot)
+        slot.delete()
         return HttpResponse(json.dumps({'return': True}))
 
 
 @login_required
 def clean_slot(request, slot_id):
     if request.is_ajax():
-        s = Slot.objects.get(id=slot_id)
-        # TODO SEND MAIL PATIENT_REMOVE_BOOKING TO PATIENT / DOCTOR
-        s.clean_slot()
-        d = {'return': True, 'slot': s.as_json()}
-        print d
+        slot = Slot.objects.get(id=slot_id)
+        mail_patient_cancel_appointment_from_doctor(request, slot)
+        slot.clean_slot()
+        d = {'return': True, 'slot': slot.as_json()}
         return HttpResponse(json.dumps(d))

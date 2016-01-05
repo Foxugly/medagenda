@@ -49,7 +49,7 @@ class TypePrice(models.Model):
 
     def info(self):
         ret = u'(%d %s) : %d euros ' % (
-        self.num_months, _(u'month') if self.num_months < 2 else _(u'months'), self.price_exVAT)
+            self.num_months, _(u'month') if self.num_months < 2 else _(u'months'), self.price_exVAT)
         ret += u'%s' % _(u'excl. VAT')
         return ret
 
@@ -128,8 +128,9 @@ class UserProfile(models.Model):
     timezone = TimeZoneField(default=settings.TIME_ZONE)
     invoices = models.ManyToManyField(Invoice, verbose_name=_(u'Invoices'), blank=True)
     accept = models.BooleanField(verbose_name=_(
-        u'I accept the terms and conditions of use of Medagenda (see <a href="/conditions/"> here </a>)'), blank=False,
-                                 null=False, default=False)
+            u'I accept the terms and conditions of use of Medagenda (see <a href="/conditions/"> here </a>)'),
+            blank=False,
+            null=False, default=False)
 
     def __str__(self):
         return u"userprofile : %s" % self.user.username
@@ -215,7 +216,7 @@ class UserProfileForm(ModelForm):
 
         'password_mismatch': _("The two password fields didn't match."),
         'not_accepted': _("You must accept the terms and conditions of use of Medagenda"),
-        'username_already_exists' : _("This username already exists"),
+        'username_already_exists': _("This username already exists"),
     }
 
     username = forms.CharField(label=_(u"Username"), max_length=50)
@@ -233,29 +234,27 @@ class UserProfileForm(ModelForm):
         self.fields['timezone'].widget.attrs['class'] = 'select2'
 
     def clean_username(self):
-        print 'clean_username'
         username = self.cleaned_data.get('username')
         u = User.objects.filter(username=username)
-        print u
         if u:
-            self.add_error('username', forms.ValidationError(self.error_messages['username_already_exists'], code='username_already_exists'))
+            self.add_error('username', forms.ValidationError(self.error_messages['username_already_exists'],
+                                                             code='username_already_exists'))
         return username
 
     def clean_repeat_password(self):
-        #super(UserProfileForm, self).clean()
         password1 = self.cleaned_data.get('password')
         password2 = self.cleaned_data.get('repeat_password')
         if password1 and password2:
             if password1 != password2:
-                #raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch')
-                self.add_error('password', forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch'))
-                self.add_error('repeat_password', forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch'))
+                self.add_error('password', forms.ValidationError(self.error_messages['password_mismatch'],
+                                                                 code='password_mismatch'))
+                self.add_error('repeat_password', forms.ValidationError(self.error_messages['password_mismatch'],
+                                                                        code='password_mismatch'))
         return password2
 
     def clean_accept(self):
         accept = self.cleaned_data.get('accept')
         if not accept:
-            #raise forms.ValidationError(self.error_messages['not_accepted'], code='not_accepted')
             self.add_error('accept', forms.ValidationError(self.error_messages['not_accepted'], code='not_accepted'))
         return accept
 

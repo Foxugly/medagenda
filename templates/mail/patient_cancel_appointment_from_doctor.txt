@@ -1,0 +1,16 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Hello {{ slot.patient.first_name }}{% endblocktrans %}
+{% trans "You booked a appointment on Medagenda." %} {% trans "We thank you for your trust." %}
+
+{% trans "We inform you that an appointment is cancelled :" %}
+{%  trans "Date" %} : {{ slot.date }}
+{%  trans "Hour" %} : {{ slot.st.start }}
+{%  trans "To" %} : {{ slot.refer_doctor.full_name }}
+{%  trans "Address" %} : {{ slot.refer_doctor.address }}
+
+{% blocktrans %}We invite you to contact 1{{ slot.refer_doctor.full_name }} for any explanation.{% endblocktrans %}
+
+{% trans "Thanks for using our site!" %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% endautoescape %}

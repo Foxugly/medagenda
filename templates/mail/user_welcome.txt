@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Hello{% endblocktrans %} {{ userprofile.user.first_name }}
+
+{% trans "You just create an account to Medagenda." %} {% trans "We thank you for your trust." %}
+{% if b_link %}
+{% trans "Could you click on the link below to confirm your email address :" %}
+{{ protocol }}://{{ domain }}{% url 'confirm_user' text=userprofile.confirm user_id=userprofile.user.id %}
+{% endif %}
+{% trans "Thanks for using our site!" %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% endautoescape %}

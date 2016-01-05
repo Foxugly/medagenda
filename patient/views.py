@@ -20,7 +20,6 @@ from django.shortcuts import get_object_or_404
 def search_patient(request):
     if request.is_ajax():
         email = request.GET['email']
-        print email
         if len(email) > 5:
             p = Patient.objects.filter(email=email)
             if len(p):
@@ -34,7 +33,7 @@ def search_patient(request):
 def reminder(request, slug):
     if request.is_ajax():
         email = request.GET['email']
-        s = get_object_or_404(Slot,refer_doctor__slug=slug, patient__mail=email )
+        s = get_object_or_404(Slot, refer_doctor__slug=slug, patient__mail=email )
         # s = Slot.objects.filter(refer_doctor__slug=slug, patient__mail=email)
         if s:
             #TODO SEND MAIL PATIENT_REMINDER

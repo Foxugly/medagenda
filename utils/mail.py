@@ -8,3 +8,76 @@
 # your option) any later version.
 
 # https://www.rossp.org/blog/easy-multi-part-e-mails-django/
+
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader, Context
+from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.shortcuts import get_current_site
+
+
+def mail_patient_welcome(request, patient):
+    subject_part = _('[medagenda] Confirm your email address')
+    template_name = 'mail/patient_welcome'
+    context = {"patient": patient}
+    msg = mail_body(request, subject_part, template_name, context, patient.email)
+    return msg.send()
+
+
+def mail_user_welcome(request, userprofile, b_link):
+    subject_part = _('[medagenda] Confirm your email address')
+    template_name = 'mail/user_welcome'
+    context = {"userprofile": userprofile, "b_link": b_link}
+    msg = mail_body(request, subject_part, template_name, context, userprofile.user.email)
+    return msg.send()
+
+
+def mail_patient_new_appointment(request, slot):
+    subject_part = _('[medagenda] New appointment')
+    template_name = 'mail/patient_new_appointment'
+    context = {"slot": slot}
+    msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
+    # add ical
+    return msg.send()
+
+
+def mail_patient_reminder(request, slot):
+    subject_part = _('[medagenda] Reminder appointments')
+    template_name = 'mail/patient_reminder'
+    context = {"slot": slot}
+    msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
+    # add ical
+    return msg.send()
+
+
+def mail_patient_cancel_appointment_from_doctor(request, slot):
+    subject_part = _('[medagenda] Cancel appointment')
+    template_name = 'mail/patient_cancel_appointment_from_doctor'
+    context = {"slot": slot}
+    msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
+    return msg.send()
+
+
+def mail_patient_cancel_appointment_from_patient(request, slot, accepted):
+    if accepted:
+        subject_part = _('[medagenda] Cancel appointment accepted')
+        template_name = 'mail/patient_cancel_appointment_from_patient_yes'
+    else:
+        subject_part = _('[medagenda] Cancel appointment refused')
+        template_name = 'mail/patient_cancel_appointment_from_patient_no'
+    context = {"slot": slot}
+    msg = mail_body(subject_part, template_name, context, slot.patient.email)
+    return msg.send()
+
+
+def mail_body(request, subject_part, template_name, context, receiver):
+    sender = settings.DEFAULT_FROM_EMAIL
+    current_site = get_current_site(request)
+    context['domain'] = current_site.domain
+    context['site_name'] = current_site.name
+    context['protocol'] = 'https' if request.is_secure() else 'http'
+    text_part = loader.get_template('%s.txt' % template_name).render(Context(context))
+    html_part = loader.get_template('%s.tpl' % template_name).render(Context(context))
+    msg = EmailMultiAlternatives(subject_part, text_part, sender, [receiver])
+    msg.attach_alternative(html_part, "text/html")
+    return msg
