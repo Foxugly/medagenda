@@ -109,8 +109,8 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}} {{user.last_name}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a class="glyphicon glyphicon-home" href="{%  url 'home' %}"> {% trans "Home" %} </a></li>
-                <li><a class="glyphicon glyphicon-cog" href="{%  url 'settings' %}"> {% trans "Change Settings" %}</a></li>
-                <!--<li><a class="glyphicon glyphicon-lock" href="/user/password_change/"> {% trans "Change Password" %}</a></li>-->
+                <li><a class="glyphicon glyphicon-cog" href="{%  url 'settings' %}"> {% trans "Settings" %}</a></li>
+                <li><a class="glyphicon glyphicon-duplicate" href="{%  url 'invoice' %}"> {% trans "Invoices" %}</a></li>
                 <li class="divider"></li>
                 <li><a class="glyphicon glyphicon-calendar" href="{%  url 'calendar' %}"> {% trans "Calendar" %}</a></li>
                 <li><a class="glyphicon glyphicon-equalizer" href="{%  url 'model' %}"> {% trans "Model" %}</a></li>

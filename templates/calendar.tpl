@@ -264,8 +264,8 @@ $(document).ready(function() {
           <div class="row form-group">
             <label class="col-md-3 col-md-offset-1 control-label" for="id_telephone">{% trans "Telephone" %} :</label>
             <div class="col-md-7 input-group">
-              <input id="id_telephone" name="telephone" type="text" class="form-control">
-              <span class="input-group-addon"><span class="glyphicon glyphicon-phone-alt"></span></span>
+              <input id="id_telephone" name="telephone" type="text" class="form-control" placeholder="+475123456">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>
             </div>
           </div>
           <div class="row form-group">

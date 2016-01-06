@@ -11,7 +11,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
 from users.views import add_user, calendar_user, search_doctor, model_calendar, user_settings, create_user, personal_data, \
-    config, avatar, text, color, remove_picture, password, invoice_add, invoice_remove
+    config, avatar, text, color, remove_picture, password, invoice_add, invoice_remove, invoices
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}, name='login'),
@@ -26,6 +26,7 @@ urlpatterns = (
         {'template_name': 'password_reset_confirm.tpl'}, name="password_reset_confirm"),
     url(r'^password/done/$', views.password_reset_complete, {'template_name': 'password_reset_complete.tpl'},
         name="password_reset_complete"),
+    url(r'^invoice/$', login_required(invoices), name='invoice'),
     url(r'^calendar/$', login_required(calendar_user), name='calendar'),
     url(r'^model/$', login_required(model_calendar), name='model'),
     url(r'^ajax/personal_data/$', login_required(personal_data), name="personal_data"),

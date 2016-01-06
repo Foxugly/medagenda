@@ -27,19 +27,20 @@ from django.utils.dateformat import format
 from django.db.models import Q
 from utils.mail import mail_user_welcome
 
+
 def home(request):
     c = {}
     if request.user.is_authenticated():
         # TODO mettre à jour les invoices
-        # TODO foutre un dashboard avec
         if request.user.is_superuser:
             # admin
             c['list'] = UserProfile.objects.all()
+            return render(request, 'list.tpl', c)
         else:
-            c['list'] = UserProfile.objects.filter(view_in_list=True)
+            return render(request, 'dashboard.tpl', c)
     else:
         c['list'] = UserProfile.objects.filter(view_in_list=True)
-    return render(request, 'list.tpl', c)
+        return render(request, 'list.tpl', c)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -340,3 +341,20 @@ def invoice_remove(request, invoice_id):
     else:
         results['return'] = False
     return HttpResponse(json.dumps(results))
+
+
+@login_required
+def invoices(request):
+    data = []
+    titles = ['ID', _(u'Creation date'), _(u'Type of subscription'), _(u'Start date'), _('End date'),
+              _(u'Price inc. VAT'), _(u'date paid')]
+    date_format = formats.get_format('DATE_FORMAT')
+    for i in request.user.userprofile.invoices.all().order_by('id'):
+        if i.paid:
+            paid = format(i.date_paid, date_format)
+        else:
+            paid = '<a href="link/sofort" class="btn btn-danger" role="button">%s</a>' % _("Pay now")
+        data.append([i.id, format(i.date_creation, date_format), i.type_price, format(i.date_start, date_format),
+                     format(i.date_end, date_format), "%.2f euros" % i.price_incVAT, paid])
+    c = {'title': 'Invoices', 'table': {'data': data, 'titles': titles}}
+    return render(request, 'table.tpl', c)

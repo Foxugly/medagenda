@@ -16,7 +16,7 @@ class Patient(models.Model):
     email = models.EmailField(verbose_name=_(u'Email'), blank=True, null=True)
     first_name = models.CharField(verbose_name=_(u'First name'), max_length=100, blank=True, null=True)
     last_name = models.CharField(verbose_name=_(u'Last_name'), max_length=100, blank=True, null=True)
-    telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True, null=True)
+    telephone = models.CharField(verbose_name=_(u'Telephone'), help_text=_(u'format : +32475123456'), max_length=20, blank=True, null=True)
     active = models.BooleanField(verbose_name=_(u'Confirmed'), default=False)
     confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)
 

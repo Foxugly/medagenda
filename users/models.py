@@ -17,7 +17,7 @@ from django.forms import ModelForm
 from django.utils.text import slugify
 from agenda.models import WeekTemplate, DayTemplate, Slot
 from timezone_field import TimeZoneField
-
+from django.core.validators import RegexValidator
 
 class ColorSlot(models.Model):
     SLOT_TYPE = settings.SLOT_TYPE
@@ -55,19 +55,19 @@ class TypePrice(models.Model):
 
 
 class Invoice(models.Model):
-    type_price = models.ForeignKey(TypePrice, verbose_name=_(u'Type of account'), blank=False)
-    date_creation = models.DateField(verbose_name=_(u'Creation_date'), auto_now_add=True)
+    type_price = models.ForeignKey(TypePrice, verbose_name=_(u'Type of subscription'), blank=False)
+    date_creation = models.DateField(verbose_name=_(u'Creation date'), auto_now_add=True)
     date_start = models.DateField(verbose_name=_(u'Start date'), blank=False)
     date_end = models.DateField(verbose_name=_(u'End date'), blank=False)
-    active = models.BooleanField(verbose_name=_('Active'), default=True)
-    price_exVAT = models.FloatField(verbose_name=_('Price excl. VAT'), blank=False, default=0.0)
-    VAT = models.FloatField(verbose_name=_('VAT (%)'), blank=False, default=21)
-    price_VAT = models.FloatField(verbose_name=_('Price VAT'), blank=True, default=0.0)
-    price_incVAT = models.FloatField(verbose_name=_('Price inc. VAT'), blank=True, default=0.0)
-    paid = models.BooleanField(verbose_name=_('Paid'), default=False)
-    date_paid = models.DateField(verbose_name=_('date Paid'), blank=True, null=True)
+    active = models.BooleanField(verbose_name=_(u'Active'), default=True)
+    price_exVAT = models.FloatField(verbose_name=_(u'Price excl. VAT'), blank=False, default=0.0)
+    VAT = models.FloatField(verbose_name=_(u'VAT (%)'), blank=False, default=21)
+    price_VAT = models.FloatField(verbose_name=_(u'Price VAT'), blank=True, default=0.0)
+    price_incVAT = models.FloatField(verbose_name=_(u'Price inc. VAT'), blank=True, default=0.0)
+    paid = models.BooleanField(verbose_name=_(u'Paid'), default=False)
+    date_paid = models.DateField(verbose_name=_(u'date paid'), blank=True, null=True)
     note_paid = models.CharField(verbose_name=_(u'note paid'), max_length=100, blank=True)
-    show = models.BooleanField(verbose_name=_('Show'), default=True)
+    show = models.BooleanField(verbose_name=_(u'Show'), default=True)
 
     def save(self, *args, **kwargs):
         super(Invoice, self).save(*args, **kwargs)
@@ -100,11 +100,11 @@ class NoFreeMiniInvoiceForm(MiniInvoiceForm):
         self.fields['type_price'].widget.attrs['style'] = 'width:100%'
 
 
-# raise ValidationError(_("You must accept the terms and conditions of use of Medagenda"))
-
 class UserProfile(models.Model):
     MEDECINE_CHOICES = settings.MEDECINE_CHOICES
     TITLE_CHOICES = settings.TITLE_CHOICES
+
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
 
     title = models.IntegerField(verbose_name=_(u'Title'), choices=TITLE_CHOICES)
     user = models.OneToOneField(User, verbose_name=_('User'))
@@ -113,7 +113,7 @@ class UserProfile(models.Model):
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
     language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES, default=1)
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
-    telephone = models.CharField(verbose_name=_(u'Telephone'), max_length=20, blank=True)
+    telephone = models.CharField(verbose_name=_(u'Telephone'), validators=[phone_regex], help_text=_(u'format : +32475123456'), max_length=20, blank=True)
     address = AddressField()
     start_time = models.TimeField(verbose_name=_(u'Start time'), blank=False, default="09:00")
     end_time = models.TimeField(verbose_name=_(u'End time'), blank=False, default="18:00")
