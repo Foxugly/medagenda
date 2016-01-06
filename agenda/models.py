@@ -12,8 +12,11 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient
 from datetime import datetime, timedelta
-from utils.toolbox import reformat_date
+from django.utils import formats
+from django.utils.dateformat import format
+from icalendar import vText, Event, Calendar
 import pytz
+import os
 
 
 class SlotTemplate(models.Model):
@@ -119,14 +122,18 @@ class Slot(models.Model):
                                      related_name='back_userprofile', null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
+    path = models.CharField(verbose_name=_(u'path_ics'), blank=True, null=True)
 
     def clean_slot(self):
         self.patient = None
         self.booked = False
         self.save()
 
-    def date_t(self, date_format):
-        return str(self.date.strftime(reformat_date(date_format)))
+    def date_t(self):
+        # TODO a vérifier / controle
+        # return str(self.date.strftime(reformat_date(date_format)))
+        date_format = formats.get_format('DATE_FORMAT')
+        return format(self.date, date_format)
 
     @staticmethod
     def hour_t(t):
@@ -135,7 +142,7 @@ class Slot(models.Model):
     def start_dt(self):
         tz = pytz.timezone(str(self.refer_doctor.timezone))
         return tz.localize(
-            datetime(self.date.year, self.date.month, self.date.day, self.st.start.hour, self.st.start.minute, 0))
+                datetime(self.date.year, self.date.month, self.date.day, self.st.start.hour, self.st.start.minute, 0))
 
     def start_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.start)
@@ -143,7 +150,7 @@ class Slot(models.Model):
     def end_dt(self):
         tz = pytz.timezone(str(self.refer_doctor.timezone))
         return tz.localize(
-            datetime(self.date.year, self.date.month, self.date.day, self.st.end.hour, self.st.end.minute, 0))
+                datetime(self.date.year, self.date.month, self.date.day, self.st.end.hour, self.st.end.minute, 0))
 
     def end_t(self):
         return self.date.strftime('%Y-%m-%d') + "T" + self.hour_t(self.st.end)
@@ -155,12 +162,12 @@ class Slot(models.Model):
         return dict(id=self.id, start=self.start_t(), end=self.end_t(), title=self.get_title(),
                     color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
 
-    def detail(self, date_format=None):
+    def detail(self):
         if self.booked:
             if self.refer_doctor.view_busy_slot:
-                d = dict(id=self.id, date=self.date_t(date_format), start=self.hour_t(self.st.start), title=str(_('Booked')),
-                         color=self.refer_doctor.get_color(self.st.slot_type, self.booked), booked=self.booked,
-                         informations=self.informations)
+                d = {'id': self.id, 'date': self.date_t(), 'start': self.hour_t(self.st.start),
+                     'title': str(_('Booked')), 'color': self.refer_doctor.get_color(self.st.slot_type, self.booked),
+                     'booked': self.booked, 'informations': self.informations}
                 if self.patient:
                     d_patient = self.patient.as_json()
                     del d_patient['id']
@@ -169,8 +176,42 @@ class Slot(models.Model):
             else:
                 return None
         else:
-            return dict(id=self.id, date=self.date_t(date_format), start=self.hour_t(self.st.start), title=str(_('Free')),
-                        color=self.refer_doctor.get_color(self.st.slot_type, self.booked))
+            return {'id': self.id, 'date': self.date_t(), 'start': self.hour_t(self.st.start),
+                    'title': str(_('Free')), 'color': self.refer_doctor.get_color(self.st.slot_type, self.booked)}
 
     def __str__(self):
         return u"Slot %d" % self.id
+
+    def save(self, *args, **kwargs):
+        super(Slot, self).save(*args, **kwargs)
+        if self.refer_doctor:
+            self.path = os.path.join(settings.MEDIA_ROOT, 'ics', 'slot',
+                                     '%s_%s.ics' % (self.refer_doctor.slug, self.id))
+        super(Slot, self).save(*args, **kwargs)
+
+    def icalendar(self):
+        cal = Calendar()
+        cal.add('version', '2.0')
+        cal.add('prodid', '-//Medical appointement//')
+        cal.add('calscale', 'GREGORIAN')
+        cal.add('method', 'PUBLISH')
+        cal.add('x-wr-calname', '[Medagenda] appointment')
+        cal.add('x-wr-timezone', self.refer_doctor.timezone)
+        cal.add('x-wr-caldesc', '')
+        event = Event()
+        title = '[Medical appointment] %s' % str(self.refer_doctor.full_name())
+        event.add('dtstart', self.start_dt())
+        event.add('dtend', self.end_dt())
+        event.add('dtstamp', datetime.now(pytz.timezone(str(self.refer_doctor.timezone))))
+        event.add('created', datetime.now(pytz.timezone(str(self.refer_doctor.timezone))))
+        event['description'] = vText(_(u"Medical consultation with %s" % self.refer_doctor.full_name()))
+        event.add('last-modified', datetime.now(pytz.timezone(str(self.refer_doctor.timezone))))
+        event['location'] = vText(self.refer_doctor.address.formatted)
+        event.add('sequence', 0)
+        event['status'] = vText('CONFIRMED')
+        event.add('summary', title)
+        event['transp'] = vText('OPAQUE')
+        cal.add_component(event)
+        f = open(self.path, 'wb')
+        f.write(cal.to_ical())
+        f.close()

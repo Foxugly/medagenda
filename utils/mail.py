@@ -37,16 +37,16 @@ def mail_patient_new_appointment(request, slot):
     template_name = 'mail/patient_new_appointment'
     context = {"slot": slot}
     msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
-    # add ical
+    msg.attach_file(slot.path)
     return msg.send()
 
 
 def mail_patient_reminder(request, slot):
+    # TODO faut complétement revoir
     subject_part = _('[medagenda] Reminder appointments')
     template_name = 'mail/patient_reminder'
     context = {"slot": slot}
     msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
-    # add ical
     return msg.send()
 
 
@@ -66,7 +66,7 @@ def mail_patient_cancel_appointment_from_patient(request, slot, accepted):
         subject_part = _('[medagenda] Cancel appointment refused')
         template_name = 'mail/patient_cancel_appointment_from_patient_no'
     context = {"slot": slot}
-    msg = mail_body(subject_part, template_name, context, slot.patient.email)
+    msg = mail_body(request, subject_part, template_name, context, slot.patient.email)
     return msg.send()
 
 

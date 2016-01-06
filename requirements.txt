@@ -5,3 +5,4 @@ django-colorfield
 django-address
 django-timezone-field
 icalendar
+reportlab

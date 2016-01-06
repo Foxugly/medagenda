@@ -76,6 +76,17 @@ USE_L10N = True
 USE_TZ = True
 AUTH_PROFILE_MODULE = 'users.UserProfile'
 
+
+entreprise_name = "MedAgenda"
+entreprise_first_name = "First"
+entreprise_last_name = "Last"
+entreprise_address = "Address"
+entreprise_code_postal = "1000"
+entreprise_city = "Brussels"
+entreprise_country = "Belgium"
+entreprise_email = "info@medagenda.be"
+entreprise_phonenumber = "+32(0)475/12.34.S56"
+entreprise_number = "123456798"
 #EMAIL_USE_TLS = True
 EMAIL_HOST = 'relay.skynet.be'
 #EMAIL_HOST_USER = ''

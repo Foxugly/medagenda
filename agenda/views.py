@@ -13,7 +13,8 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from agenda.models import SlotTemplate, Slot
 from patient.models import Patient
-from utils.toolbox import reformat_date
+from django.utils import formats
+from django.utils.dateformat import format
 import json
 from utils.toolbox import string_random
 from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
@@ -65,11 +66,16 @@ def st_apply(request):
     results = {}
     if request.is_ajax():
         if 'start_date' in request.POST and 'end_date' in request.POST:
-            # TODO remplacer
-            f_date = request.POST['date_format']
-            f_date = reformat_date(f_date)
-            start_date = datetime.strptime(request.POST['start_date'], f_date)
-            end_date = datetime.strptime(request.POST['end_date'], f_date)
+            # TODO vérifier/controler
+            date_format = formats.get_format('DATE_FORMAT')
+            start_date = format(request.POST['start_date'], date_format)
+            end_date = format(request.POST['end_date'], date_format)
+            print start_date
+            print end_date
+            # f_date = request.POST['date_format']
+            # f_date = reformat_date(f_date)
+            # start_date = datetime.strptime(request.POST['start_date'], date_format)
+            # end_date = datetime.strptime(request.POST['end_date'], date_format)
             for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
@@ -151,6 +157,7 @@ def book_slot(request, slot_id):
             s.patient = p
         s.booked = True
         s.save()
+        s.calendar()
         mail_patient_new_appointment(request, s)
         d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))

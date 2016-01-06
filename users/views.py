@@ -32,8 +32,7 @@ def home(request):
     c = {}
     if request.user.is_authenticated():
         # TODO mettre à jour les invoices
-        if request.user.is_superuser:
-            # admin
+        if request.user.is_superuser:  # admin
             c['list'] = UserProfile.objects.all()
             return render(request, 'list.tpl', c)
         else:

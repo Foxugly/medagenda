@@ -38,7 +38,7 @@ def faq(request):
     c = {}
     f = Faq.objects.filter(lang=request.LANGUAGE_CODE)
     if len(f):
-        c ['faq'] = f
+        c['faq'] = f
     return render(request, 'faq.tpl', c)
 
 
@@ -65,6 +65,7 @@ def about(request):
 
 def offer(request):
     return render(request, 'offer.tpl')
+
 
 def conditions(request):
     return render(request, 'conditions.tpl')

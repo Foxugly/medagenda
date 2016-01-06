@@ -13,7 +13,6 @@ from django.http import HttpResponse
 import json
 from agenda.models import Slot
 from django.shortcuts import render
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 
@@ -33,11 +32,10 @@ def search_patient(request):
 def reminder(request, slug):
     if request.is_ajax():
         email = request.GET['email']
-        s = get_object_or_404(Slot, refer_doctor__slug=slug, patient__mail=email )
+        s = get_object_or_404(Slot, refer_doctor__slug=slug, patient__mail=email)
         # s = Slot.objects.filter(refer_doctor__slug=slug, patient__mail=email)
         if s:
-            #TODO SEND MAIL PATIENT_REMINDER
-            print str(s.patient.email) + ' : ' + settings.WEBSITE_URL + '/patient/confirm/remove/' + str(s.patient.id) + '/' + str(s.id) + '/'
+            # TODO SEND MAIL PATIENT_REMINDER
             return HttpResponse(json.dumps({'return': False}))
         else:
             return HttpResponse(json.dumps({'return': False}))
@@ -59,4 +57,3 @@ def confirm_remove(request, patient_id, slot_id):
     s.clean_slot()
     s.save()
     return render(request, 'valid.tpl')
-
