@@ -126,12 +126,12 @@ def get_slot(request, slot_id):
             format_date = 'mm/dd/yyyy'
         s = Slot.objects.get(id=int(slot_id))
         if request.user.is_authenticated():
-            results['slot'] = s.detail(format_date)
+            results['slot'] = s.detail()
             results['return'] = True
         else:
             if not s.booked:
                 results['return'] = True
-                results['slot'] = s.detail(format_date)
+                results['slot'] = s.detail()
             else:
                 results['return'] = False
     else:
@@ -157,7 +157,7 @@ def book_slot(request, slot_id):
             s.patient = p
         s.booked = True
         s.save()
-        s.calendar()
+        s.icalendar()
         mail_patient_new_appointment(request, s)
         d = {'return': True, 'slot': s.as_json()}
         return HttpResponse(json.dumps(d))

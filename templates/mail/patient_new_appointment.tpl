@@ -13,6 +13,9 @@
 <br>
 {% trans "You will find in attachment an ical file to add the appointment to your calendar." %}
 <br><br>
+{% trans "If you want to cancel the appointment, you can click on this link :" %}
+<a href="{{ protocol }}://{{ domain }}{% url 'patient_confirm_remove' patient_id=slot.patient.id slot_id=slot.id %}">{{ protocol }}://{{ domain }}{% url 'patient_confirm_remove' patient_id=slot.patient.id slot_id=slot.id  %}</a>
+<br><br>
 {% trans "Thanks for using our site!" %}
 <br><br>
 {% blocktrans %}The {{ site_name }} team{% endblocktrans %}

@@ -122,7 +122,7 @@ class Slot(models.Model):
                                      related_name='back_userprofile', null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
-    path = models.CharField(verbose_name=_(u'path_ics'), blank=True, null=True)
+    path = models.CharField(verbose_name=_(u'path_ics'), max_length=255, blank=True, null=True)
 
     def clean_slot(self):
         self.patient = None

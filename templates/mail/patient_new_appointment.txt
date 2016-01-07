@@ -11,6 +11,9 @@
 
 {% trans "You will find in attachment an ical file to add the appointment to your calendar." %}
 
+{% trans "If you want to cancel the appointment, you can click on this link :" %}
+{{ protocol }}://{{ domain }}{% url 'patient_confirm_remove' patient_id=slot.patient.id slot_id=slot.id  %}
+
 {% trans "Thanks for using our site!" %}
 
 {% blocktrans %}The {{ site_name }} team{% endblocktrans %}

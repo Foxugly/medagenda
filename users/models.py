@@ -18,6 +18,8 @@ from django.utils.text import slugify
 from agenda.models import WeekTemplate, DayTemplate, Slot
 from timezone_field import TimeZoneField
 from django.core.validators import RegexValidator
+import os
+
 
 class ColorSlot(models.Model):
     SLOT_TYPE = settings.SLOT_TYPE
@@ -54,6 +56,20 @@ class TypePrice(models.Model):
         return ret
 
 
+class InvoiceNumber(models.Model):
+    year = models.IntegerField(verbose_name=_(u'Year'), default=2015)
+    number = models.IntegerField(verbose_name=_(u'Number'), default=0)
+
+
+def get_number(y):
+    inst = InvoiceNumber.objects.filter(year=y)
+    if not inst:
+        inst = InvoiceNumber(year=y)
+    inst.number += 1
+    inst.save()
+    return inst.number
+
+
 class Invoice(models.Model):
     type_price = models.ForeignKey(TypePrice, verbose_name=_(u'Type of subscription'), blank=False)
     date_creation = models.DateField(verbose_name=_(u'Creation date'), auto_now_add=True)
@@ -68,6 +84,8 @@ class Invoice(models.Model):
     date_paid = models.DateField(verbose_name=_(u'date paid'), blank=True, null=True)
     note_paid = models.CharField(verbose_name=_(u'note paid'), max_length=100, blank=True)
     show = models.BooleanField(verbose_name=_(u'Show'), default=True)
+    invoice_number = models.IntegerField(blank=True, default=0)
+    path = models.CharField(verbose_name=_(u'path'), max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super(Invoice, self).save(*args, **kwargs)
@@ -75,6 +93,9 @@ class Invoice(models.Model):
             self.price_VAT = (self.VAT / 100) * self.price_exVAT
             self.price_incVAT = self.price_VAT + self.price_exVAT
             super(Invoice, self).save(*args, **kwargs)
+        self.invoice_number = get_number(self.date_creation.year)
+        self.path = self.path = os.path.join(settings.MEDIA_ROOT, 'invoice',
+                                             '%s_%s.pdf' % (self.date_creation.year, self.invoice_number))
 
     def __str__(self):
         return '%d: %s' % (self.id, self.type_price)
@@ -104,7 +125,9 @@ class UserProfile(models.Model):
     MEDECINE_CHOICES = settings.MEDECINE_CHOICES
     TITLE_CHOICES = settings.TITLE_CHOICES
 
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+999999999'."
+                                         " Up to 15 digits allowed.")
 
     title = models.IntegerField(verbose_name=_(u'Title'), choices=TITLE_CHOICES)
     user = models.OneToOneField(User, verbose_name=_('User'))
@@ -113,7 +136,8 @@ class UserProfile(models.Model):
     slug = models.SlugField(verbose_name=_(u'slug'), max_length=50, blank=True)
     language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES, default=1)
     vat_number = models.CharField(verbose_name=_(u'VAT number'), max_length=20, blank=True)
-    telephone = models.CharField(verbose_name=_(u'Telephone'), validators=[phone_regex], help_text=_(u'format : +32475123456'), max_length=20, blank=True)
+    telephone = models.CharField(verbose_name=_(u'Telephone'), validators=[phone_regex],
+                                 help_text=_(u'format : +32475123456'), max_length=20, blank=True)
     address = AddressField()
     start_time = models.TimeField(verbose_name=_(u'Start time'), blank=False, default="09:00")
     end_time = models.TimeField(verbose_name=_(u'End time'), blank=False, default="18:00")
@@ -129,8 +153,10 @@ class UserProfile(models.Model):
     invoices = models.ManyToManyField(Invoice, verbose_name=_(u'Invoices'), blank=True)
     accept = models.BooleanField(verbose_name=_(
             u'I accept the terms and conditions of use of Medagenda (see <a href="/conditions/"> here </a>)'),
-            blank=False,
-            null=False, default=False)
+            blank=False, null=False, default=False)
+    can_recharge = models.BooleanField(verbose_name=_(u'Can recharge type of subscription '), blank=False, null=False,
+                                       default=True)
+    # TODO add can_recharge to settings
 
     def __str__(self):
         return u"userprofile : %s" % self.user.username

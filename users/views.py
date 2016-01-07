@@ -21,21 +21,54 @@ from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
+from datetime import datetime, date
 from django.utils import formats
 from django.utils.dateformat import format
 from django.db.models import Q
 from utils.mail import mail_user_welcome
+from utils.invoice import PrintInvoice
 
 
 def home(request):
     c = {}
     if request.user.is_authenticated():
-        # TODO mettre à jour les invoices
         if request.user.is_superuser:  # admin
             c['list'] = UserProfile.objects.all()
             return render(request, 'list.tpl', c)
         else:
+            # TODO MUST BE RUN BY A CRON DAEMON
+            old_i = request.user.userprofile.invoices.objects.get(active=True)
+            i = request.user.userprofile.invoices.objects.filter(date_start__lte=date.today(),
+                                                                 date_end__gte=date.today())
+            if len(i):
+                current_i = i[0]
+                if old_i is not current_i:
+                    old_i.active = False
+                    old_i.save()
+                    current_i.active = True
+                    current_i.save()
+                    new_pi = PrintInvoice(i[0])
+                    new_pi.save()
+                    # TODO send mail avec invoice
+            else:
+                if request.user.userprofile.can_recharge:
+                    old_i.active = False
+                    old_i.save()
+                    f_day = datetime.today()
+                    new_i = Invoice(type_price=old_i.type_price, date_start=f_day,
+                                    date_end=f_day + relativedelta(months=+old_i.type_price.num_months),
+                                    price_exVAT=int(old_i.type_price.price_exVAT), active=True)
+                    new_i.save()
+                    new_pi = PrintInvoice(new_i)
+
+                    new_pi.save()
+                    # TODO send mail avec invoice
+                else:
+                    # TODO send mail pour dire va mettre à jour sinon dans 7 jours, on cloture
+                    # gérer la cloture
+                    print "HERE"
+            # ----------------------
+            # TODO préparer les data pour le dashboard
             return render(request, 'dashboard.tpl', c)
     else:
         c['list'] = UserProfile.objects.filter(view_in_list=True)
