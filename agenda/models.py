@@ -17,6 +17,7 @@ from django.utils.dateformat import format
 from icalendar import vText, Event, Calendar
 import pytz
 import os
+from utils.toolbox import string_random
 
 
 class SlotTemplate(models.Model):
@@ -122,6 +123,7 @@ class Slot(models.Model):
                                      related_name='back_userprofile', null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
+    random = models.CharField(verbose_name=_(u'random character'), max_length=16, blank=True, null=True)
     path = models.CharField(verbose_name=_(u'path_ics'), max_length=255, blank=True, null=True)
 
     def clean_slot(self):
@@ -130,10 +132,7 @@ class Slot(models.Model):
         self.save()
 
     def date_t(self):
-        # TODO a vérifier / controle
-        # return str(self.date.strftime(reformat_date(date_format)))
-        date_format = formats.get_format('DATE_FORMAT')
-        return format(self.date, date_format)
+        return self.date.strftime(formats.get_format('DATE_INPUT_FORMATS')[0])
 
     @staticmethod
     def hour_t(t):
@@ -183,10 +182,12 @@ class Slot(models.Model):
         return u"Slot %d" % self.id
 
     def save(self, *args, **kwargs):
+        if not self.random:
+            self.random = string_random(16)
         super(Slot, self).save(*args, **kwargs)
         if self.refer_doctor:
             self.path = os.path.join(settings.MEDIA_ROOT, 'ics', 'slot',
-                                     '%s_%s.ics' % (self.refer_doctor.slug, self.id))
+                                     '%s_%s_%s.ics' % (self.random, self.refer_doctor.slug, self.id))
         super(Slot, self).save(*args, **kwargs)
 
     def icalendar(self):

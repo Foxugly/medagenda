@@ -18,6 +18,7 @@ from django.utils.text import slugify
 from agenda.models import WeekTemplate, DayTemplate, Slot
 from timezone_field import TimeZoneField
 from django.core.validators import RegexValidator
+from utils.toolbox import string_random
 import os
 
 
@@ -65,6 +66,8 @@ def get_number(y):
     inst = InvoiceNumber.objects.filter(year=y)
     if not inst:
         inst = InvoiceNumber(year=y)
+    else:
+        inst = inst[0]
     inst.number += 1
     inst.save()
     return inst.number
@@ -85,23 +88,29 @@ class Invoice(models.Model):
     note_paid = models.CharField(verbose_name=_(u'note paid'), max_length=100, blank=True)
     show = models.BooleanField(verbose_name=_(u'Show'), default=True)
     invoice_number = models.IntegerField(blank=True, default=0)
+    random = models.CharField(verbose_name=_(u'random character'), max_length=16, blank=True, null=True)
     path = models.CharField(verbose_name=_(u'path'), max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super(Invoice, self).save(*args, **kwargs)
+        if not self.random:
+            self.random = string_random(16)
         if self.price_incVAT != ((self.VAT / 100) * self.price_exVAT) + self.price_exVAT:
             self.price_VAT = (self.VAT / 100) * self.price_exVAT
             self.price_incVAT = self.price_VAT + self.price_exVAT
-            super(Invoice, self).save(*args, **kwargs)
-        self.invoice_number = get_number(self.date_creation.year)
-        self.path = self.path = os.path.join(settings.MEDIA_ROOT, 'invoice',
-                                             '%s_%s.pdf' % (self.date_creation.year, self.invoice_number))
+        year = int(self.date_creation.year) % 1000
+        self.invoice_number = (((year * 100) + 42) * 10 ** 5) + get_number(year)
+        self.path = self.path = os.path.join(settings.MEDIA_URL, 'invoice',
+                                             '%s_%s.pdf' % (self.random, self.invoice_number))
+        super(Invoice, self).save(*args, **kwargs)
 
     def __str__(self):
         return '%d: %s' % (self.id, self.type_price)
 
 
 class MiniInvoiceForm(ModelForm):
+    can_recharge = forms.BooleanField(label=_(u"Can recharge subscription"), initial=True)
+
     class Meta:
         model = Invoice
         fields = ['type_price']
@@ -156,7 +165,8 @@ class UserProfile(models.Model):
             blank=False, null=False, default=False)
     can_recharge = models.BooleanField(verbose_name=_(u'Can recharge type of subscription '), blank=False, null=False,
                                        default=True)
-    # TODO add can_recharge to settings
+    random = models.CharField(verbose_name=_(u'random character'), max_length=16, blank=True, null=True)
+    path = models.CharField(verbose_name=_(u'path'), max_length=255, blank=True, null=True)
 
     def __str__(self):
         return u"userprofile : %s" % self.user.username
@@ -187,8 +197,11 @@ class UserProfile(models.Model):
         return ret
 
     def save(self, *args, **kwargs):
+        if not self.random:
+            self.random = string_random(16)
         if not self.slug:
             self.slug = slugify(self.real_name())
+        self.path = os.path.join(settings.MEDIA_ROOT, 'ics', '%s_%s.pdf' % (self.random, self.slug))
         super(UserProfile, self).save(*args, **kwargs)
 
     def get_all_slottemplates(self):

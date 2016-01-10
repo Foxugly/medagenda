@@ -67,15 +67,11 @@ def st_apply(request):
     if request.is_ajax():
         if 'start_date' in request.POST and 'end_date' in request.POST:
             # TODO vérifier/controler
-            date_format = formats.get_format('DATE_FORMAT')
+            date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
+            print st_apply
             start_date = format(request.POST['start_date'], date_format)
-            end_date = format(request.POST['end_date'], date_format)
             print start_date
-            print end_date
-            # f_date = request.POST['date_format']
-            # f_date = reformat_date(f_date)
-            # start_date = datetime.strptime(request.POST['start_date'], date_format)
-            # end_date = datetime.strptime(request.POST['end_date'], date_format)
+            end_date = format(request.POST['end_date'], date_format)
             for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
@@ -120,10 +116,6 @@ def st_remove(request, st_id):
 def get_slot(request, slot_id):
     results = {}
     if request.is_ajax():
-        if 'date_format' in request.POST:
-            format_date = request.POST['date_format']
-        else:
-            format_date = 'mm/dd/yyyy'
         s = Slot.objects.get(id=int(slot_id))
         if request.user.is_authenticated():
             results['slot'] = s.detail()

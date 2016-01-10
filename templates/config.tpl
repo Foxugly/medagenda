@@ -151,7 +151,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(result){
                 if (result['return']){
-                    $('#confirm_yes').show();
+                    //$('#confirm_yes').show();
                     var tr = "<tr><td>" + result['id'] + "</td><td>" + result['type_price'] + "</td>";
                     tr += "<td>" + result['date_start'] + "</td><td>" +  result['date_end'] + "</td>";
                     tr += "<td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>";
@@ -211,7 +211,7 @@ $(document).ready(function() {
         });
     });*/
 
-     $("table").on("click", ".ibtnDel", function (event) {
+     $("table").on("click", ".ibtnDel", function() {
          var killrow = $(this).closest("tr");
          console.log(killrow);
          var myid = killrow.find("td:first").html();
@@ -415,7 +415,12 @@ $(document).ready(function() {
                             <table id="table_invoice" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>ID</th><th>Type</th><th>Start Date</th><th>End Date</th><th>Remove</th>
+                                    <th class="text-center">{%  trans "ID" %}</th>
+                                    <th class="text-center">{%  trans "Type" %}</th>
+                                    <th class="text-center">{%  trans "Start Date" %}</th>
+                                    <th class="text-center">{%  trans "End Date" %}</th>
+                                    <th class="text-center">{%  trans "Invoice" %}</th>
+                                    <th class="text-center">{%  trans "Remove" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -423,8 +428,13 @@ $(document).ready(function() {
                                 {% if i.active %}<tr class="success">{% else %}<tr>{%  endif  %}
                                 <td>{{ i.id }}</td>
                                 <td>{{ i.type_price }}</td>
-                                <td>{{ i.date_start}}</td>
-                                <td>{{ i.date_end}}</td>
+                                <td  class="text-center">{{ i.date_start | date_format}}</td>
+                                <td  class="text-center">{{ i.date_end | date_format}}</td>
+                                <td  class="text-center">
+                                {%  if True %}
+                                    <a href="{{ i.path }}">pdf</a>
+                                {%  endif %}
+                                </td>
                                 {% if not i.active or i.date_begin|after_today %}
                                     <td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>
                                 {%  else %}

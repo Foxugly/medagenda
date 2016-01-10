@@ -8,7 +8,6 @@
 # your option) any later version.
 
 
-from datetime import date
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Flowable
@@ -18,35 +17,38 @@ from django.utils.dateformat import format
 from django.utils import formats
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-
+import os
 
 class Address(Flowable):
-    def __init__(self, x=0, y=25, width=250, height=15):
+    def __init__(self, up):
         Flowable.__init__(self)
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self.user = up.user
+        self.adr = up.address
+        self.x = 0
+        self.y = 25
+        self.width = 250
+        self.height = 15
         self.styles = getSampleStyleSheet()
 
     def draw(self):
-        p = Paragraph("Prenom_client Nom_client", style=self.styles["Normal"])
+        p = Paragraph(u"%s %s" % (self.user.first_name, self.user.last_name), style=self.styles["Normal"])
         p.wrapOn(self.canv, self.width, self.height)
         p.drawOn(self.canv, self.width, self.height - self.y)
-        p = Paragraph("Adresse1", style=self.styles["Normal"])
+        p = Paragraph(u"%s %s" % (self.adr.route, self.adr.street_number), style=self.styles["Normal"])
         p.wrapOn(self.canv, self.width, self.height - 15)
         p.drawOn(self.canv, self.width, self.height - 15 - self.y)
-        p = Paragraph("Adresse2", style=self.styles["Normal"])
+        p = Paragraph(u"%s %s" % (self.adr.locality.postal_code, self.adr.locality.name), style=self.styles["Normal"])
         p.wrapOn(self.canv, self.width, self.height - 30)
         p.drawOn(self.canv, self.width, self.height - 30 - self.y)
-        p = Paragraph("PAYS", style=self.styles["Normal"])
+        p = Paragraph(u"%s" % self.adr.locality.state.country, style=self.styles["Normal"])
         p.wrapOn(self.canv, self.width, self.height - 45)
         p.drawOn(self.canv, self.width, self.height - 45 - self.y)
 
 
 class PrintInvoice:
-    def __init__(self, invoice):
-        self.path = invoice.path
+    def __init__(self, invoice, up):
+        self.userprofile = up
+        self.invoice = invoice
         self.elements = []
         # self.buffer = buffer
         # if pagesize == 'A4':
@@ -57,36 +59,44 @@ class PrintInvoice:
         self.styles = getSampleStyleSheet()
 
     def head(self):
-        self.elements.append(Paragraph(u"%s" % settings.entreprise_name, self.styles['Normal']))
-        self.elements.append(Paragraph(u"%s %s" % (settings.entreprise_first_name, settings.entreprise_last_name),
+        self.elements.append(Paragraph(u"%s" % settings.ENTREPRISE_NAME, self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s %s" % (settings.ENTREPRISE_FIRST_NAME, settings.ENTREPRISE_LAST_NAME),
                                        self.styles['Normal']))
-        self.elements.append(Paragraph(u"%s" % settings.entreprise_address, self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s" % settings.ENTREPRISE_ADDRESS, self.styles['Normal']))
         self.elements.append(
-            Paragraph(u"%s %s" % (settings.entreprise.postal_code, settings.city), self.styles['Normal']))
-        self.elements.append(Paragraph(u"%s" % settings.country, self.styles['Normal']))
-        self.elements.append(Paragraph(u"%s : %s" % (_(u"Mail"), settings.entreprise_email), self.styles['Normal']))
+                Paragraph(u"%s %s" % (settings.ENTREPRISE_POSTAL_CODE, settings.ENTREPRISE_CITY),
+                          self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s" % settings.ENTREPRISE_COUNTRY, self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s : %s" % (_(u"Mail"), settings.ENTREPRISE_EMAIL), self.styles['Normal']))
         self.elements.append(
-            Paragraph(u"%s : %s" % (_(u"Phonenumber"), settings.entreprise_phone), self.styles['Normal']))
+                Paragraph(u"%s : %s" % (_(u"Phonenumber"), settings.ENTREPRISE_PHONENUMBER), self.styles['Normal']))
         self.elements.append(
-            Paragraph(u"%s : %s" % (_(u"Entreprise number"), settings.entreprise_number), self.styles['Normal']))
+                Paragraph(u"%s : %s" % (_(u"Entreprise number"), settings.ENTREPRISE_NUMBER), self.styles['Normal']))
 
     def save(self):
-        doc = SimpleDocTemplate(self.path,
+        path = "%s%s" % (settings.BASE_DIR, self.invoice.path)
+        doc = SimpleDocTemplate(path,
                                 rightMargin=25 * mm,
                                 leftMargin=25 * mm,
                                 topMargin=30 * mm,
                                 bottomMargin=25 * mm,
                                 pagesize=self.pagesize)
         self.head()
-        self.elements.append(Address())
+        self.elements.append(Address(self.userprofile))
         self.elements.append(Spacer(0, 30 * mm))
-        self.elements.append(Paragraph("Invoice", self.styles['title']))
-        self.elements.append(Paragraph("Facture : ", self.styles['Normal']))
-        date_format = formats.get_format('DATE_FORMAT')
-        self.elements.append(Paragraph("Date : %s" % format(date.today(), date_format), self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s" % _(u"Invoice"), self.styles['title']))
         self.elements.append(Spacer(0, 10 * mm))
-        table_data = [["ID", "TYPE", "START DATE", "END DATE", "PRIX TTC"]]
-        # table_data.append(["alpha2", "beta2", "delta2", "gamma2", "omega2"])
+        self.elements.append(
+            Paragraph(u"%s : %010d" % (_(u"Invoice"), self.invoice.invoice_number), self.styles['Normal']))
+        self.elements.append(Spacer(0, 5 * mm))
+        date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
+        self.elements.append(
+                Paragraph(u"Date : %s" % format(self.invoice.date_creation, date_format), self.styles['Normal']))
+        self.elements.append(Spacer(0, 5 * mm))
+        table_data = [[u"%s" % _(u"ID"), u"%s" % _(u"TYPE"), u"%s" % _(u"START DATE"), u"%s" % _(u"END DATE"),
+                       u"%s" % _(u"PRIX TTC")],
+                      [u"%s" % self.invoice.type_price.id, u"%s" % self.invoice.type_price, self.invoice.date_start,
+                       self.invoice.date_end, u"%.2f euros " % self.invoice.price_incVAT]]
         cel_width = doc.width / 12
         user_table = Table(table_data,
                            colWidths=[cel_width, cel_width * 5, cel_width * 2, cel_width * 2, cel_width * 2])
@@ -94,16 +104,20 @@ class PrintInvoice:
                                         ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
         self.elements.append(user_table)
         self.elements.append(Spacer(0, 10 * mm))
-        self.elements.append(Paragraph("Thanks to pay the invoice in the month", self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s" % _(u"Thanks to pay the invoice in the month"), self.styles['Normal']))
         self.elements.append(Spacer(0, 10 * mm))
-        self.elements.append(Paragraph("Banking details :", self.styles['Normal']))
-        self.elements.append(Paragraph("IBAN : BE123456789", self.styles['Normal']))
-        self.elements.append(Paragraph("BIC : DEUT123456", self.styles['Normal']))
+        self.elements.append(Paragraph(u"%s" % _(u"Banking details :"), self.styles['Normal']))
+        self.elements.append(Paragraph(u"IBAN : %s" % settings.ENTREPRISE_IBAN, self.styles['Normal']))
+        self.elements.append(Paragraph(u"BIC/SWIFT : %s" % settings.ENTREPRISE_BIC, self.styles['Normal']))
+        mod = self.invoice.invoice_number % 97
+        if mod == 0:
+            mod = 97
+        part2 = self.invoice.invoice_number % (10 ** 7)
+        part1 = (self.invoice.invoice_number - part2) / (10 ** 7)
+        part3 = (part2 % 1000)
+        part2 = (part2 - part3) / 1000
+        part3 = (part3 * 100) + mod
+        self.elements.append(
+                Paragraph("Structured communication : '+++%03d/%04d/%05d+++'" % (part1, part2, part3),
+                          self.styles['Normal']))
         doc.build(self.elements)
-
-        # pdf = buffer.getvalue()
-        # buffer.close()
-        # return pdf
-
-# i = Invoice("invoice.pdf", "A4")
-# i.print_users()
