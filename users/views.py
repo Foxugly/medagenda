@@ -49,7 +49,7 @@ def home(request):
                     old_i.save()
                     current_i.active = True
                     current_i.save()
-                    new_pi = PrintInvoice(i[0])
+                    new_pi = PrintInvoice(i[0], request.user.userprofile)
                     new_pi.save()
                     # TODO send mail avec invoice
             else:
@@ -61,7 +61,7 @@ def home(request):
                                     date_end=f_day + relativedelta(months=+old_i.type_price.num_months),
                                     price_exVAT=int(old_i.type_price.price_exVAT), active=True)
                     new_i.save()
-                    new_pi = PrintInvoice(new_i)
+                    new_pi = PrintInvoice(new_i, request.user.userprofile)
 
                     new_pi.save()
                     # TODO send mail avec invoice
@@ -245,7 +245,7 @@ def personal_data(request):
 
 
 @login_required
-def text(request):
+def text_profil(request):
     results = {}
     if request.is_ajax():
         form = TextForm(request.POST, instance=request.user.userprofile.current_doctor)
@@ -339,8 +339,10 @@ def invoice_add(request):
     results = {}
     if request.is_ajax():
         up = request.user.userprofile
-        # tp = TypePrice.objects.get(id=request.POST['type_price'][0])
-        tp = get_object_or_404(TypePrice, id=request.POST['type_price'][0])
+        tp = TypePrice.objects.filter(id=request.POST['type_price'][0])[0]
+        up.can_recharge = request.POST['can_recharge']
+        up.save()
+        # TODO a vérifier
         if tp:
             if len(up.invoices.all()):
                 i = up.invoices.order_by('-date_end')[0]
@@ -361,7 +363,7 @@ def invoice_add(request):
             results['return'] = True
             results['id'] = new_invoice.id
             results['type_price'] = str(new_invoice.type_price)
-            date_format = formats.get_format('DATE_FORMAT')
+            date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
             results['date_start'] = format(new_invoice.date_start, date_format)
             results['date_end'] = format(new_invoice.date_end, date_format)
         else:
@@ -393,7 +395,8 @@ def invoices(request):
     data = []
     titles = ['ID', _(u'Creation date'), _(u'Type of subscription'), _(u'Start date'), _('End date'),
               _(u'Price inc. VAT'), _(u'date paid')]
-    date_format = formats.get_format('DATE_FORMAT')
+    date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
+    print 'invoices'
     for i in request.user.userprofile.invoices.all().order_by('id'):
         if i.paid:
             paid = format(i.date_paid, date_format)

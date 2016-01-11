@@ -11,6 +11,8 @@ from django import template
 import os
 from datetime import datetime
 # from utils.toolbox import reformat_date
+from django.utils import formats
+
 
 register = template.Library()
 
@@ -26,6 +28,11 @@ def time_format(time):
 
 
 @register.filter()
+def date_format(date):
+    return date.strftime(formats.get_format('DATE_INPUT_FORMATS')[0])
+
+
+@register.filter()
 def filename(path):
     return os.path.basename(path.name)
 
@@ -38,3 +45,11 @@ def cast(s):
 @register.filter()
 def after_today(date):
     return date > datetime.today()
+
+
+@register.filter()
+def file_exists(path):
+    if path:
+        return os.path.exists(path)
+    else:
+        return False

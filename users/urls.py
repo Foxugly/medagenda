@@ -11,7 +11,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
 from users.views import add_user, calendar_user, search_doctor, model_calendar, user_settings, create_user, personal_data, \
-    config, avatar, text, color, remove_picture, password, invoice_add, invoice_remove, invoices
+    config, avatar, text_profil, color, remove_picture, password, invoice_add, invoice_remove, invoices
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}, name='login'),
@@ -32,7 +32,7 @@ urlpatterns = (
     url(r'^ajax/personal_data/$', login_required(personal_data), name="personal_data"),
     url(r'^ajax/config/$', login_required(config), name="config"),
     url(r'^ajax/avatar/$', login_required(avatar), name="avatar"),
-    url(r'^ajax/text/$', login_required(text), name="text"),
+    url(r'^ajax/text/$', login_required(text_profil), name="text"),
     url(r'^ajax/color/(?P<color_id>[\w-]+)/$', login_required(color), name="color"),
     url(r'^ajax/remove_picture/$', login_required(remove_picture), name="remove_picture"),
     url(r'^ajax/search/$', search_doctor, name='search_doctor'),

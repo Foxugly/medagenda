@@ -27,7 +27,7 @@ class UserProfile(models.Model):
             blank=False, null=False, default=False)
 
     def __str__(self):
-        return u"%s" % self.user
+        return u"userprofile : %s" % self.user.username
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u, language=settings.LANGUAGES[0])[0])
 
