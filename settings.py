@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'address',
     'agenda',
     'patient',
+    'doctor'
 )
 
 MIDDLEWARE_CLASSES = (

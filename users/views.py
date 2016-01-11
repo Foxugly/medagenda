@@ -10,7 +10,8 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, UserProfileForm, PersonalDataForm, TextForm, SettingsForm, ColorForm, ColorSlot, \
+from users.models import UserProfile, UserCreateForm, UserProfileForm
+from doctor.models import DoctorForm, TextForm, SettingsForm, ColorForm, ColorSlot, \
     MiniInvoiceForm, NoFreeMiniInvoiceForm, TypePrice, Invoice
 from utils.toolbox import string_random
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -27,13 +28,14 @@ from django.utils.dateformat import format
 from django.db.models import Q
 from utils.mail import mail_user_welcome
 from utils.invoice import PrintInvoice
+from doctor.models import Doctor
 
 
 def home(request):
     c = {}
     if request.user.is_authenticated():
         if request.user.is_superuser:  # admin
-            c['list'] = UserProfile.objects.all()
+            c['list'] = Doctor.objects.all()
             return render(request, 'list.tpl', c)
         else:
             # TODO MUST BE RUN BY A CRON DAEMON
@@ -71,7 +73,7 @@ def home(request):
             # TODO préparer les data pour le dashboard
             return render(request, 'dashboard.tpl', c)
     else:
-        c['list'] = UserProfile.objects.filter(view_in_list=True)
+        c['list'] = Doctor.objects.filter(view_in_list=True)
         return render(request, 'list.tpl', c)
 
 
@@ -79,41 +81,52 @@ def home(request):
 def add_user(request):
     c = {}
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            u = form.save()
+        ucform = UserCreateForm(request.POST)
+        upform = UserProfileForm(request.POST)
+        docform = DoctorForm(request.POST)
+        if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+            u = ucform.save()
+            up = upform.save()
+            doc = docform.save()
+            doc.refer_userprofile = up
             for st in settings.SLOT_TYPE:
-                u.get_colorslot(st[0])
-            u.save()
-            mail_user_welcome(request, u, False)
+                doc.get_colorslot(st[0])
+            doc.save()
+            up.user = u
+            up.doctors.add(doc)
+            up.current_doctor = doc
+            up.save()
+            doc.set_slug()
+            doc.save()
+            mail_user_welcome(request, up, False)
             return HttpResponseRedirect('/')
         else:
-            c['form'] = form
+            c['form'] = [ucform, upform, docform]
             messages.error(request, "Error")
     else:
-        c['form'] = UserProfileForm()
+        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm()]
     c['url'] = "/user/add_user/"
     c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
 
 
 def profile(request, slug=None):
-    doc = get_object_or_404(UserProfile, slug=slug) if slug else request.user.userprofile
+    doc = get_object_or_404(Doctor, slug=slug) if slug else request.user.userprofile.current_doctor
     c = {'doctor': doc}
     return render(request, 'profile.tpl', c)
 
 
 def calendar_user(request, slug=None):
-    userp = get_object_or_404(UserProfile, slug=slug) if slug else request.user.userprofile
-    c = {'doctor': userp}
+    doc = get_object_or_404(Doctor, slug=slug) if slug else request.user.userprofile.current_doctor
+    c = {'doctor': doc}
     today = datetime.now().date()
     c['slots'] = []
     if request.user.is_authenticated():
-        slots = userp.slots.all()
-    elif userp.view_busy_slot is True:
-        slots = userp.slots.filter(date__gte=today)
+        slots = doc.slots.all()
+    elif doc.view_busy_slot is True:
+        slots = doc.slots.filter(date__gte=today)
     else:
-        slots = userp.slots.filter(date__gte=today, patient_id__isnull=False)
+        slots = doc.slots.filter(date__gte=today, patient_id__isnull=False)
     for s in slots:
         c['slots'].append(s.as_json())
     if len(c['slots']) == 0:
@@ -169,15 +182,15 @@ def search_doctor(request):
 def user_settings(request):
     up = request.user.userprofile
     c = {'userprofile_id': request.user.userprofile.id,
-         'personal_data_form': PersonalDataForm(instance=up),
-         'settings_form': SettingsForm(instance=up), 'avatar': up.picture,
-         'text_form': TextForm(instance=up), 'color_forms': [],
+         'personal_data_form': DoctorForm(instance=up.current_doctor),
+         'settings_form': SettingsForm(instance=up.current_doctor), 'avatar': up.picture,
+         'text_form': TextForm(instance=up.current_doctor), 'color_forms': [],
          'password_change_form': PasswordChangeForm(user=request.user),
          'invoice': up.get_active_invoice(),
          'new_invoice': MiniInvoiceForm() if not up.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
     for st in settings.SLOT_TYPE:
         d = {'id': up.get_colorslot(st[0]).id, 'name': st[1],
-             'form': ColorForm(instance=up.get_colorslot(st[0]))}
+             'form': ColorForm(instance=up.current_doctor.get_colorslot(st[0]))}
         c['color_forms'].append(d)
     return render(request, 'config.tpl', c)
 
@@ -219,7 +232,7 @@ def confirm_user(request, user_id, text):
 def personal_data(request):
     results = {}
     if request.is_ajax():
-        form = PersonalDataForm(request.POST, instance=request.user.userprofile)
+        form = DoctorForm(request.POST, instance=request.user.userprofile.current_doctor)
         if form.is_valid():
             form.save()
             results['return'] = True
@@ -235,7 +248,7 @@ def personal_data(request):
 def text(request):
     results = {}
     if request.is_ajax():
-        form = TextForm(request.POST, instance=request.user.userprofile)
+        form = TextForm(request.POST, instance=request.user.userprofile.current_doctor)
         if form.is_valid():
             form.save()
             results['return'] = True
