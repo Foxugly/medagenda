@@ -33,5 +33,5 @@ class FaqForm(ModelForm):
 class ContactForm(forms.Form):
     sender = forms.EmailField(label=_(u'Your email address'))
     subject = forms.CharField(label=_(u'Subject'))
-    message = forms.CharField(label=_(u'Message'),widget=forms.Textarea)
+    message = forms.CharField(label=_(u'Message'), widget=forms.Textarea)
     cc_myself = forms.BooleanField(label=_(u'sent me the mail'))

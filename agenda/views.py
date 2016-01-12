@@ -13,10 +13,8 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from agenda.models import SlotTemplate, Slot
 from patient.models import Patient
-from django.utils import formats
-from django.utils.dateformat import format
 import json
-from utils.toolbox import string_random
+from utils.toolbox import string_random, convert_date
 from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
 
 
@@ -28,7 +26,7 @@ def st_add(request):
         results = {}
         for day in days:
             if day in request.POST:
-                dt = request.user.userprofile.get_daytemplate(days.index(day) + 1)
+                dt = request.user.userprofile.current_doctor.get_daytemplate(days.index(day) + 1)
                 current = datetime.strptime(settings.FULLCALENDAR_REF_DATE + ' ' + request.POST['start_time'],
                                             "%Y-%m-%d %H:%M")
                 current += timedelta(days=days.index(day))
@@ -49,15 +47,15 @@ def st_add(request):
                     dt.add_slottemplate(st)
                     current = current_end + timedelta(minutes=int(request.POST['break_time']))
         results['return'] = True
-        results['slottemplates'] = request.user.userprofile.get_all_slottemplates()
+        results['slottemplates'] = request.user.userprofile.current_doctor.get_all_slottemplates()
         return HttpResponse(json.dumps(results))
 
 
 @login_required
 def st_clean(request):
     if request.is_ajax():
-        request.user.userprofile.remove_all_slottemplates()
-        results = {'slottemplates': request.user.userprofile.get_all_slottemplates(), 'return': True}
+        request.user.userprofile.current_doctor.remove_all_slottemplates()
+        results = {'slottemplates': request.user.userprofile.current_doctor.get_all_slottemplates(), 'return': True}
         return HttpResponse(json.dumps(results))
 
 
@@ -65,34 +63,29 @@ def st_clean(request):
 def st_apply(request):
     results = {}
     if request.is_ajax():
+        doc = request.user.userprofile.current_doctor
         if 'start_date' in request.POST and 'end_date' in request.POST:
-            # TODO vérifier/controler
-            date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
-            print st_apply
-            start_date = format(request.POST['start_date'], date_format)
-            print start_date
-            end_date = format(request.POST['end_date'], date_format)
+            c = convert_date(request.POST['date_format'])
+            start_date = datetime.strptime(request.POST['start_date'], c)
+            end_date = datetime.strptime(request.POST['end_date'], c)
             for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
-                    sts = request.user.userprofile.get_daytemplate(
+                    sts = doc.get_daytemplate(
                             1 + (int(start_date.weekday()) + i) % 7).get_slottemplates()
                     if sts:
                         for st in sts:
                             current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
-                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day),
-                                                                           st__start__lte=current_day,
-                                                                           st__end__gt=current_day):
-                                request.user.userprofile.slots.remove(s)
+                            for s in doc.slots.filter(date=datetime.date(current_day), st__start__lte=current_day,
+                                                      st__end__gt=current_day):
+                                doc.slots.remove(s)
                             current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
-                            for s in request.user.userprofile.slots.filter(date=datetime.date(current_day),
-                                                                           st__start__lt=current_day,
-                                                                           st__end__gte=current_day):
-                                request.user.userprofile.slots.remove(s)
-                            new_slot = Slot(date=datetime.date(current_day), st=st,
-                                            refer_doctor=request.user.userprofile, booked=st.booked)
+                            for s in doc.slots.filter(date=datetime.date(current_day), st__start__lt=current_day,
+                                                      st__end__gte=current_day):
+                                doc.slots.remove(s)
+                            new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=doc, booked=st.booked)
                             new_slot.save()
-                            request.user.userprofile.slots.add(new_slot)
+                            doc.slots.add(new_slot)
                     current_day += timedelta(days=7)
             results['return'] = True
         else:
@@ -105,7 +98,7 @@ def st_remove(request, st_id):
     results = {}
     if request.is_ajax():
         st = SlotTemplate.objects.get(id=int(st_id))
-        for dt in request.user.userprofile.weektemplate.days.all():
+        for dt in request.user.userprofile.current_doctor.weektemplate.days.all():
             dt.remove_slottemplate(st)
         results['return'] = True
     else:

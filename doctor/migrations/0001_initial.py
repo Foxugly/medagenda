@@ -11,8 +11,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('address', '0001_initial'),
-        ('users', '0017_auto_20160107_0251'),
-        ('agenda', '0013_auto_20160110_2355'),
     ]
 
     operations = [
@@ -96,20 +94,5 @@ class Migration(migrations.Migration):
             model_name='doctor',
             name='invoices',
             field=models.ManyToManyField(to='doctor.Invoice', verbose_name='Invoices', blank=True),
-        ),
-        migrations.AddField(
-            model_name='doctor',
-            name='refer_userprofile',
-            field=models.ForeignKey(related_name='refer_userprofile', verbose_name='UserProfile', to='users.UserProfile', null=True),
-        ),
-        migrations.AddField(
-            model_name='doctor',
-            name='slots',
-            field=models.ManyToManyField(to='agenda.Slot', verbose_name='Slots', blank=True),
-        ),
-        migrations.AddField(
-            model_name='doctor',
-            name='weektemplate',
-            field=models.ForeignKey(verbose_name='Week template', blank=True, to='agenda.WeekTemplate', null=True),
         ),
     ]

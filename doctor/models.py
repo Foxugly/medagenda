@@ -153,7 +153,7 @@ class Doctor(models.Model):
     can_recharge = models.BooleanField(verbose_name=_(u'Can recharge type of subscription '), blank=False, null=False,
                                        default=True)
     refer_userprofile = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'),
-                                          related_name='refer_userprofile', null=True)
+                                          related_name='refer_userprofile', null=True, blank=True)
 
     def __str__(self):
         return u"%d " % (self.id)

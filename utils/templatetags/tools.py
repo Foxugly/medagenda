@@ -24,7 +24,7 @@ def index(d, value):
 
 @register.filter()
 def time_format(time):
-    return u"%d:%d" % (time.hour, time.minute)
+    return u"%02d:%02d" % (time.hour, time.minute)
 
 
 @register.filter()

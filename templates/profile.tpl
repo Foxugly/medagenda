@@ -50,7 +50,7 @@ $(document).ready(function() {
 <div class="jumbotron">
   <div class="row">
     <div class="col-sm-8 col-md-8">
-      <h1>{{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h1>
+      <h1>{{doctor.refer_userprofile.user.first_name|capfirst}} {{doctor.refer_userprofile.user.last_name|capfirst}}</h1>
       <h2>{{doctor.MEDECINE_CHOICES|index:doctor.speciality|safe}}</h2>
       <h2>{{doctor.address.locality.name|capfirst}}</h2>
       <p><a class="btn btn-success btn-lg" href="/doc/calendar/{{doctor.slug}}/" role="button">Réserver</a></p>

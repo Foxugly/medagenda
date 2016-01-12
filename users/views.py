@@ -136,8 +136,8 @@ def calendar_user(request, slug=None):
 
 @login_required
 def model_calendar(request):
-    c = {'doctor': request.user.userprofile, 'slot_type': settings.SLOT_TYPE,
-         'slottemplates': request.user.userprofile.get_all_slottemplates(),
+    c = {'doctor': request.user.userprofile.current_doctor, 'slot_type': settings.SLOT_TYPE,
+         'slottemplates': request.user.userprofile.current_doctor.get_all_slottemplates(),
          'fullcalendar_ref_date': settings.FULLCALENDAR_REF_DATE}
     return render(request, 'model.tpl', c)
 
@@ -181,16 +181,17 @@ def search_doctor(request):
 @login_required
 def user_settings(request):
     up = request.user.userprofile
+    doc = up.current_doctor
     c = {'userprofile_id': request.user.userprofile.id,
-         'personal_data_form': DoctorForm(instance=up.current_doctor),
-         'settings_form': SettingsForm(instance=up.current_doctor), 'avatar': up.picture,
-         'text_form': TextForm(instance=up.current_doctor), 'color_forms': [],
+         'personal_data_form': DoctorForm(instance=doc),
+         'settings_form': SettingsForm(instance=doc), 'avatar': doc.picture,
+         'text_form': TextForm(instance=doc), 'color_forms': [],
          'password_change_form': PasswordChangeForm(user=request.user),
-         'invoice': up.get_active_invoice(),
-         'new_invoice': MiniInvoiceForm() if not up.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
+         'invoice': doc.get_active_invoice(),
+         'new_invoice': MiniInvoiceForm() if not doc.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
     for st in settings.SLOT_TYPE:
-        d = {'id': up.get_colorslot(st[0]).id, 'name': st[1],
-             'form': ColorForm(instance=up.current_doctor.get_colorslot(st[0]))}
+        d = {'id': doc.get_colorslot(st[0]).id, 'name': st[1],
+             'form': ColorForm(instance=doc.get_colorslot(st[0]))}
         c['color_forms'].append(d)
     return render(request, 'config.tpl', c)
 
@@ -198,23 +199,36 @@ def user_settings(request):
 def create_user(request):
     c = {}
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            up = form.save()
-            up.user.is_active = False
+        ucform = UserCreateForm(request.POST)
+        upform = UserProfileForm(request.POST)
+        docform = DoctorForm(request.POST)
+        if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+            u = ucform.save()
+            up = upform.save()
+            u.is_active = False
+            u.save()
             up.confirm = string_random(32)
-            up.user.save()
+            doc = docform.save()
+            doc.refer_userprofile = up
+            for st in settings.SLOT_TYPE:
+                doc.get_colorslot(st[0])
+            doc.save()
+            up.user = u
+            up.doctors.add(doc)
+            up.current_doctor = doc
             up.save()
+            doc.set_slug()
+            doc.save()
             mail_user_welcome(request, up, True)
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:
+            c['form'] = [ucform, upform, docform]
             messages.error(request, "Error")
-            c['form'] = form
     else:
-        c['form'] = UserProfileForm()
-        c['url'] = "/user/create_user/"
-        c['title'] = _("New doctor")
+        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm()]
+    c['url'] = "/user/add_user/"
+    c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
 
 
@@ -397,7 +411,7 @@ def invoices(request):
               _(u'Price inc. VAT'), _(u'date paid')]
     date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
     print 'invoices'
-    for i in request.user.userprofile.invoices.all().order_by('id'):
+    for i in request.user.userprofile.current_doctor.invoices.all().order_by('id'):
         if i.paid:
             paid = format(i.date_paid, date_format)
         else:

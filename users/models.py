@@ -18,7 +18,7 @@ from django.forms import ModelForm
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, verbose_name=_('User'), null=True)
-    current_doctor = models.ForeignKey('doctor.Doctor', verbose_name=_(u'Current doctor'), related_name='current_doctor', null=True)
+    current_doctor = models.ForeignKey('doctor.Doctor', verbose_name=_(u'Current doctor'), related_name='current_doctor', blank=True, null=True)
     doctors = models.ManyToManyField('doctor.Doctor', verbose_name=_(u'Doctors'), related_name='doctors', blank=True)
     language = models.CharField(verbose_name=_(u'language'), max_length=8, choices=settings.LANGUAGES, default=1)
     confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)

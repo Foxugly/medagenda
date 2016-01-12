@@ -7,7 +7,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_auto_20151130_0236'),
         ('patient', '0001_initial'),
     ]
 
@@ -16,42 +15,36 @@ class Migration(migrations.Migration):
             name='DayTemplate',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('day', models.IntegerField(choices=[(1, 'Lundi'), (2, 'Mardi'), (3, 'Mercredi'), (4, 'Jeudi'), (5, 'Vendredi'), (6, 'Samedi'), (7, 'Dimanche')])),
+                ('day', models.IntegerField(verbose_name='Day', choices=[(1, 'Lundi'), (2, 'Mardi'), (3, 'Mercredi'), (4, 'Jeudi'), (5, 'Vendredi'), (6, 'Samedi'), (7, 'Dimanche')])),
             ],
         ),
         migrations.CreateModel(
             name='Slot',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateField()),
-                ('patient', models.ForeignKey(blank=True, to='patient.Patient', null=True)),
-                ('refer_doctor', models.ForeignKey(related_name='back_userprofile', verbose_name='UserProfile', to='users.UserProfile', null=True)),
+                ('date', models.DateField(verbose_name='Date')),
+                ('informations', models.TextField(null=True, verbose_name='Usefull informations', blank=True)),
+                ('booked', models.BooleanField(default=False, verbose_name='Booked')),
+                ('random', models.CharField(max_length=16, null=True, verbose_name='random character', blank=True)),
+                ('path', models.CharField(max_length=255, null=True, verbose_name='path_ics', blank=True)),
+                ('patient', models.ForeignKey(verbose_name='Patient', blank=True, to='patient.Patient', null=True)),
             ],
         ),
         migrations.CreateModel(
             name='SlotTemplate',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('start', models.TimeField(verbose_name='D\xe9but')),
-                ('end', models.TimeField(verbose_name='Fin')),
-                ('national_health_service_price', models.BooleanField(verbose_name='Tarif Conventionn\xe9')),
+                ('start', models.TimeField(verbose_name='Start')),
+                ('end', models.TimeField(verbose_name='End')),
+                ('slot_type', models.IntegerField(verbose_name='Slot type', choices=[(1, 'National Health Pricing Slot'), (2, 'Free Pricing Slot'), (3, 'Home visit Slot'), (4, 'Nursing home Slot')])),
+                ('booked', models.BooleanField(default=False, verbose_name='Booked')),
             ],
         ),
         migrations.CreateModel(
             name='WeekTemplate',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('days', models.ManyToManyField(to='agenda.DayTemplate', verbose_name='Jours', blank=True)),
+                ('days', models.ManyToManyField(to='agenda.DayTemplate', verbose_name='Days', blank=True)),
             ],
-        ),
-        migrations.AddField(
-            model_name='slot',
-            name='slotTemplate',
-            field=models.ForeignKey(blank=True, to='agenda.SlotTemplate', null=True),
-        ),
-        migrations.AddField(
-            model_name='daytemplate',
-            name='slots',
-            field=models.ManyToManyField(to='agenda.SlotTemplate', verbose_name='Cr\xe9neaux Horaires', blank=True),
         ),
     ]

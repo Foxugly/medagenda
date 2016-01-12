@@ -27,10 +27,10 @@ def mail():
     return None
 
 
-#def reformat_date(s):
-#    out = s
-#    out = out.replace('yyyy', '%Y')
-#    out = out.replace('yy', '%y')
-#    out = out.replace('mm', '%m')
-#    out = out.replace('dd', '%d')
-#    return out
+def convert_date(s):
+    out = s
+    out = out.replace('yyyy', '%Y')
+    out = out.replace('yy', '%y')
+    out = out.replace('mm', '%m')
+    out = out.replace('dd', '%d')
+    return out

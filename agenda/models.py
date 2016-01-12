@@ -119,8 +119,8 @@ class Slot(models.Model):
     date = models.DateField(verbose_name=_(u'Date'))
     st = models.ForeignKey(SlotTemplate, verbose_name=_(u'Slot template'), blank=True, null=True)
     patient = models.ForeignKey(Patient, verbose_name=_(u'Patient'), blank=True, null=True)
-    refer_userprofile = models.ForeignKey('users.UserProfile', verbose_name=_('UserProfile'),
-                                     related_name='back_userprofile', null=True)
+    refer_doctor = models.ForeignKey('doctor.Doctor', verbose_name=_('refer_doctor'),
+                                     related_name='back_doctor', null=True)
     informations = models.TextField(verbose_name=_(u'Usefull informations'), blank=True, null=True)
     booked = models.BooleanField(verbose_name=_(u'Booked'), default=False)
     random = models.CharField(verbose_name=_(u'random character'), max_length=16, blank=True, null=True)

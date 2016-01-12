@@ -47,13 +47,12 @@ def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            print "SENT MAIL contact"
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:
             messages.error(request, "Error")
     else:
-        c['form'] = ContactForm()
+        c['form'] = [ContactForm()]
         c['url'] = "/contact/"
         c['title'] = _("Contact us")
     return render(request, 'form.tpl', c)

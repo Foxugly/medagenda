@@ -27,7 +27,6 @@ $(document).ready(function() {
         allDaySlot : false,
         defaultView : 'agendaWeek',
         editable: false,
-        //slotLabelFormat : 'H:mm',
         {% if slottemplates %}
         events: {{slottemplates|safe}},
         {% endif %}
@@ -105,9 +104,15 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#calendar').fullCalendar('removeEvents').fullCalendar('addEventSource', result['slottemplates']);
+                console.log("success");
+                $('#calendar').fullCalendar('removeEvents');
+                $('#calendar').fullCalendar('addEventSource', result['slottemplates']);
                 $('#loading').hide();
                 $('#confirm_yes').show();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
             }
         });
     });
@@ -183,7 +188,7 @@ $(document).ready(function() {
 <div id="calendar"></div>
 <div class="row text-center" style="margin-top:20px;">
   <ul class="legend">
-  {% for c in user.userprofile.colorslots.all %}
+  {% for c in user.userprofile.current_doctor.colorslots.all %}
     <li><span style="background-color: {{c.free_slot_color}};"></span> <span style="background-color: {{c.booked_slot_color}};"></span> {{ c.SLOT_TYPE|index:c.slot}}</li>
   {% endfor %}
   </ul>
@@ -217,7 +222,7 @@ $(document).ready(function() {
               <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
             </div>
             <script>
-              $("#start_time").val("{{doctor.start_time}}");
+              $("#start_time").val("{{doctor.start_time|time_format}}");
             </script>
           </div>
           <div class="row form-group">
@@ -227,7 +232,7 @@ $(document).ready(function() {
               <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
             </div>
             <script>
-              $("#end_time").val("{{doctor.end_time}}");
+              $("#end_time").val("{{doctor.end_time|time_format}}");
             </script>
           </div>
           <div class="row form-group">
