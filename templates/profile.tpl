@@ -18,10 +18,14 @@ $(document).ready(function() {
         $("#id_email").val("");
     });
 
-    $("#get_mail_ok").click(function(){
+    $("#get_mail_cancel").click(function(){
         $("#get_mail").hide();
         $("#id_email").val("");
-        var url = '/patient/ajax/reminder/' + {{ doctor.slug }} + '/';
+    });
+
+    $("#get_mail_ok").click(function(){
+        var form = $('#form_mail');
+        var url = '/doc/ajax/reminder/' + {{ doctor.slug }} + '/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -29,18 +33,17 @@ $(document).ready(function() {
             traditional: true,
             dataType: 'json',
             success: function(result){
-                $('#bookingslot').hide();
-                clean_modal();
                 if (result['return']){
-                    $('#calendar').fullCalendar( 'removeEvents', id ).fullCalendar('addEventSource', [result['slot']]);
+                    $("#get_mail").hide();
+                    $("#id_email").val("");
                     $('#confirm_yes').show();
                 }
                 else{
-                    $('#confirm2').show();
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
                 }
             }
         });
-        $('#confirm_yes').show();
     });
 });
 </script>
@@ -113,22 +116,26 @@ $(document).ready(function() {
         <h4 class="modal-title">{% trans "Reminder / Remove" %}</h4>
       </div>
       <div class="modal-body">
-          <div class="row form-group">
-              <div class="col-md-10 col-md-offset-1">
-                  <p>{%  trans "Could you give your email address, we will send you your booking slots by mail." %}</p>
-                  <p>{%  trans "You will receive usefull inforamtions to cancel a booking slot." %}</p>
+          <form class="form-horizontal" id="form_mail">
+              {% csrf_token %}
+              <div class="row form-group">
+                  <div class="col-md-10 col-md-offset-1">
+                      <p>{%  trans "Could you give your email address, we will send you your booking slots by mail." %}</p>
+                      <p>{%  trans "You will receive usefull informations to cancel a booking slot." %}</p>
+                  </div>
               </div>
-          </div>
-          <div class="row form-group">
-            <label class="col-md-3 col-md-offset-1 control-label" for="id_email">{% trans "Email" %} :</label>
-            <div class="col-md-7 input-group">
-              <input id="id_email" name="email" type="text" class="form-control">
-              <span class="input-group-addon"> @ </span>
-            </div>
-          </div>
+              <div class="row form-group">
+                <label class="col-md-3 col-md-offset-1 control-label" for="id_email">{% trans "Email" %} :</label>
+                <div class="col-md-7 input-group">
+                  <input id="id_email" name="email" type="text" class="form-control">
+                  <span class="input-group-addon"> @ </span>
+                </div>
+              </div>
+          </form>
       </div>
         <div class="modal-footer">
-          <button id="get_mail_ok" type="submit" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
+          <button id="get_mail_ok" type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Ok" %}</button>
+          <button id="get_mail_cancel" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
         </div>
     </div>
   </div>

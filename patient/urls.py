@@ -8,11 +8,10 @@
 # your option) any later version.
 
 from django.conf.urls import url
-from patient.views import search_patient, confirm_create, confirm_remove, reminder
+from patient.views import search_patient, confirm_create, confirm_remove
 
 urlpatterns = (
     url(r'^ajax/search/$', search_patient, name='search_patient'),
     url(r'^confirm/create/(?P<patient_id>[\w-]+)/(?P<text>[\w-]+)/$', confirm_create, name='patient_confirm_create'),
     url(r'^confirm/remove/(?P<patient_id>[\w-]+)/(?P<slot_id>[\w-]+)/$', confirm_remove, name='patient_confirm_remove'),
-    url(r'^ajax/reminder/(?P<slug>[\w-]+)/$', reminder, name='reminder'),
 )

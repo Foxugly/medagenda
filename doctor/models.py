@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from address.models import AddressField
 from django.forms import ModelForm
+from django import forms
 from django.utils.text import slugify
 from agenda.models import WeekTemplate, DayTemplate, Slot
 from timezone_field import TimeZoneField
@@ -250,6 +251,8 @@ class DoctorForm(ModelForm):
 
 class SettingsForm(ModelForm):
     name = 'settingsform'
+    start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
+    end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
 
     def __init__(self, *args, **kw):
         super(SettingsForm, self).__init__(*args, **kw)

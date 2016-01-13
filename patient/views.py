@@ -29,18 +29,6 @@ def search_patient(request):
             return HttpResponse(json.dumps({'return': False}))
 
 
-def reminder(request, slug):
-    if request.is_ajax():
-        email = request.GET['email']
-        s = get_object_or_404(Slot, refer_doctor__slug=slug, patient__mail=email)
-        # s = Slot.objects.filter(refer_doctor__slug=slug, patient__mail=email)
-        if s:
-            # TODO SEND MAIL PATIENT_REMINDER
-            return HttpResponse(json.dumps({'return': False}))
-        else:
-            return HttpResponse(json.dumps({'return': False}))
-
-
 def confirm_create(request, patient_id, text):
     p = get_object_or_404(Patient, id=patient_id, confirm=text)
     if p:

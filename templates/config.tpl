@@ -28,7 +28,7 @@ $(document).ready(function() {
 
     $('#btn_personal_data').click(function(){
         var form = $('#form_personal_data');
-        var url = '/user/ajax/personal_data/';
+        var url = '/doc/ajax/personal_data/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -48,7 +48,7 @@ $(document).ready(function() {
     });
     $('#btn_config').click(function(){
         var form = $('#form_config');
-        var url = '/user/ajax/config/';
+        var url = '/doc/ajax/config/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -73,7 +73,7 @@ $(document).ready(function() {
         var file = input[0].files[0];
         /*console.log(input[0].id);*/
         formdata.append(input[0].id, file);
-        var url = '/user/ajax/avatar/';
+        var url = '/doc/ajax/avatar/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -98,7 +98,7 @@ $(document).ready(function() {
     {% for cform in color_forms %}
         $('#btn_color_{{cform|index:"id"}}').click(function(){
             var form = $('#form_color_{{cform|index:"id"}}');
-            var url = '/user/ajax/color/{{cform|index:"id"}}/';
+            var url = '/doc/ajax/color/{{cform|index:"id"}}/';
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -121,7 +121,7 @@ $(document).ready(function() {
 
     $('#btn_text').click(function(){
         var form = $('#form_text');
-        var url = '/user/ajax/text/';
+        var url = '/doc/ajax/text/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -142,7 +142,7 @@ $(document).ready(function() {
 
     $('#btn_new_invoice').click(function(){
         var form = $('#form_invoice').serializeArray();
-        var url = '/user/ajax/invoice/add/';
+        var url = '/doc/ajax/invoice/add/';
         $.ajax({
             url: url,
             type: 'POST',
@@ -151,7 +151,6 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(result){
                 if (result['return']){
-                    //$('#confirm_yes').show();
                     var tr = "<tr><td>" + result['id'] + "</td><td>" + result['type_price'] + "</td>";
                     tr += "<td>" + result['date_start'] + "</td><td>" +  result['date_end'] + "</td>";
                     tr += "<td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>";
@@ -191,32 +190,12 @@ $(document).ready(function() {
         });
     });
 
-    /*$(".btn_del").click(function () {
-        var killrow = $(this).parent('tr');
-        var myid = killrow.find("td:first").html();
-        var url = '/user/ajax/invoice/remove/' + myid + '/';
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: '',
-            traditional: true,
-            dataType: 'json',
-            success: function(result){
-                if (result['return']){
-                    killrow.fadeOut(100, function(){
-                        $(this).remove();
-                    });
-                }
-            }
-        });
-    });*/
-
      $("table").on("click", ".ibtnDel", function() {
          var killrow = $(this).closest("tr");
          console.log(killrow);
          var myid = killrow.find("td:first").html();
          console.log(myid);
-         var url = '/user/ajax/invoice/remove/' + myid + '/';
+         var url = '/doc/ajax/invoice/remove/' + myid + '/';
          console.log(url);
          $.ajax({
             url: url,
@@ -245,6 +224,7 @@ $(document).ready(function() {
         <li><a data-toggle="tab" href="#div_color">{% trans "Colors" %}</a></li>
         <li><a data-toggle="tab" href="#div_text">{% trans "Text" %}</a></li>
         <li><a data-toggle="tab" href="#div_account">{% trans "Account" %}</a></li>
+        <li><a data-toggle="tab" href="#div_permissions">{% trans "Permissions" %}</a></li>
         <li><a data-toggle="tab" href="#div_password">{% trans "Password" %}</a></li>
     </ul>
 
@@ -424,7 +404,7 @@ $(document).ready(function() {
                                 </tr>
                                 </thead>
                                 <tbody>
-                            {% for i in user.userprofile.invoices.all %}
+                            {% for i in user.userprofile.current_doctor.invoices.all %}
                                 {% if i.active %}<tr class="success">{% else %}<tr>{%  endif  %}
                                 <td>{{ i.id }}</td>
                                 <td>{{ i.type_price }}</td>
@@ -449,6 +429,49 @@ $(document).ready(function() {
                 </div>
             </div>
         </div>
+
+        <div id="div_permissions" class="tab-pane">
+            <div class="row row_space_top">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "List of collaborators" %}</div>
+                        <div class="panel-body">
+                            <table id="table_invoice" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">{%  trans "ID" %}</th>
+                                    <th class="text-center">{%  trans "first name" %}</th>
+                                    <th class="text-center">{%  trans "last name" %}</th>
+                                    <th class="text-center">{%  trans "Email address" %}</th>
+                                    <th class="text-center">{%  trans "Remove" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>nom</td>
+                                    <td  class="text-center">prenom</td>
+                                    <td  class="text-center">email</td>
+                                    <td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row_space_top">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{%  trans "Add collaborators" %}</div>
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="div_password" class="tab-pane">
             <div class="row row_space">
                 <form class="form-horizontal" id="form_password">

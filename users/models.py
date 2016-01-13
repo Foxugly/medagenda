@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django import forms
 from django.forms import ModelForm
+from utils.toolbox import string_random
 
 
 class UserProfile(models.Model):
@@ -56,3 +57,18 @@ class UserProfileForm(ModelForm):
         if not accept:
             self.add_error('accept', forms.ValidationError(self.error_messages['not_accepted'], code='not_accepted'))
         return accept
+
+
+class Collaborator(models.Model):
+    doctor = models.ForeignKey('doctor.Doctor', blank=True, null=True)
+    confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)
+    email = models.EmailField()
+
+    def update(self):
+        self.confirm = string_random(16)
+
+
+class CollaboratorForm(ModelForm):
+    class Meta:
+        model = Collaborator
+        fields = ['email']

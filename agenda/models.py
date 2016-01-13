@@ -13,7 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient
 from datetime import datetime, timedelta
 from django.utils import formats
-from django.utils.dateformat import format
 from icalendar import vText, Event, Calendar
 import pytz
 import os
