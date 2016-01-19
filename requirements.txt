@@ -5,4 +5,5 @@ django-colorfield
 django-address
 django-timezone-field
 icalendar
+pillow==2.9.0
 reportlab
