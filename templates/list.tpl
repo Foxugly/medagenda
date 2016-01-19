@@ -10,7 +10,7 @@ $(document).ready(function() {
     var map;
     var markers = [
     {% for item in list %}{% if not forloop.first %},{% endif %}
-      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/doc/{{item.slug}}/"}
+      {"doctor": "{{item.TITLE_CHOICES|index:item.title|safe}} {{item.refer_userprofile.user.first_name|capfirst}} {{item.refer_userprofile.user.last_name|capfirst}}", "spec":"{{item.MEDECINE_CHOICES|index:item.speciality|safe}}", "lat": {{item.address.latitude|safe}},"lng": {{item.address.longitude|safe}},  "link": "/doc/{{item.slug}}/"}
     {% endfor %}];
 
     function initialize(){
@@ -82,7 +82,7 @@ $(document).ready(function() {
         <div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;">
       {% endif %}
       </div>
-      <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.user.first_name|capfirst}} {{item.user.last_name|capfirst}}</p>
+      <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.refer_userprofile.user.first_name|capfirst}} {{item.refer_userprofile.user.last_name|capfirst}}</p>
       <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
       <p  style="text-align:center;">{{item.address.locality.name}}</p>
       <p style="text-align:center;"><a class="btn btn-info" href="/doc/{{item.slug}}/" role="button">Plus d'infos</a></p>
