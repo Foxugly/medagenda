@@ -36,8 +36,8 @@ def home(request):
             return render(request, 'list.tpl', c)
         else:
             # TODO MUST BE RUN BY A CRON DAEMON
-            old_i = request.user.userprofile.invoices.objects.get(active=True)
-            i = request.user.userprofile.invoices.objects.filter(date_start__lte=date.today(),
+            old_i = request.user.userprofile.current_doctor.invoices.objects.get(active=True)
+            i = request.user.userprofile.current_doctor.invoices.objects.filter(date_start__lte=date.today(),
                                                                  date_end__gte=date.today())
             if len(i):
                 current_i = i[0]
