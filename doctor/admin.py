@@ -8,7 +8,7 @@
 # your option) any later version.
 
 from django.contrib import admin
-from doctor.models import Doctor, ColorSlot, Invoice, TypePrice
+from doctor.models import Doctor, ColorSlot, Invoice, TypePrice, InvoiceNumber
 
 
 @admin.register(Doctor)
@@ -23,6 +23,11 @@ class ColorSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(InvoiceNumber)
+class InvoiceNumberAdmin(admin.ModelAdmin):
     pass
 
 
