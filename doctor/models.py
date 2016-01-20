@@ -20,6 +20,8 @@ from agenda.models import WeekTemplate, DayTemplate, Slot
 from timezone_field import TimeZoneField
 from django.core.validators import RegexValidator
 import os
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 
 class ColorSlot(models.Model):
@@ -89,6 +91,9 @@ class Invoice(models.Model):
     path = models.CharField(verbose_name=_(u'path'), max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        if not self.date_start:
+            self.date_start = datetime.now()
+        self.date_end = self.date_start + relativedelta(months=+self.type_price.num_months)
         super(Invoice, self).save(*args, **kwargs)
         if self.price_incVAT != ((self.VAT / 100) * self.price_exVAT) + self.price_exVAT:
             self.price_VAT = (self.VAT / 100) * self.price_exVAT

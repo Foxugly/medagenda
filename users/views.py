@@ -12,7 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from users.models import UserProfile, UserCreateForm, UserProfileForm
 from django.contrib.auth.forms import PasswordChangeForm
-from doctor.models import DoctorForm, Invoice
+from doctor.models import DoctorForm, Invoice, MiniInvoiceForm
 from utils.toolbox import string_random
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.translation import ugettext_lazy as _
@@ -38,7 +38,7 @@ def home(request):
             # TODO MUST BE RUN BY A CRON DAEMON
             old_i = request.user.userprofile.current_doctor.invoices.objects.get(active=True)
             i = request.user.userprofile.current_doctor.invoices.objects.filter(date_start__lte=date.today(),
-                                                                 date_end__gte=date.today())
+                                                                                date_end__gte=date.today())
             if len(i):
                 current_i = i[0]
                 if old_i is not current_i:
@@ -81,13 +81,16 @@ def add_user(request):
         ucform = UserCreateForm(request.POST)
         upform = UserProfileForm(request.POST)
         docform = DoctorForm(request.POST)
+        invoiceform = MiniInvoiceForm(request.POST)
         if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+            i = invoiceform.save()
             u = ucform.save()
             up = upform.save()
             doc = docform.save()
             doc.refer_userprofile = up
             for st in settings.SLOT_TYPE:
                 doc.get_colorslot(st[0])
+            doc.invoices.add(i)
             doc.save()
             up.user = u
             up.doctors.add(doc)
@@ -98,10 +101,10 @@ def add_user(request):
             mail_user_welcome(request, up, False)
             return HttpResponseRedirect('/')
         else:
-            c['form'] = [ucform, upform, docform]
+            c['form'] = [ucform, upform, docform, invoiceform]
             messages.error(request, "Error")
     else:
-        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm()]
+        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm(), MiniInvoiceForm()]
     c['url'] = "/user/add_user/"
     c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
@@ -113,7 +116,9 @@ def create_user(request):
         ucform = UserCreateForm(request.POST)
         upform = UserProfileForm(request.POST)
         docform = DoctorForm(request.POST)
+        invoiceform = MiniInvoiceForm(request.POST)
         if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+            i = invoiceform.save()
             u = ucform.save()
             up = upform.save()
             u.is_active = False
@@ -123,6 +128,7 @@ def create_user(request):
             doc.refer_userprofile = up
             for st in settings.SLOT_TYPE:
                 doc.get_colorslot(st[0])
+            doc.invoices.add(i)
             doc.save()
             up.user = u
             up.doctors.add(doc)
@@ -134,11 +140,11 @@ def create_user(request):
             c['mail'] = True
             return render(request, 'valid.tpl', c)
         else:
-            c['form'] = [ucform, upform, docform]
+            c['form'] = [ucform, upform, docform, invoiceform]
             messages.error(request, "Error")
     else:
-        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm()]
-    c['url'] = "/user/add_user/"
+        c['form'] = [UserCreateForm(), UserProfileForm(), DoctorForm(), MiniInvoiceForm()]
+    c['url'] = "/user/create_user/"
     c['title'] = _("New doctor")
     return render(request, 'form.tpl', c)
 
