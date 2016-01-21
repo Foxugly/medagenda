@@ -36,30 +36,29 @@ def home(request):
             return render(request, 'list.tpl', c)
         else:
             # TODO MUST BE RUN BY A CRON DAEMON
-            old_i = request.user.userprofile.current_doctor.invoices.objects.get(active=True)
-            i = request.user.userprofile.current_doctor.invoices.objects.filter(date_start__lte=date.today(),
-                                                                                date_end__gte=date.today())
-            if len(i):
+            old_i = request.user.userprofile.current_doctor.invoices.filter(active=True)
+            i = request.user.userprofile.current_doctor.invoices.filter(date_start__lte=date.today(),
+                                                                        date_end__gte=date.today())
+            if len(i) and len(old_i):
                 current_i = i[0]
                 if old_i is not current_i:
-                    old_i.active = False
-                    old_i.save()
+                    old_i[0].active = False
+                    old_i[0].save()
                     current_i.active = True
                     current_i.save()
-                    new_pi = PrintInvoice(i[0], request.user.userprofile)
+                    new_pi = PrintInvoice(i[0], request.user.userprofile.current_doctor)
                     new_pi.save()
                     # TODO send mail avec invoice
             else:
                 if request.user.userprofile.can_recharge:
-                    old_i.active = False
-                    old_i.save()
+                    old_i[0].active = False
+                    old_i[0].save()
                     f_day = datetime.today()
-                    new_i = Invoice(type_price=old_i.type_price, date_start=f_day,
+                    new_i = Invoice(type_price=old_i[0].type_price, date_start=f_day,
                                     date_end=f_day + relativedelta(months=+old_i.type_price.num_months),
-                                    price_exVAT=int(old_i.type_price.price_exVAT), active=True)
+                                    price_exVAT=int(old_i[0].type_price.price_exVAT), active=True)
                     new_i.save()
                     new_pi = PrintInvoice(new_i, request.user.userprofile)
-
                     new_pi.save()
                     # TODO send mail avec invoice
                 else:
@@ -123,6 +122,9 @@ def create_user(request):
             up = upform.save()
             u.is_active = False
             u.save()
+            i.active = True
+
+            i.save()
             up.confirm = string_random(32)
             doc = docform.save()
             doc.refer_userprofile = up

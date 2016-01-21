@@ -482,7 +482,7 @@ $(document).ready(function() {
                                 <td  class="text-center">{{ i.date_end | date_format}}</td>
                                 <td  class="text-center">
                                 {%  if i.path %}
-                                    <a href="{{ i.path }}">pdf</a>
+                                    <a href="{{ MEDIA_URL }}{{ i.path }}">pdf</a>
                                 {%  endif %}
                                 </td>
                                 {% if not i.active or i.date_begin|after_today %}

@@ -22,6 +22,7 @@ from django.core.validators import RegexValidator
 import os
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from utils.toolbox import string_random
 
 
 class ColorSlot(models.Model):
@@ -84,7 +85,7 @@ class Invoice(models.Model):
     date_creation = models.DateField(verbose_name=_(u'Creation date'), auto_now_add=True)
     date_start = models.DateField(verbose_name=_(u'Start date'), blank=False)
     date_end = models.DateField(verbose_name=_(u'End date'), blank=False)
-    active = models.BooleanField(verbose_name=_(u'Active'), default=True)
+    active = models.BooleanField(verbose_name=_(u'Active'), default=False)
     price_exVAT = models.FloatField(verbose_name=_(u'Price excl. VAT'), blank=False, default=0.0)
     VAT = models.FloatField(verbose_name=_(u'VAT (%)'), blank=False, default=21)
     price_VAT = models.FloatField(verbose_name=_(u'Price VAT'), blank=True, default=0.0)
@@ -100,14 +101,14 @@ class Invoice(models.Model):
         if not self.date_start:
             self.date_start = datetime.now()
         self.date_end = self.date_start + relativedelta(months=+self.type_price.num_months)
-        super(Invoice, self).save(*args, **kwargs)
+        # super(Invoice, self).save(*args, **kwargs)
         if self.price_incVAT != ((self.VAT / 100) * self.price_exVAT) + self.price_exVAT:
             self.price_VAT = (self.VAT / 100) * self.price_exVAT
             self.price_incVAT = self.price_VAT + self.price_exVAT
-            super(Invoice, self).save(*args, **kwargs)
+            # super(Invoice, self).save(*args, **kwargs)
         self.invoice_number = get_number(self.date_creation.year)
-        self.path = self.path = os.path.join(settings.MEDIA_ROOT, 'invoice',
-                                             '%s_%s.pdf' % (self.date_creation.year, self.invoice_number))
+        self.path = os.path.join('invoice', '%s_%s_%s.pdf' % (string_random(16), self.date_creation.year, self.invoice_number))
+        super(Invoice, self).save(*args, **kwargs)
 
     def __str__(self):
         return '%d: %s' % (self.id, self.type_price)

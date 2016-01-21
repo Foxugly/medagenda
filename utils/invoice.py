@@ -19,10 +19,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 import os
 
+
 class Address(Flowable):
     def __init__(self, up):
         Flowable.__init__(self)
-        self.user = up.user
+        self.user = up.refer_userprofile.user
         self.adr = up.address
         self.x = 0
         self.y = 25
@@ -74,7 +75,7 @@ class PrintInvoice:
                 Paragraph(u"%s : %s" % (_(u"Entreprise number"), settings.ENTREPRISE_NUMBER), self.styles['Normal']))
 
     def save(self):
-        path = "%s%s" % (settings.BASE_DIR, self.invoice.path)
+        path = os.path.join(settings.MEDIA_ROOT, self.invoice.path)
         doc = SimpleDocTemplate(path,
                                 rightMargin=25 * mm,
                                 leftMargin=25 * mm,
