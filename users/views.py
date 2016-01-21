@@ -82,7 +82,7 @@ def add_user(request):
         upform = UserProfileForm(request.POST)
         docform = DoctorForm(request.POST)
         invoiceform = MiniInvoiceForm(request.POST)
-        if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+        if ucform.is_valid() and upform.is_valid() and docform.is_valid() and invoiceform.is_valid():
             i = invoiceform.save()
             u = ucform.save()
             up = upform.save()
@@ -117,7 +117,7 @@ def create_user(request):
         upform = UserProfileForm(request.POST)
         docform = DoctorForm(request.POST)
         invoiceform = MiniInvoiceForm(request.POST)
-        if ucform.is_valid() and upform.is_valid() and docform.is_valid():
+        if ucform.is_valid() and upform.is_valid() and docform.is_valid() and invoiceform.is_valid():
             i = invoiceform.save()
             u = ucform.save()
             up = upform.save()

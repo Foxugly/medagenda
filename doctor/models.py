@@ -63,14 +63,20 @@ class InvoiceNumber(models.Model):
     year = models.IntegerField(verbose_name=_(u'Year'), default=2015)
     number = models.IntegerField(verbose_name=_(u'Number'), default=0)
 
+    def __str__(self):
+        return u"%s" % self.year
+
 
 def get_number(y):
     inst = InvoiceNumber.objects.filter(year=y)
-    if not inst:
-        inst = InvoiceNumber(year=y)
-    inst.number += 1
-    inst.save()
-    return inst.number
+    if len(inst):
+        inst[0].number += 1
+        inst[0].save()
+        return inst[0].number
+    else:
+        inst = InvoiceNumber(year=y, number=1)
+        inst.save()
+        return 1
 
 
 class Invoice(models.Model):
@@ -162,7 +168,7 @@ class Doctor(models.Model):
                                           related_name='refer_userprofile', null=True, blank=True)
 
     def __str__(self):
-        return u"%d " % (self.id)
+        return u"%s " % (self.slug)
 
     def get_title(self):
         return u"%s" % self.TITLE_CHOICES[self.title - 1][1]
