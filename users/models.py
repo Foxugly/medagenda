@@ -62,13 +62,16 @@ class UserProfileForm(ModelForm):
 class Collaborator(models.Model):
     doctor = models.ForeignKey('doctor.Doctor', blank=True, null=True)
     confirm = models.TextField(verbose_name=_(u'Confirm key'), blank=True, null=True)
-    email = models.EmailField()
+    email_col = models.EmailField(verbose_name=_(u'Email address'))
 
     def update(self):
-        self.confirm = string_random(16)
+        self.confirm = string_random(32)
+
+    def __str__(self):
+        return "(%d) %s" % (self.id, self.email_col)
 
 
 class CollaboratorForm(ModelForm):
     class Meta:
         model = Collaborator
-        fields = ['email']
+        fields = ['email_col']

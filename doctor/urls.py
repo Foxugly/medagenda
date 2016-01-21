@@ -10,7 +10,8 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from doctor.views import calendar_user, search_doctor, model_calendar, user_settings, personal_data, reminder_slot,\
-    config, avatar, text_profil, color, remove_picture, reminder, invoice_add, invoice_remove, invoices, profile
+    config, avatar, text_profil, color, remove_picture, reminder, invoice_add, invoice_remove, invoices, profile,\
+    collaborator_add, collaborator_remove, collaborator_remove2, change_doctor
 urlpatterns = (
     url(r'^settings/$', login_required(user_settings), name='settings'),
     url(r'^invoice/$', login_required(invoices), name='invoice'),
@@ -28,5 +29,9 @@ urlpatterns = (
     url(r'^ajax/search/$', search_doctor, name='search_doctor'),
     url(r'^ajax/invoice/add/$', invoice_add, name='invoice_add'),
     url(r'^ajax/invoice/remove/(?P<invoice_id>[\w-]+)/$', invoice_remove, name='invoice_remove'),
+    url(r'^ajax/collaborator/add/$', collaborator_add, name='collaborator_add'),
+    url(r'^ajax/collaborator/remove/(?P<user_id>[\w-]+)/$', collaborator_remove, name='collaborator_remove'),
+    url(r'^ajax/collaborator/remove2/(?P<col_id>[\w-]+)/$', collaborator_remove2, name='collaborator_remove2'),
+    url(r'^ajax/change/$', change_doctor, name='change_doctor'),
     url(r'^(?P<slug>[\w-]+)/$', profile, name='profile'),
 )

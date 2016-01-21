@@ -13,8 +13,8 @@
   <div class="col-md-8 col-md-offset-2 text-center" style="margin-top:20px">
     <a href="/" class="btn btn-success btn-default"><span class="glyphicon glyphicon-home"></span> {% blocktrans %}Home{% endblocktrans %} </a>
     {% if request.user.is_authenticated %}
-      <a href="/user/profil/{{user.userprofile.slug}}/calendar/" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span> {% blocktrans %} Calendar{% endblocktrans %}</a> 
-      <a href="/user/profil/{{user.userprofile.slug}}/model/" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {% blocktrans %} Model{% endblocktrans %}</a>
+      <a href="/user/profil/{{user.userprofile.current_doctor.slug}}/calendar/" class="btn btn-default"><span class="glyphicon glyphicon-calendar"></span> {% blocktrans %} Calendar{% endblocktrans %}</a>
+      <a href="/user/profil/{{user.userprofile.current_doctor.slug}}/model/" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {% blocktrans %} Model{% endblocktrans %}</a>
     {% endif %}
   </div>
 </div>

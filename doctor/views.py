@@ -10,7 +10,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile
+from users.models import UserProfile, CollaboratorForm, Collaborator
 from doctor.models import DoctorForm, TextForm, SettingsForm, ColorForm, ColorSlot, \
     MiniInvoiceForm, NoFreeMiniInvoiceForm, TypePrice, Invoice
 from django.contrib.auth.decorators import login_required
@@ -105,6 +105,9 @@ def user_settings(request):
          'text_form': TextForm(instance=doc), 'color_forms': [],
          'password_change_form': PasswordChangeForm(user=request.user),
          'invoice': doc.get_active_invoice(),
+         'collaborator_form': CollaboratorForm(),
+         'collaborators1': UserProfile.objects.filter(doctors=doc),
+         'collaborators2': Collaborator.objects.filter(doctor=doc),
          'new_invoice': MiniInvoiceForm() if not doc.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
     for st in settings.SLOT_TYPE:
         d = {'id': doc.get_colorslot(st[0]).id, 'name': st[1],
@@ -208,12 +211,11 @@ def invoice_add(request):
     if request.is_ajax():
         up = request.user.userprofile
         tp = TypePrice.objects.filter(id=request.POST['type_price'][0])[0]
-        up.can_recharge = request.POST['can_recharge']
         up.save()
         # TODO a vérifier
         if tp:
-            if len(up.invoices.all()):
-                i = up.invoices.order_by('-date_end')[0]
+            if len(up.current_doctor.invoices.all()):
+                i = up.current_doctor.invoices.order_by('-date_end')[0]
                 if i.date_end > datetime.date(datetime.today()):
                     f_day = i.date_end + relativedelta(days=+1)
                     active = False
@@ -227,13 +229,13 @@ def invoice_add(request):
                                   date_end=f_day + relativedelta(months=+tp.num_months),
                                   price_exVAT=int(tp.price_exVAT), active=active)
             new_invoice.save()
-            up.invoices.add(new_invoice)
+            up.current_doctor.invoices.add(new_invoice)
             results['return'] = True
             results['id'] = new_invoice.id
             results['type_price'] = str(new_invoice.type_price)
             date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
-            results['date_start'] = format(new_invoice.date_start, date_format)
-            results['date_end'] = format(new_invoice.date_end, date_format)
+            results['date_start'] = new_invoice.date_start.strftime(date_format)
+            results['date_end'] = new_invoice.date_end.strftime(date_format)
         else:
             results['return'] = False
     else:
@@ -247,8 +249,8 @@ def invoice_remove(request, invoice_id):
     if request.is_ajax():
         up = request.user.userprofile
         i = Invoice.objects.get(id=invoice_id)
-        if i in up.invoices.all():
-            up.invoices.remove(i)
+        if i in up.current_doctor.invoices.all():
+            up.current_doctor.invoices.remove(i)
             i.delete()
             results['return'] = True
         else:
@@ -285,3 +287,87 @@ def reminder(request, slug):
             return HttpResponse(json.dumps({'return': False}))
         else:
             return HttpResponse(json.dumps({'return': False}))
+
+
+@login_required
+def collaborator_add(request):
+    results = {}
+    if request.is_ajax():
+        up = request.user.userprofile
+        form = CollaboratorForm(request.POST)
+        if form.is_valid:
+            inst = form.save()
+            new_up = UserProfile.objects.filter(user__email=inst.email_col)
+            if len(new_up):
+                new_up[0].doctors.add(up.current_doctor)
+                new_up[0].save()
+                results['id'] = new_up[0].id
+                results['firstname'] = new_up[0].user.first_name
+                results['lastname'] = new_up[0].user.last_name
+                results['email'] = new_up[0].user.email
+                results['type'] = 1
+            else:
+                inst.doctor = up.current_doctor
+                inst.update()
+                inst.save()
+                results['type'] = 2
+                results['id'] = inst.id
+                results['email'] = inst.email_col
+                # TODO SEND MAIL TO ADD USER
+            results['return'] = True
+        else:
+            results['return'] = False
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def collaborator_remove(request, user_id):
+    results = {}
+    if request.is_ajax():
+        doctor = request.user.userprofile.current_doctor
+        up = UserProfile.objects.get(id=user_id)
+        up.doctors.remove(doctor)
+        if len(up.doctors.all()):
+            up.current_doctor = up.doctors.all()[0]
+        else:
+            up.current_doctor = None
+        up.save()
+        # TODO SEND MAIL TO ADD USER
+        results['return'] = True
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def collaborator_remove2(request, col_id):
+    results = {}
+    if request.is_ajax():
+        c = Collaborator.objects.filter(id=col_id)
+        if len(c):
+            c[0].delete()
+        # TODO SEND MAIL TO ADD USER
+        results['return'] = True
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))
+
+
+@login_required
+def change_doctor(request):
+    results = {}
+    if request.is_ajax():
+        doc_id = request.POST['doc']
+        up = request.user.userprofile
+        doc = Doctor.objects.get(id=doc_id)
+        if doc in up.doctors.all():
+            up.current_doctor = doc
+            up.save()
+            results['return'] = True
+        else:
+            results['return'] = False
+    else:
+        results['return'] = False
+    return HttpResponse(json.dumps(results))

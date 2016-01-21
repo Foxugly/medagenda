@@ -17,8 +17,7 @@ $(document).ready(function() {
         layoutTemplates: {main2: '{preview} {remove} {browse}'},
         {% if avatar %}
         initialPreview: ["<img src='{{ MEDIA_URL }}{{avatar}}' class='file-preview-image' alt='alt' title='title.jpg'>"],
-        initialPreviewConfig: [
-        {
+        initialPreviewConfig: [{
             caption: '{{avatar|filename}}',
             width: '120px'
         }],
@@ -152,8 +151,9 @@ $(document).ready(function() {
             success: function(result){
                 if (result['return']){
                     var tr = "<tr><td>" + result['id'] + "</td><td>" + result['type_price'] + "</td>";
-                    tr += "<td>" + result['date_start'] + "</td><td>" +  result['date_end'] + "</td>";
-                    tr += "<td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>";
+                    tr += "<td class='text-center'>" + result['date_start'] + "</td><td class='text-center'>" +  result['date_end'] + "</td><td></td>";
+                    tr += "<td class='text-center'><a href='#' class='btn btn-xs btn-danger invoice_del' role='button'>" ;
+                    tr += "<span class='glyphicon glyphicon-remove'></span></a></td>";
                     $('#table_invoice').append(tr);
                     $('#confirm_yes').show();
                 }
@@ -190,14 +190,49 @@ $(document).ready(function() {
         });
     });
 
-     $("table").on("click", ".ibtnDel", function() {
-         var killrow = $(this).closest("tr");
-         console.log(killrow);
-         var myid = killrow.find("td:first").html();
-         console.log(myid);
-         var url = '/doc/ajax/invoice/remove/' + myid + '/';
-         console.log(url);
-         $.ajax({
+    $('#btn_add_collaborators').click(function(){
+        var form = $('#form_collaborator');
+        var url = '/doc/ajax/collaborator/add/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    var tr = "<tr><td class='text-center'>" + result['id'] + "</td>";
+                    if (result['type'] == 1){
+                        tr += "<td class='text-center'>" + result['firstname'] + "</td>";
+                        tr += "<td class='text-center'>" +  result['lastname'] + "</td>";
+                        tr += "<td class='text-center'>" +  result['email'] + "</td>";
+                        tr += "<td class='text-center'><a href='#' class='btn btn-xs btn-danger collaborator_del' role='button'>" ;
+                        tr += "<span class='glyphicon glyphicon-remove'></span></a></td>";
+                        $('#table_permission').append(tr);
+                    }
+                    else if (result['type'] == 2){
+                        tr += "<td class='text-center'></td><td class='text-center'></td>";
+                        tr += "<td class='text-center'>" +  result['email'] + "</td>";
+                        tr += "<td class='text-center'><a href='#' class='btn btn-xs btn-danger collaborator2_del' role='button'>" ;
+                        tr += "<span class='glyphicon glyphicon-remove'></span></a></td>";
+                        $('#table_permission').append(tr);
+                    }
+                    $('#id_email_col').val('');
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
+            }
+        });
+    });
+
+    $("table").on("click", ".invoice_del", function() {
+        var killrow = $(this).closest("tr");
+        var myid = killrow.find("td:first").html();
+        var url = '/doc/ajax/invoice/remove/' + myid + '/';
+        $.ajax({
             url: url,
             type: 'POST',
             data: '',
@@ -208,7 +243,42 @@ $(document).ready(function() {
                     killrow.remove();
                 }
             }
-         });
+        });
+    });
+
+    $("table").on("click", ".collaborator_del", function() {
+        var killrow = $(this).closest("tr");
+        var myid = killrow.find("td:first").html();
+        var url = '/doc/ajax/collaborator/remove/' + myid + '/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: '',
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    killrow.remove();
+                }
+            }
+        });
+    });
+    $("table").on("click", ".collaborator2_del", function() {
+        var killrow = $(this).closest("tr");
+        var myid = killrow.find("td:first").html();
+        var url = '/doc/ajax/collaborator/remove2/' + myid + '/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: '',
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    killrow.remove();
+                }
+            }
+        });
     });
 });
 </script>
@@ -411,12 +481,16 @@ $(document).ready(function() {
                                 <td  class="text-center">{{ i.date_start | date_format}}</td>
                                 <td  class="text-center">{{ i.date_end | date_format}}</td>
                                 <td  class="text-center">
-                                {%  if True %}
+                                {%  if i.path %}
                                     <a href="{{ i.path }}">pdf</a>
                                 {%  endif %}
                                 </td>
                                 {% if not i.active or i.date_begin|after_today %}
-                                    <td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>
+                                    <td class='text-center'>
+                                        <a href='#' class='btn btn-xs btn-danger invoice_del' role='button'>
+                                            <span class='glyphicon glyphicon-remove'></span>
+                                        </a>
+                                    </td>
                                 {%  else %}
                                     <td></td>
                                 {% endif %}
@@ -436,24 +510,35 @@ $(document).ready(function() {
                     <div class="panel panel-default">
                         <div class="panel-heading">{%  trans "List of collaborators" %}</div>
                         <div class="panel-body">
-                            <table id="table_invoice" class="table table-bordered">
+                            <table id="table_permission" class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <th class="text-center">{%  trans "ID" %}</th>
                                     <th class="text-center">{%  trans "first name" %}</th>
                                     <th class="text-center">{%  trans "last name" %}</th>
                                     <th class="text-center">{%  trans "Email address" %}</th>
-                                    <th class="text-center">{%  trans "Remove" %}</th>
+                                    <th class="text-center"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>id</td>
-                                    <td>nom</td>
-                                    <td  class="text-center">prenom</td>
-                                    <td  class="text-center">email</td>
-                                    <td class='text-center'><div class='glyphicon glyphicon-remove ibtnDel'></div></td>
-                                </tr>
+                                {%  for c in collaborators1 %}
+                                    <tr>
+                                    <td class="text-center">{{ c.id }}</td>
+                                    <td class="text-center">{{ c.user.first_name }}</td>
+                                    <td class="text-center">{{ c.user.last_name }}</td>
+                                    <td class="text-center">{{ c.user.email }}</td>
+                                    <td class="text-center"><a href='#' class='btn btn-xs btn-danger collaborator_del' role='button'><span class='glyphicon glyphicon-remove'></span></a></td>
+                                    </tr>
+                                {%  endfor  %}
+                                {%  for c in collaborators2 %}
+                                    <tr>
+                                    <td class="text-center">{{ c.id }}</td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center">{{ c.email_col }}</td>
+                                    <td class="text-center"><a href='#' class='btn btn-xs btn-danger collaborator2_del' role='button'><span class='glyphicon glyphicon-remove'></span></a></td>
+                                    </tr>
+                                {%  endfor  %}
                                 </tbody>
                             </table>
                         </div>
@@ -465,7 +550,15 @@ $(document).ready(function() {
                     <div class="panel panel-default">
                         <div class="panel-heading">{%  trans "Add collaborators" %}</div>
                         <div class="panel-body">
-
+                            <form class="form-horizontal" id="form_collaborator">
+                                {% csrf_token %}
+                                {% bootstrap_form collaborator_form layout="horizontal" %}
+                                <div class="form_group">
+                                    <div class="col-xs-9 col-xs-offset-3" style="margin-top: 10px;">
+                                        <a href="#" id="btn_add_collaborators" class="btn btn-primary">Add</a>
+                                    </div>
+                                 </div>
+                            </form>
                         </div>
                     </div>
                 </div>

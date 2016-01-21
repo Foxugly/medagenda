@@ -8,10 +8,14 @@
 # your option) any later version.
 
 from django.contrib import admin
-from users.models import UserProfile
+from users.models import UserProfile, Collaborator
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ['doctors']
 
+
+@admin.register(Collaborator)
+class CollaboratorAdmin(admin.ModelAdmin):
+    pass

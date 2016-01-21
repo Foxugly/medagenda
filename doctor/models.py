@@ -257,7 +257,7 @@ class DoctorForm(ModelForm):
 
     class Meta:
         model = Doctor
-        fields = ['speciality', 'title', 'address', 'telephone', 'vat_number', 'timezone']
+        fields = ['speciality', 'title', 'address', 'telephone', 'vat_number', 'timezone', 'can_recharge']
 
 
 class SettingsForm(ModelForm):

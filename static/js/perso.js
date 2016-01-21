@@ -80,6 +80,30 @@ $(document).ready(function() {
         });
     });
 
+    $('#select_doctor').change(function() {
+        var select = $(this);
+        var mydata = {doc:select.val()};
+        console.log(mydata);
+        var url = '/doc/ajax/change/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: mydata,
+            traditional: true,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    location.reload();
+                    $('#confirm_yes').show();
+                }
+                else{
+                    $('#confirm_no_error').val(result['errors']);
+                    $('#confirm_no').show();
+                }
+            }
+        });
+    });
+
     $(".clockpicker").parent().clockpicker({
         autoclose: true
     });

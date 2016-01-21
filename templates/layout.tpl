@@ -79,6 +79,23 @@
           <a class="navbar-brand" href="/">MedAgenda</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          {% if user.is_authenticated %}
+              <ul class="nav navbar-nav navbar-left">
+                  <li>
+                    <div class='navbar-form form-group'>
+                     <select id="select_doctor" name="select_doctor" class="form-control">
+                         {%  for doc in user.userprofile.doctors.all %}
+                             {%  if doc == user.userprofile.current_doctor %}
+                                <option value="{{ doc.id }}" selected="selected">{{ doc.slug }}</option>
+                             {%  else %}
+                                <option value="{{ doc.id }}">{{ doc.slug }}</option>
+                             {%  endif %}
+                         {%  endfor %}
+                     </select>
+                    </div>
+                  </li>
+              </ul>
+          {%  endif  %}
           <ul class="nav navbar-nav navbar-right">
             <li>
                 <div class='navbar-form form-group'>
@@ -146,7 +163,7 @@
               <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tempus vel leo eu ultrices. Nulla vitae sem mattis, blandit lacus scelerisque, pharetra velit. Sed pellentesque sagittis purus eget vehicula. Mauris vulputate felis non tempus dignissim. Nulla ac arcu quis diam laoreet hendrerit. Nam vel felis lectus. Pellentesque sodales nulla id purus facilisis, id egestas mi pulvinar." %}</p>  
           	</div>
             <div class="col-md-4 col-md-offset-4" style="margin-top:20px">
-              <a href="/user/login" class="btn btn-success btn-lg btn-block">{% trans "Connexion" %}</a>
+              <a href="{% url "login" %}" class="btn btn-success btn-lg btn-block">{% trans "Connexion" %}</a>
             </div>
           </div>
         {% endif %}
