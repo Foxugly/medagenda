@@ -25,6 +25,7 @@ from django.utils.dateformat import format
 from django.db.models import Q
 from doctor.models import Doctor
 from agenda.models import Slot
+from utils.mail import mail_collaborator
 
 
 def profile(request, slug=None):
@@ -212,7 +213,6 @@ def invoice_add(request):
         up = request.user.userprofile
         tp = TypePrice.objects.filter(id=request.POST['type_price'][0])[0]
         up.save()
-        # TODO a vérifier
         if tp:
             if len(up.current_doctor.invoices.all()):
                 i = up.current_doctor.invoices.order_by('-date_end')[0]
@@ -313,8 +313,7 @@ def collaborator_add(request):
                 results['type'] = 2
                 results['id'] = inst.id
                 results['email'] = inst.email_col
-                # TODO SEND MAIL TO ADD USER
-                print '%s : http://127.0.0.1:8000/user/collaborator/add/%d/%s/' % (inst.email_col, inst.id, inst.confirm)
+                mail_collaborator(inst)
             results['return'] = True
         else:
             results['return'] = False

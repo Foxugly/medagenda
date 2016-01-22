@@ -16,6 +16,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.shortcuts import get_current_site
 
 
+def mail_collaborator(request, collaborator):
+    subject_part = _('[medagenda] Subscription')
+    template_name = 'mail/collaborator_subscription'
+    context = {"collaborator": collaborator}
+    msg = mail_body(request, subject_part, template_name, context)
+    return msg.send()
+
+
 def mail_patient_welcome(request, patient):
     subject_part = _('[medagenda] Confirm your email address')
     template_name = 'mail/patient_welcome'
