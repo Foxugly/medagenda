@@ -10,22 +10,21 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
-from users.models import UserProfile, UserCreateForm, UserProfileForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-from doctor.models import DoctorForm, Invoice, MiniInvoiceForm
-from utils.toolbox import string_random
-from django.contrib.auth.decorators import user_passes_test
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
+from doctor.models import DoctorForm, Invoice, MiniInvoiceForm, Doctor
+from users.models import UserProfile, UserCreateForm, UserProfileForm, Collaborator
+from utils.toolbox import string_random
 from utils.mail import mail_user_welcome
 from utils.invoice import PrintInvoice
-from doctor.models import Doctor
 import json
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -123,7 +122,6 @@ def create_user(request):
             u.is_active = False
             u.save()
             i.active = True
-
             i.save()
             up.confirm = string_random(32)
             doc = docform.save()
@@ -134,6 +132,7 @@ def create_user(request):
             doc.save()
             up.user = u
             up.doctors.add(doc)
+            # TODO regarder dans collaborator pour voir si il faut en rajouter
             up.current_doctor = doc
             up.save()
             doc.set_slug()
@@ -176,3 +175,34 @@ def password(request):
     else:
         results['return'] = False
     return HttpResponse(json.dumps(results))
+
+
+def collaborator_add(request, collaborator_id, confirm):
+    col = Collaborator.objects.filter(id=collaborator_id)
+    c = {}
+    if request.method == 'POST':
+        ucform = UserCreateForm(request.POST)
+        upform = UserProfileForm(request.POST)
+        if ucform.is_valid() and upform.is_valid() and confirm == col[0].confirm:
+            u = ucform.save()
+            up = upform.save()
+            up.doctors.add(col[0].doctor)
+            up.current_doctor = col[0].doctor
+            up.user = u
+            up.save()
+            col.delete()
+            return render(request, 'valid.tpl')
+        else:
+            c['form'] = [ucform, upform]
+            messages.error(request, "Error")
+    else:
+        if len(col):
+            u = User.objects.filter(email=col[0].email_col)
+            if len(u):
+                u[0].doctors.add(col[0].doctor)
+                return render(request, 'valid.tpl')
+            else:
+                c['form'] = [UserCreateForm(email=col[0].email_col), UserProfileForm()]
+    c['url'] = "/user/collaborator/add/%s/%s/" % (collaborator_id, confirm)
+    c['title'] = _("New User")
+    return render(request, 'form.tpl', c)

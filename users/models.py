@@ -38,6 +38,13 @@ class UserCreateForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
 
+    def __init__(self, *args, **kw):
+        new_kw = {}
+        super(UserCreateForm, self).__init__(*args, **new_kw)
+        if len(kw):
+            for key, val in kw.items():
+                self.fields[key].initial = val
+
 
 class UserProfileForm(ModelForm):
     error_messages = {

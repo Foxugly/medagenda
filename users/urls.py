@@ -10,13 +10,14 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views
-from users.views import add_user, create_user, password
+from users.views import add_user, create_user, password, collaborator_add
 
 urlpatterns = (
     url(r'^login/$', views.login, {'template_name': 'login.tpl'}, name='login'),
     url(r'^logout/$', login_required(views.logout), {'template_name': 'logout.tpl'}, name='logout'),
     url(r'^add_user/$', add_user, name='add_user'),
     url(r'^create_user/$', create_user, name='create_user'),
+    url(r'^collaborator/add/(?P<collaborator_id>\w+)/(?P<confirm>\w+)/$', collaborator_add, name='collaborator_add'),
     url(r'^password/reset/$', views.password_reset, {'template_name': 'password_reset_form.tpl'}, name="password_reset"),
     url(r'^password/reset/done/$', views.password_reset_done, {'template_name': 'password_reset_done.tpl'},
         name="password_reset_done"),

@@ -314,6 +314,7 @@ def collaborator_add(request):
                 results['id'] = inst.id
                 results['email'] = inst.email_col
                 # TODO SEND MAIL TO ADD USER
+                print '%s : http://127.0.0.1:8000/user/collaborator/add/%d/%s/' % (inst.email_col, inst.id, inst.confirm)
             results['return'] = True
         else:
             results['return'] = False
