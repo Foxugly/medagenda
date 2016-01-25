@@ -28,6 +28,7 @@
     <link href='{% static "select2-4.0.1/dist/css/select2.min.css" %}' rel='stylesheet' />
     {% block css %}
     {% endblock %}
+    {% get_current_language as LANGUAGE_CODE %}
     <link href='{% static "css/perso.css" %}' rel='stylesheet' />
     <link href='{% static "css/offer.css" %}' rel='stylesheet' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -38,12 +39,16 @@
     <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lang-all.js" %}'></script>
     <script type="text/javascript" src='{% static "clockfield/bootstrap-clockpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-datepicker-master/dist/js/bootstrap-datepicker.min.js" %}'></script>
-    {% get_current_language as LANGUAGE_CODE %}
     {% if LANGUAGE_CODE != 'en' %}
         {% with 'bootstrap-datepicker-master/dist/locales/bootstrap-datepicker.'|add:LANGUAGE_CODE|add:'.min.js' as datepicker_lang %}
         <script type="text/javascript" src='{% static datepicker_lang %}'></script>
         {% endwith %}
     {%  endif %}
+    <script>
+        $(document).ready(function() {
+            $(".date_format").val($.fn.datepicker.dates["{{ LANGUAGE_CODE }}"]["format"]);
+        });
+    </script>
     <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
     {% if LANGUAGE_CODE != 'en' %}

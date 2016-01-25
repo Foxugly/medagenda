@@ -14,8 +14,9 @@ from django.conf import settings
 from agenda.models import SlotTemplate, Slot
 from patient.models import Patient
 import json
-from utils.toolbox import string_random, convert_date
+from utils.toolbox import string_random
 from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
+from utils.toolbox import convert_date
 
 
 @login_required
@@ -65,9 +66,10 @@ def st_apply(request):
     if request.is_ajax():
         doc = request.user.userprofile.current_doctor
         if 'start_date' in request.POST and 'end_date' in request.POST:
-            c = convert_date(request.POST['date_format'])
-            start_date = datetime.strptime(request.POST['start_date'], c)
-            end_date = datetime.strptime(request.POST['end_date'], c)
+            dateformat = request.POST['date_format']
+            dateformat = convert_date(dateformat)
+            start_date = datetime.strptime(request.POST['start_date'], dateformat)
+            end_date = datetime.strptime(request.POST['end_date'], dateformat)
             for i in range(0, 7):
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:

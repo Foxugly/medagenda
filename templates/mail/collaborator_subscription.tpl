@@ -3,9 +3,7 @@
 <br><br>
 {% blocktrans %}{{ collaborator.doctor }} or a collaborator asks you to subscript to Medagenda{% endblocktrans %}.
 <br><br>
-{%  with link=protocol |add:'://'|add: domain | add: url 'collaborator_add' collaborator_id=collaborator.id confirm=collaborator.confirm %}
-{% trans "Could you click on the link to subscribe :" %}<a href="{{ link }}">{{ link }}</a>
-{%  endwith %}
+{% trans "Could you click on the link to subscribe :" %}<a href="{{ uri }}{%  url 'collaborator_add' collaborator_id=collaborator.id confirm=collaborator.confirm %}">{{ link }}{% url 'collaborator_add' collaborator_id=collaborator.id confirm=collaborator.confirm %}</a>
 <br><br>
 {% trans "Thanks for using our site!" %}
 <br><br>

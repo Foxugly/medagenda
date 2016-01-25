@@ -13,18 +13,16 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Flowable
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
-from django.utils.dateformat import format
-from django.utils import formats
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 import os
 
 
 class Address(Flowable):
-    def __init__(self, up):
+    def __init__(self, doctor):
         Flowable.__init__(self)
-        self.user = up.refer_userprofile.user
-        self.adr = up.address
+        self.user = doctor.refer_userprofile.user
+        self.adr = doctor.address
         self.x = 0
         self.y = 25
         self.width = 250
@@ -47,8 +45,8 @@ class Address(Flowable):
 
 
 class PrintInvoice:
-    def __init__(self, invoice, up):
-        self.userprofile = up
+    def __init__(self, invoice, doctor):
+        self.doctor = doctor
         self.invoice = invoice
         self.elements = []
         # self.buffer = buffer
@@ -83,16 +81,15 @@ class PrintInvoice:
                                 bottomMargin=25 * mm,
                                 pagesize=self.pagesize)
         self.head()
-        self.elements.append(Address(self.userprofile))
+        self.elements.append(Address(self.doctor))
         self.elements.append(Spacer(0, 30 * mm))
         self.elements.append(Paragraph(u"%s" % _(u"Invoice"), self.styles['title']))
         self.elements.append(Spacer(0, 10 * mm))
         self.elements.append(
             Paragraph(u"%s : %010d" % (_(u"Invoice"), self.invoice.invoice_number), self.styles['Normal']))
         self.elements.append(Spacer(0, 5 * mm))
-        date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
         self.elements.append(
-                Paragraph(u"Date : %s" % format(self.invoice.date_creation, date_format), self.styles['Normal']))
+                Paragraph(u"Date : %s" % self.invoice.date_creation, self.styles['Normal']))
         self.elements.append(Spacer(0, 5 * mm))
         table_data = [[u"%s" % _(u"ID"), u"%s" % _(u"TYPE"), u"%s" % _(u"START DATE"), u"%s" % _(u"END DATE"),
                        u"%s" % _(u"PRIX TTC")],

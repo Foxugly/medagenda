@@ -49,7 +49,7 @@ def home(request):
                     new_pi.save()
                     # TODO send mail avec invoice
             else:
-                if request.user.userprofile.can_recharge:
+                if request.user.userprofile.current_doctor.can_recharge:
                     old_i[0].active = False
                     old_i[0].save()
                     f_day = datetime.today()
@@ -57,7 +57,7 @@ def home(request):
                                     date_end=f_day + relativedelta(months=+old_i.type_price.num_months),
                                     price_exVAT=int(old_i[0].type_price.price_exVAT), active=True)
                     new_i.save()
-                    new_pi = PrintInvoice(new_i, request.user.userprofile)
+                    new_pi = PrintInvoice(new_i, request.user.userprofile.current_doctor)
                     new_pi.save()
                     # TODO send mail avec invoice
                 else:
@@ -66,6 +66,10 @@ def home(request):
                     print "HERE"
             # ----------------------
             # TODO préparer les data pour le dashboard
+            c['plan'] = request.user.userprofile.current_doctor.slots.filter(date=datetime.now()).order_by("id")
+            c['invoice'] = request.user.userprofile.current_doctor.invoices.filter(active=True)[0]
+            date_max = request.user.userprofile.current_doctor.slots.all().order_by("date")
+            c['date_max'] = date_max[0].date if date_max else None
             return render(request, 'dashboard.tpl', c)
     else:
         c['list'] = Doctor.objects.filter(view_in_list=True)

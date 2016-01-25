@@ -10,7 +10,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from users.models import UserProfile, CollaboratorForm, Collaborator
+from users.models import UserProfile, CollaboratorForm, Collaborator, UserForm
 from doctor.models import DoctorForm, TextForm, SettingsForm, ColorForm, ColorSlot, \
     MiniInvoiceForm, NoFreeMiniInvoiceForm, TypePrice, Invoice
 from django.contrib.auth.decorators import login_required
@@ -20,8 +20,6 @@ from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-from django.utils import formats
-from django.utils.dateformat import format
 from django.db.models import Q
 from doctor.models import Doctor
 from agenda.models import Slot
@@ -101,6 +99,7 @@ def user_settings(request):
     up = request.user.userprofile
     doc = up.current_doctor
     c = {'userprofile_id': request.user.userprofile.id,
+         'user_form': UserForm(instance=doc.refer_userprofile.user),
          'personal_data_form': DoctorForm(instance=doc),
          'settings_form': SettingsForm(instance=doc), 'avatar': doc.picture,
          'text_form': TextForm(instance=doc), 'color_forms': [],
@@ -109,7 +108,8 @@ def user_settings(request):
          'collaborator_form': CollaboratorForm(),
          'collaborators1': UserProfile.objects.filter(doctors=doc),
          'collaborators2': Collaborator.objects.filter(doctor=doc),
-         'new_invoice': MiniInvoiceForm() if not doc.already_use_free_invoice() else NoFreeMiniInvoiceForm()}
+         'new_invoice': MiniInvoiceForm() if not doc.already_use_free_invoice() else NoFreeMiniInvoiceForm(),
+         'doctor_profile': doc.refer_userprofile}
     for st in settings.SLOT_TYPE:
         d = {'id': doc.get_colorslot(st[0]).id, 'name': st[1],
              'form': ColorForm(instance=doc.get_colorslot(st[0]))}
@@ -122,11 +122,14 @@ def personal_data(request):
     results = {}
     if request.is_ajax():
         form = DoctorForm(request.POST, instance=request.user.userprofile.current_doctor)
-        if form.is_valid():
+        user_form = UserForm(request.POST, instance=request.user.userprofile.current_doctor.refer_userprofile.user)
+        if form.is_valid() and user_form.is_valid():
             form.save()
+            user_form.save()
             results['return'] = True
         else:
-            results['errors'] = form.errors
+            print
+            results['errors'] = form.errors + user_form.errors
             results['return'] = False
     else:
         results['return'] = False
@@ -184,7 +187,6 @@ def avatar(request):
 def color(request, color_id):
     results = {}
     if request.is_ajax():
-        # inst = ColorSlot.objects.get(id=color_id)
         inst = get_object_or_404(ColorSlot, id=color_id)
         form = ColorForm(request.POST, instance=inst)
         if form.is_valid():
@@ -233,9 +235,9 @@ def invoice_add(request):
             results['return'] = True
             results['id'] = new_invoice.id
             results['type_price'] = str(new_invoice.type_price)
-            date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
-            results['date_start'] = new_invoice.date_start.strftime(date_format)
-            results['date_end'] = new_invoice.date_end.strftime(date_format)
+
+            results['date_start'] = new_invoice.date_start
+            results['date_end'] = new_invoice.date_end
         else:
             results['return'] = False
     else:
@@ -265,14 +267,13 @@ def invoices(request):
     data = []
     titles = ['ID', _(u'Creation date'), _(u'Type of subscription'), _(u'Start date'), _('End date'),
               _(u'Price inc. VAT'), _(u'date paid')]
-    date_format = formats.get_format('DATE_INPUT_FORMATS')[0]
     for i in request.user.userprofile.current_doctor.invoices.all().order_by('id'):
         if i.paid:
-            paid = format(i.date_paid, date_format)
+            paid = i.date_paid
         else:
             paid = '<a href="link/sofort" class="btn btn-danger" role="button">%s</a>' % _("Pay now")
-        data.append([i.id, format(i.date_creation, date_format), i.type_price, format(i.date_start, date_format),
-                     format(i.date_end, date_format), "%.2f euros" % i.price_incVAT, paid])
+        data.append([i.id, i.date_creation, i.type_price, i.date_start,
+                     i.date_end, "%.2f euros" % i.price_incVAT, paid])
     c = {'title': 'Invoices', 'table': {'data': data, 'titles': titles}}
     return render(request, 'table.tpl', c)
 
@@ -281,7 +282,6 @@ def reminder(request, slug):
     if request.is_ajax():
         email = request.GET['email']
         s = get_object_or_404(Slot, refer_doctor__slug=slug, patient__mail=email)
-        # s = Slot.objects.filter(refer_doctor__slug=slug, patient__mail=email)
         if s:
             # TODO SEND MAIL PATIENT_REMINDER
             return HttpResponse(json.dumps({'return': False}))

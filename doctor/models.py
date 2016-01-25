@@ -73,11 +73,13 @@ def get_number(y):
     if len(inst):
         inst[0].number += 1
         inst[0].save()
-        return inst[0].number
+        val = inst[0].number
     else:
         inst = InvoiceNumber(year=y, number=1)
         inst.save()
-        return 1
+        val = 1
+    val = (y * 10**7) + (67* 10**5) + val
+    return val
 
 
 class Invoice(models.Model):
@@ -101,7 +103,7 @@ class Invoice(models.Model):
         if not self.date_start:
             self.date_start = datetime.now()
         self.date_end = self.date_start + relativedelta(months=+self.type_price.num_months)
-        # super(Invoice, self).save(*args, **kwargs)
+        super(Invoice, self).save(*args, **kwargs)
         if self.price_incVAT != ((self.VAT / 100) * self.price_exVAT) + self.price_exVAT:
             self.price_VAT = (self.VAT / 100) * self.price_exVAT
             self.price_incVAT = self.price_VAT + self.price_exVAT
