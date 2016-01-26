@@ -344,7 +344,7 @@ $(document).ready(function() {
       </div>
       <div class="modal-body">
         <form name="form_apply" id="form_apply">
-            <input type="hidden" id="date_format" name="date_format" class="date_format">
+            <input id="date_format" name="date_format" class="date_format">
           <div class="row form-group">
             <label class="col-md-4 col-md-offset-1 control-label" for="start_date">{% trans "Start Date" %}:</label>
             <div class="col-md-4 input-group" data-placement="right" data-align="top" data-autoclose="true">

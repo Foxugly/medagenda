@@ -67,10 +67,13 @@ def st_apply(request):
         doc = request.user.userprofile.current_doctor
         if 'start_date' in request.POST and 'end_date' in request.POST:
             dateformat = request.POST['date_format']
+            if not dateformat:
+                dateformat = 'mm/dd/yyyy'
             dateformat = convert_date(dateformat)
             start_date = datetime.strptime(request.POST['start_date'], dateformat)
             end_date = datetime.strptime(request.POST['end_date'], dateformat)
             for i in range(0, 7):
+                print i
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
                     sts = doc.get_daytemplate(
