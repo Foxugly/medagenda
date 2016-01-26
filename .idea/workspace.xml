@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="45bb8447-430c-4935-a541-818eb3a5df36" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/agenda/models.py" afterPath="$PROJECT_DIR$/agenda/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/agenda/views.py" afterPath="$PROJECT_DIR$/agenda/views.py" />
     </list>
     <ignored path="medagenda.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -623,7 +621,13 @@
       <option name="project" value="LOCAL" />
       <updated>1453767953421</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="version beta">
+      <created>1453768218606</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1453768218606</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
