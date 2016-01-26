@@ -73,7 +73,6 @@ def st_apply(request):
             start_date = datetime.strptime(request.POST['start_date'], dateformat)
             end_date = datetime.strptime(request.POST['end_date'], dateformat)
             for i in range(0, 7):
-                print i
                 current_day = start_date + timedelta(days=i)
                 while current_day <= end_date:
                     sts = doc.get_daytemplate(

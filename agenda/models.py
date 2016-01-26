@@ -42,7 +42,7 @@ class SlotTemplate(models.Model):
         return str(_('Booked') if self.booked else _('Free'))
 
     def as_json(self, i, doctor):
-        return {'id': self.id, 'start': self.t_start(i), 'end': self.t_end(i), 'title': self.get_title(),
+        return {'id': str(self.id), 'start': self.t_start(i), 'end': self.t_end(i), 'title': self.get_title(),
                 'color': doctor.get_color(self.slot_type, self.booked)}
 
 
