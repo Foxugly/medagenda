@@ -71,7 +71,7 @@ $(document).ready(function() {
     ToEndDate.setDate(ToEndDate.getDate()+365);
 
     $('#start_date').datepicker({
-        language: "{{user.userprofile.language}}",
+        language: "{{ LANGUAGE_CODE }}",
         startDate: startDate,
         autoclose: true
     })
@@ -82,7 +82,7 @@ $(document).ready(function() {
     }); 
 
     $('#end_date').datepicker({
-        language: "{{user.userprofile.language}}",
+        language: "{{ LANGUAGE_CODE }}",
         startDate: startDate,
         endDate: ToEndDate,
         autoclose: true
@@ -344,6 +344,7 @@ $(document).ready(function() {
       </div>
       <div class="modal-body">
         <form name="form_apply" id="form_apply">
+            <input id="date_format" name="date_format" class="date_format">
           <div class="row form-group">
             <label class="col-md-4 col-md-offset-1 control-label" for="start_date">{% trans "Start Date" %}:</label>
             <div class="col-md-4 input-group" data-placement="right" data-align="top" data-autoclose="true">

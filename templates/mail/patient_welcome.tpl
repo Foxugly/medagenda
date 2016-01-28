@@ -3,9 +3,7 @@
 <br><br>
 {% trans "You just use Medagenda for the first time." %} {% trans "We thank you for your trust." %}
 <br><br>
-{%  with link=protocol |add:'://'|add: domain | add: url 'patient_confirm_create' patient_id=patient.id text=patient.confirm %}
-{% trans "Could you click on the link below to confirm your email address :" %}<a href="{{ link }}">{{ link }}</a>
-{%  endwith %}
+{% trans "Could you click on the link below to confirm your email address :" %} <a href="{{ uri }}{% url 'patient_confirm_create' patient_id=patient.id text=patient.confirm %}">{{ uri }}{% url 'patient_confirm_create' patient_id=patient.id text=patient.confirm %}</a>
 <br><br>
 {% trans "Thanks for using our site!" %}
 <br><br>

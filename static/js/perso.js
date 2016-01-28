@@ -60,7 +60,6 @@ $(document).ready(function() {
     $('#language').change(function() {
         var select = $(this);
         var mydata = {lang:select.val()};
-        console.log(mydata);
         var url = '/lang/';
         $.ajax({
             url: url,
@@ -108,9 +107,10 @@ $(document).ready(function() {
         autoclose: true
     });
 
+
     $('.datepicker').datepicker({
         autoclose: true,
-        language: "{{user.userprofile.language}}"
+        language: "{{ LANGUAGE_CODE }}"
     });
 
     $('.select2').select2();

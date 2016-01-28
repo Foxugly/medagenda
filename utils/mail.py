@@ -81,9 +81,9 @@ def mail_patient_cancel_appointment_from_patient(request, slot, accepted):
 def mail_body(request, subject_part, template_name, context, receiver):
     sender = settings.DEFAULT_FROM_EMAIL
     current_site = get_current_site(request)
-    context['domain'] = current_site.domain
     context['site_name'] = current_site.name
-    context['protocol'] = 'https' if request.is_secure() else 'http'
+    protocol = 'https' if request.is_secure() else 'http'
+    context['uri'] = protocol + '://' + current_site.domain
     text_part = loader.get_template('%s.txt' % template_name).render(Context(context))
     html_part = loader.get_template('%s.tpl' % template_name).render(Context(context))
     msg = EmailMultiAlternatives(subject_part, text_part, sender, [receiver])

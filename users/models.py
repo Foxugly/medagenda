@@ -46,6 +46,12 @@ class UserCreateForm(UserCreationForm):
                 self.fields[key].initial = val
 
 
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+
 class UserProfileForm(ModelForm):
     error_messages = {
         'not_accepted': _("You must accept the terms and conditions of use of Medagenda"),

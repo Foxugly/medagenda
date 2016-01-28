@@ -288,7 +288,7 @@ $(document).ready(function() {
 <div class="container">
     <h2>{% trans "Configuration and Settings" %}</h2>
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#div_personal_data">{% trans "Personal Data" %}</a></li>
+        <li class="active"><a data-toggle="tab" href="#div_personal_data">{% trans "Doctor Data" %}</a></li>
         <li><a data-toggle="tab" href="#div_config">{% trans "Settings" %}</a></li>
         <li><a data-toggle="tab" href="#div_avatar">{% trans "Avatar" %}</a></li>
         <li><a data-toggle="tab" href="#div_color">{% trans "Colors" %}</a></li>
@@ -305,6 +305,7 @@ $(document).ready(function() {
                     {% csrf_token %}
                     <fieldset>
                         <div class="row">
+                            {% bootstrap_form user_form layout="horizontal"%}
                             {% bootstrap_form personal_data_form layout="horizontal"%}
                         </div>
                         <div class="row">
@@ -522,6 +523,7 @@ $(document).ready(function() {
                                 </thead>
                                 <tbody>
                                 {%  for c in collaborators1 %}
+                                    {%  if c != doctor_profile %}
                                     <tr>
                                     <td class="text-center">{{ c.id }}</td>
                                     <td class="text-center">{{ c.user.first_name }}</td>
@@ -529,6 +531,7 @@ $(document).ready(function() {
                                     <td class="text-center">{{ c.user.email }}</td>
                                     <td class="text-center"><a href='#' class='btn btn-xs btn-danger collaborator_del' role='button'><span class='glyphicon glyphicon-remove'></span></a></td>
                                     </tr>
+                                    {%  endif %}
                                 {%  endfor  %}
                                 {%  for c in collaborators2 %}
                                     <tr>

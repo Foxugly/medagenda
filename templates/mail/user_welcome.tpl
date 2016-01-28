@@ -5,7 +5,7 @@
 <br><br>
 {% if b_link %}
 {% trans "Could you click on the link below to confirm your email address :" %}
-{{ protocol }}://{{ domain }}{% url 'confirm_user' user_id=userprofile.user.id text=userprofile.confirm  %}
+<a href="{{ uri }}{% url 'confirm_user' user_id=userprofile.user.id text=userprofile.confirm  %}">{{ uri }}{% url 'confirm_user' user_id=userprofile.user.id text=userprofile.confirm  %}</a>
 <br><br>
 {%  endif %}
 {% trans "Thanks for using our site!" %}
