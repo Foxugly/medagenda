@@ -65,7 +65,7 @@ def st_apply(request):
     results = {}
     if request.is_ajax():
         doc = request.user.userprofile.current_doctor
-        if 'start_date' in request.POST and 'end_date' in request.POST:
+        if 'start_date' in request.POST and 'end_date' in request.POST and request.POST['start_date'] and request.POST['end_date']:
             dateformat = request.POST['date_format']
             if not dateformat:
                 dateformat = 'mm/dd/yyyy'

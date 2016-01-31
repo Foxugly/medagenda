@@ -44,11 +44,7 @@
         <script type="text/javascript" src='{% static datepicker_lang %}'></script>
         {% endwith %}
     {%  endif %}
-    <script>
-        $(document).ready(function() {
-            $(".date_format").val($.fn.datepicker.dates["{{ LANGUAGE_CODE }}"]["format"]);
-        });
-    </script>
+
     <script type="text/javascript" src='{% static "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.min.js" %}'></script>
     <script type="text/javascript" src='{% static "bootstrap-fileinput-master/js/fileinput.min.js" %}'></script>
     {% if LANGUAGE_CODE != 'en' %}
@@ -62,9 +58,6 @@
         <script type="text/javascript" src='{% static select2_lang %}'></script>
         {% endwith %}
      {%  endif %}
-    <script type="text/javascript" src='http://maps.googleapis.com/maps/api/js?libraries=places'></script>
-    <script type="text/javascript" src='{% static "js/jquery.geocomplete.min.js" %}'></script>
-    <script type="text/javascript" src='{% static "address/js/address.js" %}'></script>
     {% block js %}
     {% endblock %}
     <script src='{% static "js/perso.js" %}'></script>

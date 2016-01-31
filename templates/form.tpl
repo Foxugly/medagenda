@@ -3,6 +3,12 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block header %}
+    {% for f in form %}
+        {{ f.media }}
+    {%  endfor %}
+{% endblock %}
+
 {% block content %}
     <div class="row row_space" >
         <div class="col-md-12 text-center"><h1>{{title}}</h1></div>

@@ -4,6 +4,13 @@
 {% load l10n %}
 {% load tools %}
 {% load staticfiles %}
+
+{% block header %}
+    {% for f in form %}
+        {{ f.media }}
+    {%  endfor %}
+{% endblock %}
+
 {% block js %}
 <script>
 $(document).ready(function() {

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from users.models import UserProfile
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from address.models import AddressField
+from address.models import AddressField, Country, State, Locality, Address
 from django.forms import ModelForm
 from django import forms
 from django.utils.text import slugify
@@ -23,7 +23,7 @@ import os
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from utils.toolbox import string_random
-
+import requests
 
 class ColorSlot(models.Model):
     SLOT_TYPE = settings.SLOT_TYPE
@@ -78,7 +78,7 @@ def get_number(y):
         inst = InvoiceNumber(year=y, number=1)
         inst.save()
         val = 1
-    val = (y * 10**7) + (67* 10**5) + val
+    val = (y * 10 ** 7) + (67 * 10 ** 5) + val
     return val
 
 
@@ -109,7 +109,8 @@ class Invoice(models.Model):
             self.price_incVAT = self.price_VAT + self.price_exVAT
             # super(Invoice, self).save(*args, **kwargs)
         self.invoice_number = get_number(self.date_creation.year)
-        self.path = os.path.join('invoice', '%s_%s_%s.pdf' % (string_random(16), self.date_creation.year, self.invoice_number))
+        self.path = os.path.join('invoice',
+                                 '%s_%s_%s.pdf' % (string_random(16), self.date_creation.year, self.invoice_number))
         super(Invoice, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -247,6 +248,42 @@ class Doctor(models.Model):
                 if i.price_exVAT == 0:
                     out = True
         return out
+
+    def save(self, *args, **kwargs):
+        super(Doctor, self).save(*args, **kwargs)
+        adr = self.address.raw.replace(' ', '+')
+        response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=%s' % adr)
+        resp_json_payload = response.json()
+        sol = resp_json_payload['results'][0]
+        dic_address = {}
+        for d in sol['address_components']:
+            dic_address[d['types'][0]] = d
+        country = Country.objects.filter(code=dic_address['country']['short_name'])
+        if len(country):
+            country = country[0]
+        else:
+            country = Country(code=dic_address['country']['short_name'], name=dic_address['country']['long_name'])
+            country.save()
+        state = State.objects.filter(country=country, name=dic_address['administrative_area_level_1']['long_name'])
+        if len(state):
+            state = state[0]
+        else:
+            state = State(country=country, code=dic_address['administrative_area_level_1']['short_name'],
+                          name=dic_address['administrative_area_level_1']['long_name'])
+            state.save()
+        locality = Locality.objects.filter(state=state, postal_code=dic_address['postal_code']['long_name'], name=dic_address['locality']['long_name'])
+        if len(locality):
+            locality = locality[0]
+        else:
+            locality = Locality(state=state, postal_code=dic_address['postal_code']['long_name'], name=dic_address['locality']['long_name'])
+            locality.save()
+        self.address.locality = locality
+        self.address.latitude = sol['geometry']['location']['lat']
+        self.address.longitude = sol['geometry']['location']['lng']
+        self.address.route = dic_address['route']['long_name']
+        self.address.street_number = dic_address['street_number']['long_name']
+        self.address.save()
+        super(Doctor, self).save(*args, **kwargs)
 
 
 class DoctorForm(ModelForm):
