@@ -173,7 +173,7 @@ $(document).ready(function() {
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2 class="text-center">{% trans "Calendar Model" %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2>
+    <h2 class="text-center">{% trans "Calendar Model" %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.refer_userprofile.user.first_name|capfirst}} {{doctor.refer_userprofile.user.last_name|capfirst}}</h2>
   </div>
 </div>
 <div class="row form-group">

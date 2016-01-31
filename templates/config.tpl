@@ -6,9 +6,7 @@
 {% load staticfiles %}
 
 {% block header %}
-    {% for f in form %}
-        {{ f.media }}
-    {%  endfor %}
+    {{ personal_data_form.media }}
 {% endblock %}
 
 {% block js %}

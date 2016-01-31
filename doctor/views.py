@@ -266,14 +266,19 @@ def invoice_remove(request, invoice_id):
 def invoices(request):
     data = []
     titles = ['ID', _(u'Creation date'), _(u'Type of subscription'), _(u'Start date'), _('End date'),
-              _(u'Price inc. VAT'), _(u'date paid')]
+              _(u'Price inc. VAT'), _(u'invoice'), _(u'date paid')]
+    print settings.FULLCALENDAR_REF_DATEFORMAT
     for i in request.user.userprofile.current_doctor.invoices.all().order_by('id'):
         if i.paid:
             paid = i.date_paid
         else:
-            paid = '<a href="link/sofort" class="btn btn-danger" role="button">%s</a>' % _("Pay now")
+            lang = request.LANGUAGE_CODE
+            if i.paid or int(i.price_incVAT) == 0:
+                paid = '<a href="" class="btn btn-xs btn-success disabled" role="button">%s</a>' % _("Paid")
+            else:
+                paid = '<a href="link/sofort" class="btn btn-xs btn-danger " role="button">%s</a>' % _("Pay now")
         data.append([i.id, i.date_creation, i.type_price, i.date_start,
-                     i.date_end, "%.2f euros" % i.price_incVAT, paid])
+                     i.date_end, "%.2f euros" % i.price_incVAT, '<a href="'+ settings.MEDIA_URL + i.path +'">pdf</a>', paid])
     c = {'title': 'Invoices', 'table': {'data': data, 'titles': titles}}
     return render(request, 'table.tpl', c)
 

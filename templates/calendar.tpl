@@ -197,7 +197,7 @@ $(document).ready(function() {
 {% block content %}
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
-    <p style="text-align:center;"><h2>{% trans "Calendar" %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.user.first_name|capfirst}} {{doctor.user.last_name|capfirst}}</h2><p>
+    <p style="text-align:center;"><h2>{% trans "Calendar" %} - {{doctor.TITLE_CHOICES|index:doctor.title|safe}} {{doctor.refer_userprofile.user.first_name|capfirst}} {{doctor.refer_userprofile.user.last_name|capfirst}}</h2><p>
   </div>
 </div>
 <div id="calendar"></div>

@@ -1,6 +1,7 @@
 {% extends "layout.tpl" %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load l10n %}
 {% load staticfiles %}
 
 {% block content %}
@@ -21,7 +22,7 @@
                 {%  for data in table.data %}
                     <tr>
                         {%  for td in data %}
-                            <td>{{ td|safe }}</td>
+                            <td>{{ td|localize|safe }}</td>
                         {%  endfor %}
                     </tr>
                 {%  endfor %}
