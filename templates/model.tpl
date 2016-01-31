@@ -66,31 +66,32 @@ $(document).ready(function() {
     });
 
     var startDate = new Date();
-    var FromEndDate = new Date();
-    var ToEndDate = new Date();
-    ToEndDate.setDate(ToEndDate.getDate()+365);
+    var endDate = new Date();
+    endDate.setDate(endDate.getDate()+365);
 
-    $('#start_date').datepicker({
-        language: "{{ LANGUAGE_CODE }}",
-        startDate: startDate,
-        autoclose: true
+    $('#start_date').datetimepicker({
+        locale: "{{ LANGUAGE_CODE }}",
+        format: 'L',
+        minDate: startDate,
+        maxDate: endDate
     })
-    .on('changeDate', function(selected){
+    .on('dp.change', function(selected){
         startDate = new Date(selected.date.valueOf());
         startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
-        $('#end_date').datepicker('setStartDate', startDate);
-    }); 
+        $('#end_date').data('DateTimePicker').minDate(startDate).defaultDate(startDate).show();
+    });
 
-    $('#end_date').datepicker({
-        language: "{{ LANGUAGE_CODE }}",
-        startDate: startDate,
-        endDate: ToEndDate,
-        autoclose: true
+    $('#end_date').datetimepicker({
+        locale: "{{ LANGUAGE_CODE }}",
+        format: 'L',
+        minDate: startDate,
+        maxDate: endDate
     })
-    .on('changeDate', function(selected){
-        FromEndDate = new Date(selected.date.valueOf());
-        FromEndDate.setDate(FromEndDate.getDate(new Date(selected.date.valueOf())));
-        $('#start_date').datepicker('setEndDate', FromEndDate);
+    .on('dp.change', function(selected){
+        endDate = new Date(selected.date.valueOf());
+        endDate.setDate(endDate.getDate(new Date(selected.date.valueOf())));
+        $('#start_date').data('DateTimePicker').maxDate(endDate).defaultDate(startDate);
+
     });
 
     $('#btn_addslots').on("click", function(){
@@ -143,9 +144,7 @@ $(document).ready(function() {
 
     $('#btn_applyslots').on("click", function(){
         $('#loading').show();
-        var form = $('#form_apply').serializeArray();
-        {% get_current_language as LANGUAGE_CODE %}
-        form.push({name: 'date_format',value:$.fn.datepicker.dates['{{LANGUAGE_CODE}}']['format']});
+        var form = {start_date:moment(startDate).format('YYYY-MM-DD'), end_date:moment(endDate).format('YYYY-MM-DD')};
         var url = '/slot/ajax/st/apply/';
         $.ajax({
             url: url,

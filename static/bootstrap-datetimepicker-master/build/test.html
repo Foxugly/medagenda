@@ -12,22 +12,13 @@
 <body>
 <div class="row">
     <div class="col-md-12">
-         <h6>datetimepicker1</h6>
-
-        <div class="form-group">
-            <div class="input-group date" id="datetimepicker1">
-                <input type="text" class="form-control" />	<span class="input-group-addon"><span class="glyphicon-calendar glyphicon"></span></span>
-            </div>
-        </div>
-         <h6>datetimepicker2</h6>
-
-        <input type="text" class="form-control" id="datetimepicker2" />
+         <h6>datetimepicker</h6>
+        <input type="text" class="form-control datepicker" id="datetimepicker2"/>
     </div>
 </div>
 <script>
 $( document ).ready(function() {
-    $('#datetimepicker1').datetimepicker();
-    $('#datetimepicker2').datetimepicker({
+    $('.datepicker').datetimepicker({
 	locale:'fr',
         format: 'L'
     })

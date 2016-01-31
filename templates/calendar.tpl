@@ -28,19 +28,16 @@ $(document).ready(function() {
         contentHeight: 'auto',
         minTime : '{{doctor.start_time|time_format}}',
         maxTime : '{{doctor.end_time|time_format}}',
-        eventLimit: false, // allow "more" link when too many events
+        eventLimit: false,
         {% if slots %}
             events: {{slots|safe}},
         {% endif %}
         eventClick: function (calEvent) {
             $('#id_slot').val(calEvent.id);
             var url = '/slot/ajax/s/get/' + calEvent.id + '/';
-            {% get_current_language as LANGUAGE_CODE %}
-            var mydata = {date_format:$.fn.datepicker.dates['{{LANGUAGE_CODE}}']['format']};
             $.ajax({
                 url: url,
                 type: 'POST',
-                data: mydata,
                 traditional: true,
                 dataType: 'json',
                 success: function(result){

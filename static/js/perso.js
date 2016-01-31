@@ -107,10 +107,14 @@ $(document).ready(function() {
         autoclose: true
     });
 
-
-    $('.datepicker').datepicker({
+    /*$('.datepicker').datepicker({
         autoclose: true,
         language: "{{ LANGUAGE_CODE }}"
+    });*/
+
+    $('.datepicker').datetimepicker({
+        locale: "{{ LANGUAGE_CODE }}",
+        format: 'L'
     });
 
     $('.select2').select2();
