@@ -33,6 +33,7 @@
     <link href='{% static "css/offer.css" %}' rel='stylesheet' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/moment.min.js" %}'></script>
     <script type="text/javascript" src='{% static "fullcalendar-2.5.0/lib/jquery.min.js" %}'></script>
     <script type="text/javascript" src='{% static "fullcalendar-2.5.0/fullcalendar.min.js" %}'></script>
