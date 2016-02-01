@@ -24,6 +24,7 @@ from django.db.models import Q
 from doctor.models import Doctor
 from agenda.models import Slot
 from utils.mail import mail_collaborator
+from django.contrib.auth.models import User
 
 
 def profile(request, slug=None):
@@ -77,14 +78,17 @@ def search_doctor(request):
     # TODO finaliser
     results = {}
     if request.is_ajax():
-        s = 'text'
+        s = request.POST['text']
         if request.user.is_superuser:
-            results['list'] = UserProfile.objects.filter(Q(address__contains=s) |
-                                                         Q(user__firstname__contains=s) | Q(user__lastname__contains=s))
+            list = Doctor.objects.filter(Q(refer_userprofile__user__first_name__contains=s) | Q(
+                refer_userprofile__user__last_name__contains=s) | Q(address__formatted__contains=s))
         else:
-            results['list'] = UserProfile.objects.filter(
-                    Q(address__contains=s) | Q(user__firstname__contains=s) | Q(user__lastname__contains=s),
-                    Q(view_in_list=True))
+            list = Doctor.objects.filter(Q(refer_userprofile__user__first_name__contains=s) | Q(
+                refer_userprofile__user__last_name__contains=s) | Q(address__formatted__contains=s), Q(view_in_list=True))
+        l_doctor = []
+        for l in list:
+            l_doctor.append(l.as_json())
+        results['list'] = l_doctor
         results['return'] = True
     else:
         results['return'] = False
@@ -278,7 +282,8 @@ def invoices(request):
             else:
                 paid = '<a href="link/sofort" class="btn btn-xs btn-danger " role="button">%s</a>' % _("Pay now")
         data.append([i.id, i.date_creation, i.type_price, i.date_start,
-                     i.date_end, "%.2f euros" % i.price_incVAT, '<a href="'+ settings.MEDIA_URL + i.path +'">pdf</a>', paid])
+                     i.date_end, "%.2f euros" % i.price_incVAT, '<a href="' + settings.MEDIA_URL + i.path + '">pdf</a>',
+                     paid])
     c = {'title': 'Invoices', 'table': {'data': data, 'titles': titles}}
     return render(request, 'table.tpl', c)
 

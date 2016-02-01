@@ -25,6 +25,7 @@ from datetime import datetime
 from utils.toolbox import string_random
 import requests
 
+
 class ColorSlot(models.Model):
     SLOT_TYPE = settings.SLOT_TYPE
     slot = models.IntegerField(verbose_name=_(u'Type of slot'), choices=SLOT_TYPE)
@@ -78,7 +79,7 @@ def get_number(y):
         inst = InvoiceNumber(year=y, number=1)
         inst.save()
         val = 1
-    val = (y * 10 ** 7) + (67 * 10 ** 5) + val
+    val += (y * 10 ** 7) + (67 * 10 ** 5)
     return val
 
 
@@ -172,10 +173,13 @@ class Doctor(models.Model):
                                           related_name='refer_userprofile', null=True, blank=True)
 
     def __str__(self):
-        return u"%s " % (self.slug)
+        return u"%s " % self.slug
 
     def get_title(self):
         return u"%s" % self.TITLE_CHOICES[self.title - 1][1]
+
+    def get_speciality(self):
+        return u"%s" % self.MEDECINE_CHOICES[self.speciality - 1][1]
 
     def full_name(self):
         return u"%s %s" % (self.get_title(), self.real_name())
@@ -271,11 +275,13 @@ class Doctor(models.Model):
             state = State(country=country, code=dic_address['administrative_area_level_1']['short_name'],
                           name=dic_address['administrative_area_level_1']['long_name'])
             state.save()
-        locality = Locality.objects.filter(state=state, postal_code=dic_address['postal_code']['long_name'], name=dic_address['locality']['long_name'])
+        locality = Locality.objects.filter(state=state, postal_code=dic_address['postal_code']['long_name'],
+                                           name=dic_address['locality']['long_name'])
         if len(locality):
             locality = locality[0]
         else:
-            locality = Locality(state=state, postal_code=dic_address['postal_code']['long_name'], name=dic_address['locality']['long_name'])
+            locality = Locality(state=state, postal_code=dic_address['postal_code']['long_name'],
+                                name=dic_address['locality']['long_name'])
             locality.save()
         self.address.locality = locality
         self.address.latitude = sol['geometry']['location']['lat']
@@ -284,6 +290,11 @@ class Doctor(models.Model):
         self.address.street_number = dic_address['street_number']['long_name']
         self.address.save()
         super(Doctor, self).save(*args, **kwargs)
+
+    def as_json(self):
+        return {'doctor': self.full_name(), 'lat': self.address.latitude, 'link': '/doc/%s/' % self.slug,
+                'lng': self.address.longitude, 'speciality': self.get_speciality(),
+                'locality': self.address.locality.name, 'img': self.picture if self.picture else None}
 
 
 class DoctorForm(ModelForm):

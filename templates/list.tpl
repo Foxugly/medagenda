@@ -44,6 +44,56 @@ $(document).ready(function() {
         $('#div_map').show();
         initialize();
     });
+    function search_doctors(){
+        var mydata = {text:$('#search').val()}
+        var url = '/doc/ajax/search/';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            traditional: true,
+            data: mydata,
+            dataType: 'json',
+            success: function(result){
+                if (result['return']){
+                    markers = result['list'];
+                    initialize();
+                    $( "#div_list" ).empty();
+                    var out = "";
+                    for (var i = 0; i < markers.length; ++i){
+                        var doc = markers[i];
+                        if (i % 4 == 0){
+                            out +='<div class="row">';
+                        }
+                        out += '<div class="col-sm-3"><div class="thumbnail text-center" >';
+                        out += '<div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;"></div>';
+                        out += '<p class="text-center">' + doc.doctor +'</p>';
+                        out += '<p class="text-center">' + doc.speciality +'</p>';
+                        out += '<p class="text-center">' + doc.locality +'</p>';
+                        out += '<p class="text-center"><a class="btn btn-info" href="' + doc.link + '" role="button">Plus d\'infos</a></p>';
+                        out += '</div></div>';
+                        if (i % 4 == 4 || i == markers.length-1){
+                            out+='</div>';
+                        }
+                    }
+                    $( "#div_list" ).html(out);
+                }
+                else{
+                    console.log('erreur');
+                }
+            }
+        });
+    }
+    $('#search').keydown(function(){
+        if(event.keyCode == 13) {
+            event.preventDefault();
+            search_doctors();
+            return false;
+        }
+    });
+    $('#btn_search').click(function(){
+        search_doctors();
+    });
+
 });
 </script>
 {% endblock %}
@@ -59,7 +109,7 @@ $(document).ready(function() {
   </div>
   <div class="col-md-8">
     <div class="input-group">
-      <input type="text" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></span>
+      <input type="text" id="search" class="form-control input-lg" placeholder="{% blocktrans %}Looking for a doctor{% endblocktrans %}"><span class="input-group-btn "><button id="btn_search" class="btn btn-default btn-lg" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></span>
     </div>
   </div>
   <div class="col-md-2 text-right">
@@ -82,10 +132,10 @@ $(document).ready(function() {
         <div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;">
       {% endif %}
       </div>
-      <p style="text-align:center;">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.refer_userprofile.user.first_name|capfirst}} {{item.refer_userprofile.user.last_name|capfirst}}</p>
-      <p style="text-align:center;">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
-      <p  style="text-align:center;">{{item.address.locality.name}}</p>
-      <p style="text-align:center;"><a class="btn btn-info" href="/doc/{{item.slug}}/" role="button">Plus d'infos</a></p>
+      <p class="text-center">{{item.TITLE_CHOICES|index:item.title|safe}} {{item.refer_userprofile.user.first_name|capfirst}} {{item.refer_userprofile.user.last_name|capfirst}}</p>
+      <p class="text-center">{{item.MEDECINE_CHOICES|index:item.speciality|safe}}</p>
+      <p class="text-center">{{item.address.locality.name}}</p>
+      <p class="text-center"><a class="btn btn-info" href="/doc/{{item.slug}}/" role="button">Plus d'infos</a></p>
     </div>
   </div>
 {% if forloop.last or forloop.counter|divisibleby:4 %}</div>{% endif %}
