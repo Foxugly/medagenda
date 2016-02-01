@@ -65,9 +65,16 @@ $(document).ready(function() {
                             out +='<div class="row">';
                         }
                         out += '<div class="col-sm-3"><div class="thumbnail text-center" >';
-                        out += '<div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;"></div>';
+                        if (doc.picture ){
+                            out += '<div style="height: 200px;background:url({{ MEDIA_URL }}{{doc.picture}}) no-repeat center center;"></div>';
+
+                        }
+                        else{
+                           out += '<div style="height: 200px;background:url({{ MEDIA_URL }}pic/profil.jpg) no-repeat center center;"></div>';
+
+                        }
                         out += '<p class="text-center">' + doc.doctor +'</p>';
-                        out += '<p class="text-center">' + doc.speciality +'</p>';
+                        out += '<p class="text-center">' + doc.spec +'</p>';
                         out += '<p class="text-center">' + doc.locality +'</p>';
                         out += '<p class="text-center"><a class="btn btn-info" href="' + doc.link + '" role="button">Plus d\'infos</a></p>';
                         out += '</div></div>';

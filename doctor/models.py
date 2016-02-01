@@ -293,7 +293,7 @@ class Doctor(models.Model):
 
     def as_json(self):
         return {'doctor': self.full_name(), 'lat': self.address.latitude, 'link': '/doc/%s/' % self.slug,
-                'lng': self.address.longitude, 'speciality': self.get_speciality(),
+                'lng': self.address.longitude, 'spec': self.get_speciality(),
                 'locality': self.address.locality.name, 'img': self.picture if self.picture else None}
 
 
