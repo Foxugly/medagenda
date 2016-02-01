@@ -90,7 +90,7 @@ $(document).ready(function() {
             }
         });
     }
-    $('#search').keydown(function(){
+    $('#search').keydown(function(event){
         if(event.keyCode == 13) {
             event.preventDefault();
             search_doctors();
