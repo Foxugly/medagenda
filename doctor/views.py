@@ -160,7 +160,7 @@ def text_profil(request):
 def config(request):
     results = {}
     if request.is_ajax():
-        form = SettingsForm(request.POST, instance=request.user.userprofile)
+        form = SettingsForm(request.POST, instance=request.user.userprofile.current_doctor)
         if form.is_valid():
             form.save()
             results['return'] = True
