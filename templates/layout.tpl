@@ -53,7 +53,7 @@
         <script type="text/javascript" src='{% static fileinput_lang %}'></script>
         {% endwith %}
     {%  endif  %}
-    <script type="text/javascript" src='{% static "select2-4.0.1/dist/js/select2.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "select2-4.0.1/dist/js/select2.full.min.js" %}'></script>
     {% if LANGUAGE_CODE != 'en' %}
         {% with 'select2-4.0.1/dist/js/i18n/'|add:LANGUAGE_CODE|add:'.js' as select2_lang %}
         <script type="text/javascript" src='{% static select2_lang %}'></script>

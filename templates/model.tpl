@@ -237,7 +237,7 @@ $(document).ready(function() {
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="duration">{% trans "Duration" %}:</label>
             <div class="col-md-2" style="padding-right: 0; padding-left: 0;">
-              <select id="duration" name="duration" class="select2-nosearch">
+              <select id="duration" name="duration" class="select2-nosearch" style="width:50px;">
                 <option value="0">0</option>
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -253,7 +253,7 @@ $(document).ready(function() {
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="break_time">{% trans "Break" %}:</label>
             <div class="col-md-2" style="padding-right: 0; padding-left: 0;">
-              <select  id="break_time" name="break_time" class="select2-nosearch">
+              <select  id="break_time" name="break_time" class="select2-nosearch" style="width:50px;">
                 <option value="0" selected="selected">0</option>
                 <option value="5">5</option>
                 <option value="10">10</option>
