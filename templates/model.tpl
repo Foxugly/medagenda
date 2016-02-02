@@ -267,7 +267,7 @@ $(document).ready(function() {
           <div class="row form-group">
             <label class="col-md-2 col-md-offset-1 control-label" for="slot_type">{% trans "Type" %}:</label>
             <div class="col-md-8" style="padding-right: 0; padding-left: 0;">
-              <select id="slot_type" name="slot_type" class="select2-nosearch">
+              <select id="slot_type" name="slot_type" class="select2-nosearch" style="width:210px;">
               {% for st in slot_type %}
                 <option value="{{st.0}}">{{st.1}}</option>
               {% endfor %}

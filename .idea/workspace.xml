@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eab10c8c-0182-412c-bfee-2afb57d8ac03" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/css/perso.css" afterPath="$PROJECT_DIR$/static/css/perso.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/js/perso.js" afterPath="$PROJECT_DIR$/static/js/perso.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/layout.tpl" afterPath="$PROJECT_DIR$/templates/layout.tpl" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/model.tpl" afterPath="$PROJECT_DIR$/templates/model.tpl" />
     </list>
     <ignored path="medagenda.iws" />
@@ -61,21 +57,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="calendar.tpl" pinned="false" current-in-tab="true">
+      <file leaf-file-name="calendar.tpl" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/calendar.tpl">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.9328065">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="34.592594">
+              <caret line="215" column="14" selection-start-line="215" selection-start-column="14" selection-end-line="215" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model.tpl" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model.tpl" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/model.tpl">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.0740743">
-              <caret line="239" column="96" selection-start-line="239" selection-start-column="96" selection-end-line="239" selection-end-column="96" />
+            <state vertical-scroll-proportion="0.8043478">
+              <caret line="269" column="94" selection-start-line="269" selection-start-column="94" selection-end-line="269" selection-end-column="94" />
               <folding>
                 <element signature="n#style#0;n#select#0;n#div#0;n#div#3;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#select#0;n#div#0;n#div#4;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
@@ -96,8 +92,8 @@
         <option value="$PROJECT_DIR$/doctor/views.py" />
         <option value="$PROJECT_DIR$/templates/layout.tpl" />
         <option value="$PROJECT_DIR$/static/js/perso.js" />
-        <option value="$PROJECT_DIR$/templates/model.tpl" />
         <option value="$PROJECT_DIR$/static/css/perso.css" />
+        <option value="$PROJECT_DIR$/templates/model.tpl" />
       </list>
     </option>
   </component>
@@ -704,7 +700,13 @@
       <option name="project" value="LOCAL" />
       <updated>1454422694158</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="IE and select">
+      <created>1454425454507</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1454425454507</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -739,7 +741,8 @@
     <MESSAGE value="threading apply slots" />
     <MESSAGE value="IE friendly + bug setting date fixd" />
     <MESSAGE value="select2 in nav fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="select2 in nav fixed" />
+    <MESSAGE value="IE and select" />
+    <option name="LAST_COMMIT_MESSAGE" value="IE and select" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -798,17 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/model.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.0740743">
-          <caret line="239" column="96" selection-start-line="239" selection-start-column="96" selection-end-line="239" selection-end-column="96" />
-          <folding>
-            <element signature="n#style#0;n#select#0;n#div#0;n#div#3;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#select#0;n#div#0;n#div#4;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/css/perso.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-14.740741">
@@ -819,9 +811,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/calendar.tpl">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.9328065">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="34.592594">
+          <caret line="215" column="14" selection-start-line="215" selection-start-column="14" selection-end-line="215" selection-end-column="14" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/model.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8043478">
+          <caret line="269" column="94" selection-start-line="269" selection-start-column="94" selection-end-line="269" selection-end-column="94" />
+          <folding>
+            <element signature="n#style#0;n#select#0;n#div#0;n#div#3;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#select#0;n#div#0;n#div#4;n#form#0;n#div#1;n#div#0;n#div#0;n#div#4;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
