@@ -82,7 +82,7 @@
               <ul class="nav navbar-nav navbar-left">
                   <li>
                     <div class='navbar-form form-group'>
-                     <select id="select_doctor" name="select_doctor" class="form-control">
+                     <select id="select_doctor" name="select_doctor" class="form-control select2-nosearch">
                          {%  for doc in user.userprofile.doctors.all %}
                              {%  if doc == user.userprofile.current_doctor %}
                                 <option value="{{ doc.id }}" selected="selected">{{ doc.slug }}</option>
@@ -98,7 +98,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li>
                 <div class='navbar-form form-group'>
-                    <select id="language" name="language" class="form-control">
+                    <select id="language" name="language" class="form-control select2-nosearch">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% get_available_languages as LANGUAGES %}
                         {% get_language_info_list for LANGUAGES as languages %}

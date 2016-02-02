@@ -4,7 +4,6 @@
     <list default="true" id="eab10c8c-0182-412c-bfee-2afb57d8ac03" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doctor/views.py" afterPath="$PROJECT_DIR$/doctor/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/layout.tpl" afterPath="$PROJECT_DIR$/templates/layout.tpl" />
     </list>
     <ignored path="medagenda.iws" />
@@ -39,20 +38,30 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="layout.tpl" pinned="false" current-in-tab="false">
+      <file leaf-file-name="layout.tpl" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/layout.tpl">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="16.0">
-              <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.56916994">
+              <caret line="100" column="94" selection-start-line="100" selection-start-column="94" selection-end-line="100" selection-end-column="94" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="calendar.tpl" pinned="false" current-in-tab="true">
+      <file leaf-file-name="perso.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/js/perso.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="121" column="8" selection-start-line="121" selection-start-column="8" selection-end-line="121" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="calendar.tpl" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/calendar.tpl">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.320158">
+            <state vertical-scroll-proportion="20.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -68,9 +77,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/agenda/views.py" />
-        <option value="$PROJECT_DIR$/templates/layout.tpl" />
         <option value="$PROJECT_DIR$/templates/model.tpl" />
         <option value="$PROJECT_DIR$/doctor/views.py" />
+        <option value="$PROJECT_DIR$/templates/layout.tpl" />
       </list>
     </option>
   </component>
@@ -139,6 +148,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="medagenda" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="medagenda" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="medagenda" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="medagenda" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -549,7 +590,13 @@
       <option name="project" value="LOCAL" />
       <updated>1454411140633</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="IE friendly + bug setting date fixd">
+      <created>1454422224074</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1454422224074</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -582,7 +629,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="threading apply slots" />
-    <option name="LAST_COMMIT_MESSAGE" value="threading apply slots" />
+    <MESSAGE value="IE friendly + bug setting date fixd" />
+    <option name="LAST_COMMIT_MESSAGE" value="IE friendly + bug setting date fixd" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -596,14 +644,6 @@
           <folding>
             <element signature="e#332#389#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/layout.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="16.0">
-          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -635,8 +675,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/calendar.tpl">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.320158">
+        <state vertical-scroll-proportion="20.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/js/perso.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="121" column="8" selection-start-line="121" selection-start-column="8" selection-end-line="121" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.56916994">
+          <caret line="100" column="94" selection-start-line="100" selection-start-column="94" selection-end-line="100" selection-end-column="94" />
           <folding />
         </state>
       </provider>
