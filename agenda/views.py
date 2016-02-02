@@ -62,7 +62,6 @@ def st_clean(request):
 
 def apply_slots(start_date, end_date, doc):
     for i in range(0, 7):
-        print i
         current_day = start_date + timedelta(days=i)
         while current_day <= end_date:
             sts = doc.get_daytemplate(
