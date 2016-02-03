@@ -17,6 +17,7 @@ import json
 from utils.toolbox import string_random
 from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
 from multiprocessing import Process
+from threading import Thread
 from django.db import connection
 
 
@@ -61,27 +62,34 @@ def st_clean(request):
         return HttpResponse(json.dumps(results))
 
 
-def apply_slots(start_date, end_date, doc):
-    for i in range(0, 7):
-        current_day = start_date + timedelta(days=i)
-        while current_day <= end_date:
-            sts = doc.get_daytemplate(
-                    1 + (int(start_date.weekday()) + i) % 7).get_slottemplates()
-            if sts:
-                for st in sts:
-                    current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
-                    for s in doc.slots.filter(date=datetime.date(current_day), st__start__lte=current_day,
-                                              st__end__gt=current_day):
-                        doc.slots.remove(s)
-                    current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
-                    for s in doc.slots.filter(date=datetime.date(current_day), st__start__lt=current_day,
-                                              st__end__gte=current_day):
-                        doc.slots.remove(s)
-                    new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=doc, booked=st.booked)
-                    new_slot.save()
-                    doc.slots.add(new_slot)
-            current_day += timedelta(days=7)
-    connection.close()
+class ApplySlots(Thread):
+    def __init__(self, start_date, end_date, doc):
+        Thread.__init__(self)
+        self.start_date = start_date
+        self.end_date = end_date
+        self.doc = doc
+
+    def run(self):
+        #apply_slots(start_date, end_date, doc):
+        for i in range(0, 7):
+            current_day = self.start_date + timedelta(days=i)
+            while current_day <= self.end_date:
+                sts = self.doc.get_daytemplate(
+                        1 + (int(self.start_date.weekday()) + i) % 7).get_slottemplates()
+                if sts:
+                    for st in sts:
+                        current_day = current_day.replace(hour=st.start.hour, minute=st.start.minute)
+                        for s in self.doc.slots.filter(date=datetime.date(current_day), st__start__lte=current_day,
+                                                  st__end__gt=current_day):
+                            self.doc.slots.remove(s)
+                        current_day = current_day.replace(hour=st.end.hour, minute=st.end.minute)
+                        for s in self.doc.slots.filter(date=datetime.date(current_day), st__start__lt=current_day,
+                                                  st__end__gte=current_day):
+                            self.doc.slots.remove(s)
+                        new_slot = Slot(date=datetime.date(current_day), st=st, refer_doctor=self.doc, booked=st.booked)
+                        new_slot.save()
+                        self.doc.slots.add(new_slot)
+                current_day += timedelta(days=7)
 
 
 @login_required
@@ -92,8 +100,11 @@ def st_apply(request):
             start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d')
             end_date = datetime.strptime(request.POST['end_date'], '%Y-%m-%d')
             connection.close()
-            p = Process(target=apply_slots, args=(start_date, end_date, request.user.userprofile.current_doctor))
-            p.start()
+            # p = Process(target=apply_slots, args=(start_date, end_date, request.user.userprofile.current_doctor))
+            # apply_slots(start_date, end_date, request.user.userprofile.current_doctor)
+            ap = ApplySlots(start_date, end_date, request.user.userprofile.current_doctor)
+            ap.start()
+            # p.start()
             results['return'] = True
         else:
             results['return'] = False
