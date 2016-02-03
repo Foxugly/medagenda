@@ -17,6 +17,7 @@ import json
 from utils.toolbox import string_random
 from utils.mail import mail_patient_welcome, mail_patient_cancel_appointment_from_doctor, mail_patient_new_appointment
 from multiprocessing import Process
+from django.db import connection
 
 
 @login_required
@@ -80,6 +81,7 @@ def apply_slots(start_date, end_date, doc):
                     new_slot.save()
                     doc.slots.add(new_slot)
             current_day += timedelta(days=7)
+    connection.close()
 
 
 @login_required
@@ -89,6 +91,7 @@ def st_apply(request):
         if 'start_date' in request.POST and 'end_date' in request.POST and request.POST['start_date'] and request.POST['end_date']:
             start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d')
             end_date = datetime.strptime(request.POST['end_date'], '%Y-%m-%d')
+            connection.close()
             p = Process(target=apply_slots, args=(start_date, end_date, request.user.userprofile.current_doctor))
             p.start()
             results['return'] = True
