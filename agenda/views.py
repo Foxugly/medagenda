@@ -156,7 +156,8 @@ def book_slot(request, slot_id):
 def remove_slot(request, slot_id):
     if request.is_ajax():
         slot = Slot.objects.get(id=slot_id)
-        mail_patient_cancel_appointment_from_doctor(request, slot)
+        if slot.patient:
+            mail_patient_cancel_appointment_from_doctor(request, slot)
         slot.delete()
         return HttpResponse(json.dumps({'return': True}))
 
@@ -165,7 +166,8 @@ def remove_slot(request, slot_id):
 def clean_slot(request, slot_id):
     if request.is_ajax():
         slot = Slot.objects.get(id=slot_id)
-        mail_patient_cancel_appointment_from_doctor(request, slot)
+        if slot.patient:
+            mail_patient_cancel_appointment_from_doctor(request, slot)
         slot.clean_slot()
         d = {'return': True, 'slot': slot.as_json()}
         return HttpResponse(json.dumps(d))
